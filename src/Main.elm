@@ -249,7 +249,6 @@ update msg ({ boxGroup } as model) =
 
         UpdateNote t d ->                     
             let 
-
                 updateNote box = if (box.id == model.noteToAdd.id) then
                                         let
                                             newTitle = if String.isEmpty t then box.note.title else t
@@ -301,7 +300,7 @@ update msg ({ boxGroup } as model) =
             ({ model | addingNote = True }, Cmd.none)
         
         CancelNoteForm ->
-            ({ model | addingNote = False, noteToAdd = emptyNote }, Cmd.none)
+            ({ model | addingNote = False,editNote=False, noteToAdd = emptyNote }, Cmd.none)
         
         ChangeTitle t ->
             ({ model | noteToAdd = 

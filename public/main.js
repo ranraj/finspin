@@ -519,11 +519,11 @@ function _Debug_crash_UNUSED(identifier, fact1, fact2, fact3, fact4)
 
 function _Debug_regionToString(region)
 {
-	if (region.ar.K === region.aD.K)
+	if (region.ar.L === region.aD.L)
 	{
-		return 'on line ' + region.ar.K;
+		return 'on line ' + region.ar.L;
 	}
-	return 'on lines ' + region.ar.K + ' through ' + region.aD.K;
+	return 'on lines ' + region.ar.L + ' through ' + region.aD.L;
 }
 
 
@@ -6272,7 +6272,7 @@ var $author$project$Main$init = function (_v0) {
 			I: false,
 			a: $author$project$Main$makeBoxGroup($author$project$Main$boxPositions),
 			aC: $zaboco$elm_draggable$Draggable$init,
-			S: false,
+			K: false,
 			b$: $elm$core$Maybe$Nothing,
 			aO: _List_Nil,
 			e: $author$project$Types$emptyNote
@@ -7406,7 +7406,7 @@ var $author$project$Main$update = F2(
 					}
 				};
 				var isEmpty = $elm$core$String$isEmpty(t) && $elm$core$String$isEmpty(d);
-				var edit = model.S;
+				var edit = model.K;
 				var newIdleBoxes = (edit && isEmpty) ? boxGroup.C : A2(
 					$elm$core$List$map,
 					function (box) {
@@ -7474,7 +7474,7 @@ var $author$project$Main$update = F2(
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{I: false, e: $author$project$Types$emptyNote}),
+						{I: false, K: false, e: $author$project$Types$emptyNote}),
 					$elm$core$Platform$Cmd$none);
 			case 9:
 				var t = msg.a;
@@ -7528,7 +7528,7 @@ var $author$project$Main$update = F2(
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{S: true, e: viewNote}),
+						{K: true, e: viewNote}),
 					$elm$core$Platform$Cmd$none);
 			default:
 				return _Utils_Tuple2(
@@ -7966,7 +7966,7 @@ var $lattyware$elm_fontawesome$FontAwesome$Solid$trash = A5(
 		['M432 32H312l-9.4-18.7A24 24 0 0 0 281.1 0H166.8a23.72 23.72 0 0 0-21.4 13.3L136 32H16A16 16 0 0 0 0 48v32a16 16 0 0 0 16 16h416a16 16 0 0 0 16-16V48a16 16 0 0 0-16-16zM53.2 467a48 48 0 0 0 47.9 45h245.8a48 48 0 0 0 47.9-45L416 128H32z']));
 var $lattyware$elm_fontawesome$FontAwesome$Icon$Presentation = $elm$core$Basics$identity;
 var $lattyware$elm_fontawesome$FontAwesome$Icon$present = function (icon) {
-	return {Q: _List_Nil, aL: icon, ag: $elm$core$Maybe$Nothing, L: $elm$core$Maybe$Nothing, ao: 'img', cz: $elm$core$Maybe$Nothing, _: _List_Nil};
+	return {R: _List_Nil, aL: icon, ag: $elm$core$Maybe$Nothing, M: $elm$core$Maybe$Nothing, ao: 'img', cz: $elm$core$Maybe$Nothing, _: _List_Nil};
 };
 var $lattyware$elm_fontawesome$FontAwesome$Icon$styled = F2(
 	function (attributes, _v0) {
@@ -7974,7 +7974,7 @@ var $lattyware$elm_fontawesome$FontAwesome$Icon$styled = F2(
 		return _Utils_update(
 			presentation,
 			{
-				Q: _Utils_ap(presentation.Q, attributes)
+				R: _Utils_ap(presentation.R, attributes)
 			});
 	});
 var $elm$core$Basics$always = F2(
@@ -8107,7 +8107,7 @@ var $lattyware$elm_fontawesome$FontAwesome$Transforms$Internal$transformForSvg =
 				_Utils_ap(
 					innerTranslate,
 					_Utils_ap(innerScale, innerRotate))),
-			L: $elm$svg$Svg$Attributes$transform(outer),
+			M: $elm$svg$Svg$Attributes$transform(outer),
 			bb: $elm$svg$Svg$Attributes$transform(path)
 		};
 	});
@@ -8221,7 +8221,7 @@ var $lattyware$elm_fontawesome$FontAwesome$Icon$viewMaskedWithTransform = F4(
 					A2(
 					$elm$svg$Svg$g,
 					_List_fromArray(
-						[transforms.L]),
+						[transforms.M]),
 					_List_fromArray(
 						[maskInnerGroup]))
 				]));
@@ -8269,7 +8269,7 @@ var $lattyware$elm_fontawesome$FontAwesome$Icon$viewWithTransform = F2(
 			return A2(
 				$elm$svg$Svg$g,
 				_List_fromArray(
-					[ts.L]),
+					[ts.M]),
 				_List_fromArray(
 					[
 						A2(
@@ -8291,12 +8291,12 @@ var $lattyware$elm_fontawesome$FontAwesome$Icon$viewWithTransform = F2(
 	});
 var $lattyware$elm_fontawesome$FontAwesome$Icon$internalView = function (_v0) {
 	var icon = _v0.aL;
-	var attributes = _v0.Q;
+	var attributes = _v0.R;
 	var transforms = _v0._;
 	var role = _v0.ao;
 	var id = _v0.ag;
 	var title = _v0.cz;
-	var outer = _v0.L;
+	var outer = _v0.M;
 	var alwaysId = A2($elm$core$Maybe$withDefault, icon.b3, id);
 	var titleId = alwaysId + '-title';
 	var semantics = A2(
@@ -8642,7 +8642,7 @@ var $author$project$Main$view = function (model) {
 							]),
 						_List_fromArray(
 							[
-								A2($author$project$Main$addNotePanel, model.e, model.S)
+								A2($author$project$Main$addNotePanel, model.e, model.K)
 							])),
 						model.I ? $author$project$Main$viewNoteForm(model.e) : A2(
 						$elm$html$Html$div,
