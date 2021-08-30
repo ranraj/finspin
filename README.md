@@ -1,5 +1,7 @@
 # finspin
-finspin is intractive board for notes
+Finspin is intractive board for notes
+
+Currently supports PC version. Web application with offline support.
 
 Live ['Demo'](https://ranraj.github.io/finspin/index.html)
 
