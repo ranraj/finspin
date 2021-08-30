@@ -1,0 +1,167 @@
+body {
+    font-family: 'Source Sans Pro', 'Trebuchet MS', 'Lucida Grande', 'Bitstream Vera Sans', 'Helvetica Neue', sans-serif;
+    margin: 20;
+    color: #293c4b;
+    background-color: #f3faff;
+}
+
+body.h1 {
+    font-size: 30px;
+    background-color: white;
+    box-shadow: 0 .2em .2em .2em #3333;
+}
+
+.done {
+    text-decoration-line: line-through;
+}
+
+
+/* .form {
+    display: flex;
+    flex-flow: column;
+    justify-content: center;
+    align-items: center;
+    position: fixed;
+    background-color: white;
+    border-radius: 1em;
+    z-index: 1;
+    height: 80vh;
+    width: 50vw;
+    top: 5%;
+    left: 25%;
+    box-shadow: 0 0 2em 100em #3335;
+} */
+
+.form-btn {
+    margin: 1em;
+    color: black;
+    border-style: solid;
+    background-color: '#f3faff';
+    border: 1px solid skyblue;
+    width: 4em;
+}
+
+.form-input {
+    font-size: 1.4em;
+    border-radius: .3em;
+    margin: 1em;
+}
+
+.list {
+    list-style: none;
+    display: flex;
+    flex-flow: row;
+    align-items: stretch;
+    justify-content: space-between;
+}
+
+.note-list {
+    height: 600;
+    line-height: 2em;
+    padding: 0;
+    margin: 0;
+    overflow: scroll;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    list-style: none;
+}
+
+.list-item {
+    box-sizing: border-box;
+    color: #3f3f3f;
+    transition: transform .25s;
+    margin: .4em;
+    padding: .5em;
+    display: flex;
+    flex-flow: row;
+    align-items: stretch;
+    justify-content: space-between;
+    background-color: white;
+    width: 95%;
+    height: 3em;
+    box-shadow: 0 .1em .1em .1em #bfe2ff;
+}
+
+.list-item:hover {
+    transform: scale(1.04);
+}
+
+.add-to-panel {
+    box-sizing: border-box;
+    color: #3f3f3f;
+    transition: transform .25s;
+    margin: .4em;
+    padding: .5em;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: space-between;
+    background-color: white;
+    box-shadow: 0 .1em .1em .1em #bfe2ff;
+}
+
+.add-to-panel input {
+    border: none;
+    font-size: 16;
+    font-weight: bold;
+    width: 100%;
+    align-items: stretch;
+    padding: 2;
+    margin: 2;
+    background-color: 'gray';
+    color: gray;
+}
+
+.add-to-panel textarea {
+    color: gray;
+    border: none;
+    width: 100%;
+    align-items: stretch;
+    resize: none;
+    padding: 2;
+    margin: 2;
+}
+
+img {
+    margin: 20px 0;
+    max-width: 200px;
+}
+
+.li-preview {
+    font-size: 10
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+    outline: none;
+}
+
+.line-seperator {
+    border-bottom: .1em 'gray';
+    height: 1px;
+    background-color: 'red';
+}
+
+.li-header {}
+
+.content-container {
+    flex-direction: row;
+    display: flex;
+}
+
+.content-display {
+    align-self: flex-start;
+    width: 70%;
+}
+
+.content-controller {
+    width: 30%;
+}
+
+.svgPanel {
+    align-content: stretch;
+    align-items: stretch;
+    width: 100%;
+    height: 700;
+}
