@@ -21,3 +21,5 @@ Test (Mac)
 ```
 open public/index.html
 ```
+App screenshot
+![](https://ranraj.github.io/finspin/Screenshot.png)
