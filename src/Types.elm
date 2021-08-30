@@ -43,6 +43,7 @@ emptyGroup =
 type alias Model =
     { boxGroup : BoxGroup
     , addingNote : Bool
+    , editNote : Bool
     , noteToAdd : Note
     , drag : Draggable.State Id
     , localData : List Box
@@ -54,6 +55,7 @@ type Msg
     | OnDragBy Vec2
     | StartDragging String
     | ToggleBoxClicked String
+    | ViewNote String
     | StopDragging
     | AddNote String String
     | CheckNote String
@@ -63,6 +65,8 @@ type Msg
     | StartNoteForm
     | CancelNoteForm
     | ReceivedDataFromJS String
+    | UpdateNote String String
+    | SaveBoard 
 
 type Color = BoardGreen | White
 getColor : Color -> String

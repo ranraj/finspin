@@ -15,8 +15,7 @@ body.h1 {
     text-decoration-line: line-through;
 }
 
-
-/* .form {
+.form {
     display: flex;
     flex-flow: column;
     justify-content: center;
@@ -30,7 +29,7 @@ body.h1 {
     top: 5%;
     left: 25%;
     box-shadow: 0 0 2em 100em #3335;
-} */
+}
 
 .form-btn {
     margin: 1em;

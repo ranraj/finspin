@@ -87,32 +87,34 @@ svgPanelBackground =
 
 -- Notes View Html --
 
-addNotePanel : Note -> Html Msg
-addNotePanel note =
+addNotePanel : Note -> Bool -> Html Msg
+addNotePanel note isEdit =
     li [class "add-to-panel"]
         [ div [ class "li-header"] [ viewInput "text" "Title" "form-input" note.title (ChangeTitle)]
         , div [ class "line-seperator"] []
         , div [] [ viewTextArea "Description" "form-input" note.description (ChangeDesc)]   
         , div [] 
             [
-               button [ onClick (AddNote note.title note.description), class "form-btn"] [text "Save"]
+               button [ onClick ((if isEdit then UpdateNote else AddNote) note.title note.description), class "form-btn"] [text "Save"]
                ,button [ onClick CancelNoteForm, class "form-btn" ] [text "Clear"]            
             ]             
         ]
 
 viewNoteComponent : Note -> Box -> Html Msg
 viewNoteComponent addNote box  =
-    let td = box.note
+    let
+         td = box.note
+         --_ = Debug.log (if (box.note.id == addNote.id) then "yes" else "")
     in
-    li [ class (if td.done then "done list-item" else "list-item"), onClick (CheckNote td.id)
-        ]
-        [ Icon.viewStyled [ Icon.sm, style "color" "gray" ] (if td.done then Icon.checkSquare else Icon.square)            
-        , div [ class "li-header" ] [ text td.title]
-        -- , div [] [
-        --     div [] [div [class "li-preview"] [text td.description]]
-        --     ]                
-        , div [ onClick (ClearNote td.id)] [ Icon.viewStyled [ Icon.sm, style "color" "gray" ] Icon.trash]
-        ]
+        li [ class (if td.done then "done list-item" else "list-item"), onClick (CheckNote td.id)
+            ]
+            [ Icon.viewStyled [ Icon.sm, style "color" "gray" ] (if td.done then Icon.checkSquare else Icon.square)            
+            , div [ class "li-header" ] [ text td.title]
+            -- , div [] [
+            --     div [] [div [class "li-preview"] [text td.description]]
+            --     ]                
+            , div [ onClick (ClearNote td.id)] [ Icon.viewStyled [ Icon.sm, style "color" "gray" ] Icon.trash]
+            ]
 
 viewInput : String -> String -> String -> String -> (String -> Msg) -> Html Msg
 viewInput t ph c v msg = 
@@ -153,6 +155,7 @@ init _ =
     ( { boxGroup = makeBoxGroup boxPositions
       , drag = Draggable.init
       , addingNote = False
+      , editNote = False
       , noteToAdd = emptyNote
       , localData = []
       , jsonError = Nothing
@@ -189,7 +192,11 @@ view model =
             [ onClick (if model.addingNote then CancelNoteForm else StartNoteForm)
              , style "border" "none", style "svgPanelBackground-color" "transparent",style "color" "skyblue"
              ] [ Icon.viewStyled [ Icon.fa2x ] Icon.plusCircle]
-        , ul [ class "list", style "color" "black" ] [addNotePanel model.noteToAdd]    
+        , button 
+            [ onClick (SaveBoard)
+             , style "border" "none", style "svgPanelBackground-color" "transparent",style "color" "skyblue"
+             ] [ Icon.viewStyled [ Icon.fa2x ] Icon.save]
+        , ul [ class "list", style "color" "black" ] [addNotePanel model.noteToAdd model.editNote]    
         , (if model.addingNote then viewNoteForm model.noteToAdd else div [ style "hidden" "true" ] [])        
         , getNotes model.boxGroup model.noteToAdd      
         ]
@@ -215,15 +222,19 @@ update msg ({ boxGroup } as model) =
                 in    
                     ({ model | boxGroup = newBoxGroup }, savePostsCmd )
 
-        ToggleBoxClicked id ->
-            let            
-                newBoxGroup = boxGroup |> toggleBoxClicked id
-                savePostsCmd = saveNotes newBoxGroup.idleBoxes 
-            in    
-                ({ model | boxGroup = newBoxGroup }, savePostsCmd)
+        ToggleBoxClicked id -> let            
+                                    boxOpt = boxGroup.idleBoxes |> List.filter (\b -> b.id == id) |> List.head
+                                    viewNote = case boxOpt of
+                                                Just b -> b.note
+                                                Nothing -> emptyNote
+                                    newBoxGroup = boxGroup |> toggleBoxClicked id
+                                    savePostsCmd = saveNotes newBoxGroup.idleBoxes 
+                                in    
+                                    ({ model | noteToAdd = viewNote, boxGroup = newBoxGroup }, savePostsCmd)         
 
         DragMsg dragMsg ->
             Draggable.update dragConfig dragMsg model
+
         AddNote t d ->                     
             let 
                 note  = buildNote (List.length model.boxGroup.idleBoxes) t d
@@ -234,21 +245,50 @@ update msg ({ boxGroup } as model) =
                 idleBoxes = if isEmpty then boxGroup.idleBoxes else makeBox note.id box :: boxGroup.idleBoxes
             in
                  ({ model | noteToAdd = emptyNote,boxGroup = {boxGroup | idleBoxes = idleBoxes}}
-                , savePostsCmd)                                    
+                , savePostsCmd)  
+
+        UpdateNote t d ->                     
+            let 
+
+                updateNote box = if (box.id == model.noteToAdd.id) then
+                                        let
+                                            newTitle = if String.isEmpty t then box.note.title else t
+                                            newDescription = if String.isEmpty d then box.note.description else d
+                                            newNote = Note box.note.id box.note.done newTitle newDescription
+                                        in    
+                                            {box | note = newNote}
+                                    else 
+                                        box
+
+                edit = model.editNote                                
+                isEmpty = String.isEmpty t && String.isEmpty d                
+
+                newIdleBoxes = if edit && isEmpty then boxGroup.idleBoxes else List.map (\box -> updateNote box) boxGroup.idleBoxes                                                                                    
+                savePostsCmd = if isEmpty then Cmd.none else saveNotes newIdleBoxes
+                
+            in
+                 ({ model | noteToAdd = emptyNote,boxGroup = { boxGroup | idleBoxes = newIdleBoxes}}
+                , savePostsCmd)
+
         CheckNote i ->
             let
-                savePostsCmd = saveNotes model.boxGroup.idleBoxes 
+                newBoxGroup = {boxGroup | idleBoxes = 
+                                List.map 
+                                    (\box -> 
+                                        if box.note.id == i
+                                        then 
+                                            { box | note = 
+                                                    { id = box.note.id
+                                                    , done = not box.note.done
+                                                    , title = box.note.title
+                                                    , description = box.note.description
+                                                     }
+                                            }
+                                        else box) boxGroup.idleBoxes 
+                    }
+                savePostsCmd = saveNotes newBoxGroup.idleBoxes 
             in
-            ({ model | boxGroup = {boxGroup | idleBoxes = List.map 
-                (\box -> 
-                    if box.note.id == i
-                    then 
-                    {box | note = { id = box.note.id
-                    , done = not box.note.done
-                    , title = box.note.title
-                    , description = box.note.description
-                    }}
-                    else box) boxGroup.idleBoxes }}, savePostsCmd)
+            ({ model | boxGroup = newBoxGroup}, savePostsCmd)
 
         ClearNote i ->
             let
@@ -284,6 +324,14 @@ update msg ({ boxGroup } as model) =
             in    
              ( { model | localData = localData, boxGroup = {boxGroup | idleBoxes = boxList  } }, Cmd.none )
 
+        ViewNote id -> let            
+                            boxOpt = boxGroup.idleBoxes |> List.filter (\b -> b.id == id) |> List.head
+                            viewNote = case boxOpt of
+                                        Just b -> b.note
+                                        Nothing -> emptyNote                                
+                        in    
+                            ( {model | noteToAdd = viewNote, editNote = True} , Cmd.none)
+        SaveBoard -> (model,saveNotes model.boxGroup.idleBoxes)
 
 subscriptions : Model -> Sub Msg
 subscriptions { drag } = 
@@ -306,7 +354,7 @@ noteEncoder note = Encode.object
 noteBoxEncoder : Box -> Encode.Value
 noteBoxEncoder noteBox =
   let 
-    positionStr = String.fromFloat (getY noteBox.position) ++ "," ++ String.fromFloat (getY noteBox.position)
+    positionStr = String.fromFloat (getX noteBox.position) ++ "," ++ String.fromFloat (getY noteBox.position)
   in
     Encode.object
         [ ("id", Encode.string noteBox.id)

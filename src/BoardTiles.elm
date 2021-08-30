@@ -94,24 +94,27 @@ dragActiveBy : Vec2 -> BoxGroup -> BoxGroup
 dragActiveBy delta group =
     { group | movingBox = group.movingBox |> Maybe.map (dragBoxBy delta) }
 
+toggleClicked : Box -> Box
+toggleClicked box =
+    { box | clicked = not box.clicked }
+
 toggleBoxClicked : Id -> BoxGroup -> BoxGroup
 toggleBoxClicked id group =
     let
         possiblyToggleBox box =
             if box.id == id then
                 toggleClicked box
-
             else
                 box
     in
-    { group | idleBoxes = group.idleBoxes |> List.map possiblyToggleBox }
+        { group | idleBoxes = group.idleBoxes |> List.map possiblyToggleBox }
 
 dragConfig : Draggable.Config Id Msg
 dragConfig =
     Draggable.customConfig
         [ onDragBy (\( dx, dy ) -> Vector2.vec2 dx dy |> OnDragBy)
         , onDragStart StartDragging
-        , Draggable.Events.onClick ToggleBoxClicked
+        , Draggable.Events.onClick ViewNote
         ]
 
 allBoxes : BoxGroup -> List Box
@@ -124,9 +127,5 @@ dragBoxBy : Vec2 -> Box -> Box
 dragBoxBy delta box =
     { box | position = box.position |> Vector2.add delta }
 
-
-toggleClicked : Box -> Box
-toggleClicked box =
-    { box | clicked = not box.clicked }
 
 -- Drag functions starts --------------------------------
