@@ -6,7 +6,7 @@ Live ['Demo'](https://ranraj.github.io/finspin/index.html)
 Tech Stack  
 ```
 Elm 19.0
-``
+```
 
 Run
 ```
