@@ -17,7 +17,7 @@ Build
 elm make src/Main.elm --output=public/main.js
 ```
 
-Mac 
+Test (Mac) 
 ```
 open public/index.html
 ```
