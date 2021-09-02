@@ -1,27 +1,18 @@
-module BoardTiles exposing (..)
+module BoardTiles exposing (boxView,startDragging,stopDragging,dragActiveBy,allBoxes,toggleBoxClicked,dragConfig)
 
-import Svg exposing (Svg,rect,circle,svg,style,text_,clipPath,view)
-import Svg.Attributes exposing (width,height,x,y,viewBox,r,cy,cx,ry,rx,fill,dy,dx,fontSize,pointerEvents,stroke)
-import Types exposing (..)
-import Tuple exposing (first,second)
+import Svg exposing (Svg,text_)
+import Svg.Attributes exposing (dy,dx)
 import Svg exposing (Svg,text_)
 import Svg.Attributes as Attr
 import Svg.Events exposing (onMouseUp)
-import Svg.Keyed
-import Svg.Lazy exposing (lazy)
-import Html exposing (Html, button, text, div, h1, img, li, ul, input, i,textarea)
-import Html.Attributes exposing ( class, src, style, type_, placeholder, value, checked)
+import Html exposing (text)
+import Html.Attributes exposing (value)
 import Math.Vector2 as Vector2 exposing (Vec2, getX, getY)
 import Draggable
 import Draggable.Events exposing (onDragBy, onDragStart)
 
-boxSize : Vec2
-boxSize =
-    Vector2.vec2 199 50
-
-num : (String -> Svg.Attribute msg) -> Float -> Svg.Attribute msg
-num attr value =
-    attr (String.fromFloat value)
+import Types exposing (Box,Msg,getColor,Color(..), Msg(..),Id,BoxGroup)
+import Config exposing (boxSize)
 
 boxView : Box -> Svg Msg
 boxView { id, position, clicked,note } =
@@ -37,43 +28,47 @@ boxView { id, position, clicked,note } =
                     ""       
     in
     Svg.svg
-    [Draggable.mouseTrigger id DragMsg
-        , onMouseUp StopDragging
-        ] 
-    [
-        Svg.rect
-        [ num Attr.width <| getX boxSize
-        , num Attr.height <| getY boxSize
-        , num Attr.x (getX position)
-        , num Attr.y (getY position)
-        , Attr.fill color
-        , Attr.stroke (getColor White)
-        , Attr.cursor "move"
+        [Draggable.mouseTrigger id DragMsg
+            , onMouseUp StopDragging
+            ] 
+        [
+            Svg.rect
+            [ convertToNum Attr.width <| getX boxSize
+            , convertToNum Attr.height <| getY boxSize
+            , convertToNum Attr.x (getX position)
+            , convertToNum Attr.y (getY position)
+            , Attr.fill color
+            , Attr.stroke (getColor White)
+            , Attr.cursor "move"
+            ]
+            []
+            ,text_
+            [ convertToNum Attr.x ((getX (position)) + 20)
+            , convertToNum Attr.y  ((getY (position)) + 20) 
+            , Attr.stroke (getColor White)
+            , Attr.fill (getColor White)
+            , Attr.cursor "move"
+            , Attr.class isDone             
+            ]
+            [text (String.slice 0 20 note.title) ]
+            ,text_
+            [ convertToNum Attr.x ((getX (position)) + 20)
+            , convertToNum Attr.y  ((getY (position)) + 35) 
+            , Attr.stroke (getColor White)
+            , Attr.fill (getColor White)
+            , Attr.cursor "move" 
+            , Attr.class isDone                           
+            ]
+            [text (String.append (String.slice 0 20 note.description)  "...")    ]        
         ]
-        []
-        ,text_
-        [ num Attr.x ((getX (position)) + 20)
-        , num Attr.y  ((getY (position)) + 20) 
-        , Attr.stroke (getColor White)
-        , Attr.fill (getColor White)
-        , Attr.cursor "move"
-        , Attr.class isDone             
-        ]
-        [text (String.slice 0 20 note.title) ]
-        ,text_
-        [ num Attr.x ((getX (position)) + 20)
-        , num Attr.y  ((getY (position)) + 35) 
-        , Attr.stroke (getColor White)
-        , Attr.fill (getColor White)
-        , Attr.cursor "move" 
-        , Attr.class isDone                           
-        ]
-        [text (String.append (String.slice 0 20 note.description)  "...")    ]        
-    ]
+
+
+convertToNum : (String -> Svg.Attribute msg) -> Float -> Svg.Attribute msg
+convertToNum attr value = attr (String.fromFloat value)
 
 -- Drag functions starts --------------------------------
 startDragging : Id -> BoxGroup -> BoxGroup
-startDragging id ({ idleBoxes, movingBox } as group) =
+startDragging id ({ idleBoxes } as group) =
     let
         ( targetAsList, others ) =
             List.partition (.id >> (==) id) idleBoxes

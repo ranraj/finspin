@@ -2,18 +2,12 @@ module Main exposing (..)
 
 import Browser
 import Draggable
-import Draggable.Events exposing (onDragBy, onDragStart)
-import Math.Vector2 as Vector2 exposing (Vec2, getX, getY)
-import Svg exposing (Svg,text_)
+import Svg exposing (Svg)
 import Svg.Attributes as Attr
-import Svg.Events exposing (onMouseUp)
-import Svg.Keyed
-import Svg.Lazy exposing (lazy)
-import Types exposing (..)
 import BoardTiles exposing (..)
-import Tuple exposing (first,second)
-import Html exposing (Html, button, text,p, div, h4, img, li, ul, input, i,textarea)
-import Html.Attributes exposing ( class, src, style, type_, placeholder, value, checked)
+
+import Html exposing (Html, button, text,p, div, h4, li, ul, input, i,textarea)
+import Html.Attributes exposing ( class, style, type_, placeholder, value,id)
 import Html.Events exposing (onInput, onClick)
 import FontAwesome.Attributes as Icon
 import FontAwesome.Brands as Icon
@@ -21,49 +15,19 @@ import FontAwesome.Icon as Icon
 import FontAwesome.Layering as Icon
 import FontAwesome.Solid as Icon
 import FontAwesome.Styles as Icon
-import Config exposing (welcomeNotes,defaultNewTilePosition)
+import Json.Decode as Decode exposing (Error(..))
+import Svg.Events as Events
+import Svg.Attributes as Attributes
+import Tuple exposing (first,second)
+import Math.Vector2 as Vector2 exposing (Vec2)
+
+import Config exposing (defaultNewTilePosition)
+import BoardDecoder exposing (boxListDecoder)
+import BoardEncoder exposing (boxListEncoder)
 import Ports
-import Json.Encode as Encode
-import Json.Decode as JD exposing (Error(..), Value, decodeValue, string,field,decodeString,bool,Decoder)
-import Math.Vector2 as Vector2 exposing (Vec2, getX, getY)
-import Array
+import Types exposing (Model,Box,BoxGroup,Note,Color(..),Msg(..))
+import Types exposing (defaultBoxGroup,buildNote,makeBox,emptyNote,emptyGroup,getColor)
 
-buildNote : Int -> String -> String -> Note
-buildNote length t d= { 
-            id = ((String.fromInt length ++ String.slice 0 5 t))
-            , done = False
-            , title = t
-            , description = d 
-            }
-
-addDefaultPositionToNote : Note -> (Vec2,Note)
-addDefaultPositionToNote note = (defaultNewTilePosition,note)
-    
-makeBox : Id -> (Vec2,Note) -> Box
-makeBox id position =
-    Box id (first position) False (second position)
-
-addBox : (Vec2, Note) -> BoxGroup -> BoxGroup
-addBox position ({ uid, idleBoxes } as group) =
-    { group
-        | idleBoxes = makeBox (String.fromInt uid) position :: idleBoxes
-        , uid = uid + 1
-    }
-
-
-makeBoxGroup : List (Vec2,Note) -> BoxGroup
-makeBoxGroup positions =
-    positions
-        |> List.foldl addBox emptyGroup
-
-boxPositions : List (Vec2,Note)
-boxPositions =
-    let
-        indexToPosition =
-            toFloat >> (*) 60 >> (+) 10 >> Vector2.vec2 10
-        notes = welcomeNotes
-    in
-    notes |> List.indexedMap (\i x -> ((indexToPosition i),x))
 
 boxesView : BoxGroup -> Svg Msg
 boxesView boxGroup =
@@ -73,14 +37,10 @@ boxesView boxGroup =
         |> List.map boxView
         |> Svg.node "g" []
 
-svgPanelBackground : Svg msg
-svgPanelBackground =
+svgBoard : Svg msg
+svgBoard =
     Svg.rect
-        [ Attr.x "0"
-        , Attr.y "0"
-        , Attr.width "100%"
-        , Attr.height "100%"
-        , Attr.fill (getColor BoardGreen)
+        [ 
         ]
         []    
 
@@ -100,8 +60,8 @@ addNotePanel note isEdit =
             ]             
         ]
 
-viewNoteComponent : Note -> Box -> Html Msg
-viewNoteComponent addNote box  =
+viewNoteComponent : Box -> Html Msg
+viewNoteComponent box =
     let
          td = box.note
          --_ = Debug.log (if (box.note.id == addNote.id) then "yes" else "")
@@ -136,9 +96,54 @@ viewNoteForm note =
         ]
     ]
 
-getNotes : BoxGroup -> Note -> Html Msg
-getNotes boxGroup addNote=
-    ul [ class "note-list", style "color" "black" ] (List.map (viewNoteComponent addNote) boxGroup.idleBoxes)
+getNotes : BoxGroup -> Html Msg
+getNotes boxGroup =
+    ul [ class "note-list", style "color" "black" ] (List.map viewNoteComponent boxGroup.idleBoxes)
+
+svgBox : Model -> Svg Msg
+svgBox model = 
+    let 
+        radius = 4
+        ( x, y ) = model.position
+        cx = x - radius // 2
+        cy = y - radius // 2
+    in
+        Svg.svg
+            [ Attr.x "0"
+            , Attr.y "0"
+            , Attr.width "100%"
+            , Attr.height "100%"
+            , Attr.fill (getColor BoardGreen)
+            , Attr.class "svg-panel"        
+            , Attr.class "content-display"   
+            , Events.on "svgclick" 
+                <| Decode.map2 Position
+                (Decode.at ["detail", "x"] Decode.int)
+                (Decode.at ["detail", "y"] Decode.int)
+            ]
+            
+            [ Svg.rect [
+                ]                
+               []              
+                , Svg.text_
+                [ Attributes.x "10"
+                , Attributes.y "20"
+                , Attributes.fill "white"                
+                ]
+                [ Svg.text "Finspin Board"
+                ]
+                , Svg.circle
+                [ Attributes.cx <| String.fromInt cx
+                , Attributes.cy <| String.fromInt cy
+                , Attributes.r <| String.fromInt radius
+                , Attributes.fill "white"
+                , Attributes.stroke "black"
+                , Attributes.strokeWidth "2"
+                ]
+                []
+                --, svgBoard 
+                , boxesView (model.boxGroup)                 
+            ]
 
 -- Elm Architecture --
 main : Program () Model Msg
@@ -152,37 +157,34 @@ main =
 
 init : flags -> ( Model, Cmd Msg )
 init _ =
-    ( { boxGroup = makeBoxGroup boxPositions
+    ( { boxGroup = emptyGroup
       , drag = Draggable.init
       , addingNote = False
       , editNote = False
       , noteToAdd = emptyNote
       , localData = []
       , jsonError = Nothing
+      , welcomeTour = True
+      , position =  (160, 120)
       }
     , Cmd.none
     )
          
 view : Model -> Html Msg
-view model =
-    div [class "content-container"] [
-        div [class "content-display"] 
-        [
-            div
-             []
-                [ 
-                h4 [] [ text "Finspin Board" ]                  
-                ,p
-                    [ style "padding-left" "8px" ]
-                    [ text "Drag any box around. Click it to toggle its color." ]
-                , Svg.svg
-                    [ Attr.class "svgPanel"
-                    ]
-                    [ svgPanelBackground
-                    , boxesView model.boxGroup
-                    ]
-                ]
-        ]
+view model =    
+   div [class "content-container"] [
+        svgBox model
+        -- ,div [class "content-display"] 
+        -- [
+        --     div
+        --      []
+        --         [ 
+        --        h4 [] [ text "Finspin Board" ]                  
+        --         ,p
+        --             [ style "padding-left" "8px" ]
+        --             [ text "Drag any box around. Click it to view details." ]                
+        --         ]
+        -- ]
         ,div [class "content-controller"]
         [ Icon.css  
         ,p
@@ -198,9 +200,11 @@ view model =
              ] [ Icon.viewStyled [ Icon.fa2x ] Icon.save]
         , ul [ class "list", style "color" "black" ] [addNotePanel model.noteToAdd model.editNote]    
         , (if model.addingNote then viewNoteForm model.noteToAdd else div [ style "hidden" "true" ] [])        
-        , getNotes model.boxGroup model.noteToAdd      
+        , getNotes model.boxGroup
         ]
     ]
+    
+               
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg ({ boxGroup } as model) =
@@ -237,14 +241,18 @@ update msg ({ boxGroup } as model) =
 
         AddNote t d ->                     
             let 
-                note  = buildNote (List.length model.boxGroup.idleBoxes) t d
-                box = addDefaultPositionToNote <| note
+                note  = buildNote (List.length model.boxGroup.idleBoxes) t d                
                 
                 isEmpty = String.isEmpty t && String.isEmpty d
                 savePostsCmd = if isEmpty then Cmd.none else saveNotes idleBoxes
-                idleBoxes = if isEmpty then boxGroup.idleBoxes else makeBox note.id box :: boxGroup.idleBoxes
+                tilePosition = Vector2.vec2 (toFloat (first model.position)) (toFloat (second model.position))
+                idleBoxes = 
+                    if isEmpty then 
+                        boxGroup.idleBoxes
+                    else 
+                        makeBox note.id note tilePosition :: boxGroup.idleBoxes
             in
-                 ({ model | noteToAdd = emptyNote,boxGroup = {boxGroup | idleBoxes = idleBoxes}}
+                 ({ model | welcomeTour = False,noteToAdd = emptyNote,boxGroup = {boxGroup | idleBoxes = idleBoxes}}
                 , savePostsCmd)  
 
         UpdateNote t d ->                     
@@ -319,9 +327,11 @@ update msg ({ boxGroup } as model) =
         ReceivedDataFromJS value ->              
             let                 
                 localData = boxListDecoder value
-                boxList = if List.isEmpty localData then model.boxGroup.idleBoxes else localData
+                newBoxGroup = if List.isEmpty localData 
+                                then boxGroup 
+                                else {boxGroup | idleBoxes = localData}                                
             in    
-             ( { model | localData = localData, boxGroup = {boxGroup | idleBoxes = boxList  } }, Cmd.none )
+             ( { model | localData = localData, boxGroup = newBoxGroup }, Cmd.none )
 
         ViewNote id -> let            
                             boxOpt = boxGroup.idleBoxes |> List.filter (\b -> b.id == id) |> List.head
@@ -331,91 +341,14 @@ update msg ({ boxGroup } as model) =
                         in    
                             ( {model | noteToAdd = viewNote, editNote = True} , Cmd.none)
         SaveBoard -> (model,saveNotes model.boxGroup.idleBoxes)
-
+        Position x y -> ({ model | position = (x, y) },Cmd.none)
 subscriptions : Model -> Sub Msg
 subscriptions { drag } = 
     Draggable.subscriptions DragMsg drag
 
 ------- Local Stroage --------------------------------
 saveNotes : List Box -> Cmd msg
-saveNotes noteBoxes =
-    Encode.list noteBoxEncoder noteBoxes        
-        |> Ports.storeNotes            
-
-noteEncoder : Note -> Encode.Value
-noteEncoder note = Encode.object
-        [ ("id", Encode.string note.id)
-        , ("done", Encode.bool note.done)
-        , ("title", Encode.string note.title)
-        , ("description", Encode.string note.description)        
-        ]
-
-noteBoxEncoder : Box -> Encode.Value
-noteBoxEncoder noteBox =
-  let 
-    positionStr = String.fromFloat (getX noteBox.position) ++ "," ++ String.fromFloat (getY noteBox.position)
-  in
-    Encode.object
-        [ ("id", Encode.string noteBox.id)
-        , ("position", Encode.string positionStr)
-        , ("note", noteEncoder noteBox.note)
-        , ("clicked", Encode.bool noteBox.clicked)        
-        ]
-
-notePositionDecoder : Maybe Float -> Maybe Float -> (Float, Float)
-notePositionDecoder x y = 
-        let         
-            xFloat = case x of
-                Just a -> a
-                _ -> 0
-            yFloat = case y of
-                Just a -> a
-                _ -> 0        
-        in
-            (xFloat,yFloat)    
-
-noteDecoder : Decoder Note
-noteDecoder =
-  JD.map4 Note
-    (field "id" string)
-    (field "done" bool)
-    (field "title" string)
-    (field "description" string)
-
-positionDecoder : String -> (Float, Float)
-positionDecoder pos = 
-        let
-            posSplit = Array.fromList (String.split "," pos)
-            x = case (Array.get 0 posSplit) of
-                Just a -> String.toFloat a
-                _ -> Nothing
-            y = case (Array.get 1 posSplit) of
-                Just a -> String.toFloat a
-                _ -> Nothing
-        in
-           notePositionDecoder  x y
-        
-boxDecoder:  Decoder Box
-boxDecoder =
-  JD.map4 Box
-    (field "id" string)
-    (field "position" string |>  JD.map ( \pos -> positionDecoder pos |> (\vec -> Vector2.vec2 (first vec) (second vec))))
-    (field "clicked" bool )
-    (field "note" noteDecoder)
-
-boxListDecoder : String -> List Box
-boxListDecoder value = 
-  let
-    res =  decodeString (JD.list boxDecoder) value    
-    
-  in
-    case res of
-        Result.Ok data -> data
-        Result.Err e -> 
-            let               
-               emptyArray = []
-            in
-                emptyArray
+saveNotes noteBoxes = boxListEncoder noteBoxes |> Ports.storeNotes            
 
 subscriptionsLocalStorage : Model -> Sub Msg
 subscriptionsLocalStorage _ = 
