@@ -1,5 +1,4 @@
 module Config exposing (defaultNewTilePosition,boxSize,colorPallet)
-import Types exposing (..)
 import Math.Vector2 as Vector2 exposing (Vec2)
 
 defaultNewTilePosition : Vec2

@@ -4,6 +4,7 @@ import Draggable
 import Json.Decode exposing (Error(..))
 import Math.Vector2 as Vector2 exposing (Vec2)
 import Tuple exposing (first,second)
+import Config exposing (defaultNewTilePosition)
 
 type alias Id =
     String
@@ -51,6 +52,8 @@ type alias Box =
     , note : Note
     }
 
+emptyBox : Box
+emptyBox = Box "" defaultNewTilePosition False emptyNote
 
 makeBox : Id -> Note -> Vec2 -> Box
 makeBox id note position =
@@ -103,7 +106,7 @@ type alias Model =
     , addingNote : Bool
     , welcomeTour : Bool
     , editNote : Bool
-    , noteToAdd : Note
+    , currentBox : Box
     , drag : Draggable.State Id
     , localData : List Box
     , jsonError : Maybe Error
@@ -114,8 +117,7 @@ type alias Model =
 type Msg
     = DragMsg (Draggable.Msg Id)
     | OnDragBy Vec2
-    | StartDragging String
-    | ToggleBoxClicked String
+    | StartDragging String    
     | ViewNote String
     | StopDragging
     | AddNote String String

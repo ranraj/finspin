@@ -4234,8 +4234,8 @@ function _Browser_getViewport()
 	return {
 		bm: _Browser_getScene(),
 		bu: {
-			f: _Browser_window.pageXOffset,
-			g: _Browser_window.pageYOffset,
+			e: _Browser_window.pageXOffset,
+			f: _Browser_window.pageYOffset,
 			bx: _Browser_doc.documentElement.clientWidth,
 			aH: _Browser_doc.documentElement.clientHeight
 		}
@@ -4276,8 +4276,8 @@ function _Browser_getViewportOf(id)
 				aH: node.scrollHeight
 			},
 			bu: {
-				f: node.scrollLeft,
-				g: node.scrollTop,
+				e: node.scrollLeft,
+				f: node.scrollTop,
 				bx: node.clientWidth,
 				aH: node.clientHeight
 			}
@@ -4311,14 +4311,14 @@ function _Browser_getElement(id)
 		return {
 			bm: _Browser_getScene(),
 			bu: {
-				f: x,
-				g: y,
+				e: x,
+				f: y,
 				bx: _Browser_doc.documentElement.clientWidth,
 				aH: _Browser_doc.documentElement.clientHeight
 			},
 			bT: {
-				f: x + rect.left,
-				g: y + rect.top,
+				e: x + rect.left,
+				f: y + rect.top,
 				bx: rect.width,
 				aH: rect.height
 			}
@@ -4355,43 +4355,6 @@ function _Browser_load(url)
 		}
 	}));
 }
-
-
-
-var _Bitwise_and = F2(function(a, b)
-{
-	return a & b;
-});
-
-var _Bitwise_or = F2(function(a, b)
-{
-	return a | b;
-});
-
-var _Bitwise_xor = F2(function(a, b)
-{
-	return a ^ b;
-});
-
-function _Bitwise_complement(a)
-{
-	return ~a;
-};
-
-var _Bitwise_shiftLeftBy = F2(function(offset, a)
-{
-	return a << offset;
-});
-
-var _Bitwise_shiftRightBy = F2(function(offset, a)
-{
-	return a >> offset;
-});
-
-var _Bitwise_shiftRightZfBy = F2(function(offset, a)
-{
-	return a >>> offset;
-});
 
 
 /*
@@ -4445,11 +4408,11 @@ var _MJS_v2setY = F2(function(y, a) {
 });
 
 var _MJS_v2toRecord = function(a) {
-    return { f: a[0], g: a[1] };
+    return { e: a[0], f: a[1] };
 };
 
 var _MJS_v2fromRecord = function(r) {
-    return new Float64Array([r.f, r.g]);
+    return new Float64Array([r.e, r.f]);
 };
 
 var _MJS_v2add = F2(function(a, b) {
@@ -4558,11 +4521,11 @@ var _MJS_v3setZ = F2(function(z, a) {
 });
 
 var _MJS_v3toRecord = function(a) {
-    return { f: a[0], g: a[1], aa: a[2] };
+    return { e: a[0], f: a[1], aa: a[2] };
 };
 
 var _MJS_v3fromRecord = function(r) {
-    return new Float64Array([r.f, r.g, r.aa]);
+    return new Float64Array([r.e, r.f, r.aa]);
 };
 
 var _MJS_v3add = F2(function(a, b) {
@@ -4718,11 +4681,11 @@ var _MJS_v4setW = F2(function(w, a) {
 });
 
 var _MJS_v4toRecord = function(a) {
-    return { f: a[0], g: a[1], aa: a[2], bv: a[3] };
+    return { e: a[0], f: a[1], aa: a[2], bv: a[3] };
 };
 
 var _MJS_v4fromRecord = function(r) {
-    return new Float64Array([r.f, r.g, r.aa, r.bv]);
+    return new Float64Array([r.e, r.f, r.aa, r.bv]);
 };
 
 var _MJS_v4add = F2(function(a, b) {
@@ -5406,6 +5369,43 @@ var _MJS_m4x4makeBasis = F3(function(vx, vy, vz) {
 
     return r;
 });
+
+
+
+var _Bitwise_and = F2(function(a, b)
+{
+	return a & b;
+});
+
+var _Bitwise_or = F2(function(a, b)
+{
+	return a | b;
+});
+
+var _Bitwise_xor = F2(function(a, b)
+{
+	return a ^ b;
+});
+
+function _Bitwise_complement(a)
+{
+	return ~a;
+};
+
+var _Bitwise_shiftLeftBy = F2(function(offset, a)
+{
+	return a << offset;
+});
+
+var _Bitwise_shiftRightBy = F2(function(offset, a)
+{
+	return a >> offset;
+});
+
+var _Bitwise_shiftRightZfBy = F2(function(offset, a)
+{
+	return a >>> offset;
+});
 var $elm$core$List$cons = _List_cons;
 var $elm$core$Elm$JsArray$foldr = _JsArray_foldr;
 var $elm$core$Array$foldr = F3(
@@ -5815,22 +5815,22 @@ var $elm$core$Array$builderToArray = F2(
 		if (!builder.a) {
 			return A4(
 				$elm$core$Array$Array_elm_builtin,
-				$elm$core$Elm$JsArray$length(builder.d),
+				$elm$core$Elm$JsArray$length(builder.b),
 				$elm$core$Array$shiftStep,
 				$elm$core$Elm$JsArray$empty,
-				builder.d);
+				builder.b);
 		} else {
 			var treeLen = builder.a * $elm$core$Array$branchFactor;
 			var depth = $elm$core$Basics$floor(
 				A2($elm$core$Basics$logBase, $elm$core$Array$branchFactor, treeLen - 1));
-			var correctNodeList = reverseNodeList ? $elm$core$List$reverse(builder.e) : builder.e;
+			var correctNodeList = reverseNodeList ? $elm$core$List$reverse(builder.d) : builder.d;
 			var tree = A2($elm$core$Array$treeFromBuilder, correctNodeList, builder.a);
 			return A4(
 				$elm$core$Array$Array_elm_builtin,
-				$elm$core$Elm$JsArray$length(builder.d) + treeLen,
+				$elm$core$Elm$JsArray$length(builder.b) + treeLen,
 				A2($elm$core$Basics$max, 5, depth * $elm$core$Array$shiftStep),
 				tree,
-				builder.d);
+				builder.b);
 		}
 	});
 var $elm$core$Basics$idiv = _Basics_idiv;
@@ -5843,7 +5843,7 @@ var $elm$core$Array$initializeHelp = F5(
 				return A2(
 					$elm$core$Array$builderToArray,
 					false,
-					{e: nodeList, a: (len / $elm$core$Array$branchFactor) | 0, d: tail});
+					{d: nodeList, a: (len / $elm$core$Array$branchFactor) | 0, b: tail});
 			} else {
 				var leaf = $elm$core$Array$Leaf(
 					A3($elm$core$Elm$JsArray$initialize, $elm$core$Array$branchFactor, fromIndex, fn));
@@ -6190,12 +6190,19 @@ var $elm$core$Task$perform = F2(
 			A2($elm$core$Task$map, toMessage, task));
 	});
 var $elm$browser$Browser$element = _Browser_element;
+var $author$project$Types$Box = F4(
+	function (id, position, clicked, note) {
+		return {bI: clicked, aK: id, b7: note, bd: position};
+	});
+var $elm_explorations$linear_algebra$Math$Vector2$vec2 = _MJS_v2;
+var $author$project$Config$defaultNewTilePosition = A2($elm_explorations$linear_algebra$Math$Vector2$vec2, 10, 10);
+var $author$project$Types$emptyNote = {bK: $elm$core$Maybe$Nothing, bQ: '', bR: false, aK: '', cC: ''};
+var $author$project$Types$emptyBox = A4($author$project$Types$Box, '', $author$project$Config$defaultNewTilePosition, false, $author$project$Types$emptyNote);
 var $author$project$Types$BoxGroup = F3(
 	function (uid, movingBox, idleBoxes) {
 		return {E: idleBoxes, L: movingBox, ar: uid};
 	});
 var $author$project$Types$emptyGroup = A3($author$project$Types$BoxGroup, 0, $elm$core$Maybe$Nothing, _List_Nil);
-var $author$project$Types$emptyNote = {bK: $elm$core$Maybe$Nothing, bQ: '', bR: false, aK: '', cC: ''};
 var $zaboco$elm_draggable$Internal$NotDragging = {$: 0};
 var $zaboco$elm_draggable$Draggable$State = $elm$core$Basics$identity;
 var $zaboco$elm_draggable$Draggable$init = $zaboco$elm_draggable$Internal$NotDragging;
@@ -6206,11 +6213,11 @@ var $author$project$Main$init = function (_v0) {
 		{
 			B: false,
 			c: $author$project$Types$emptyGroup,
+			h: $author$project$Types$emptyBox,
 			aA: $zaboco$elm_draggable$Draggable$init,
 			C: false,
 			b2: $elm$core$Maybe$Nothing,
 			aN: _List_Nil,
-			b: $author$project$Types$emptyNote,
 			bd: _Utils_Tuple2(160, 120),
 			bw: true
 		},
@@ -6635,7 +6642,7 @@ var $elm$browser$Browser$Events$onMouseMove = A2($elm$browser$Browser$Events$on,
 var $elm$browser$Browser$Events$onMouseUp = A2($elm$browser$Browser$Events$on, 0, 'mouseup');
 var $zaboco$elm_draggable$Internal$Position = F2(
 	function (x, y) {
-		return {f: x, g: y};
+		return {e: x, f: y};
 	});
 var $elm$json$Json$Decode$field = _Json_decodeField;
 var $elm$json$Json$Decode$float = _Json_decodeFloat;
@@ -6675,7 +6682,7 @@ var $author$project$Main$subscriptions = function (_v0) {
 	return A2($zaboco$elm_draggable$Draggable$subscriptions, $author$project$Types$DragMsg, drag);
 };
 var $author$project$Types$ReceivedDataFromJS = function (a) {
-	return {$: 13, a: a};
+	return {$: 12, a: a};
 };
 var $elm$json$Json$Decode$string = _Json_decodeString;
 var $author$project$Ports$receiveData = _Platform_incomingPort('receiveData', $elm$json$Json$Decode$string);
@@ -6685,10 +6692,6 @@ var $author$project$Main$subscriptionsLocalStorage = function (_v0) {
 var $author$project$Types$Note = F5(
 	function (id, done, title, description, color) {
 		return {bK: color, bQ: description, bR: done, aK: id, cC: title};
-	});
-var $author$project$Types$Box = F4(
-	function (id, position, clicked, note) {
-		return {bI: clicked, aK: id, b7: note, bd: position};
 	});
 var $elm$json$Json$Decode$bool = _Json_decodeBool;
 var $elm$json$Json$Decode$map4 = _Json_map4;
@@ -6724,7 +6727,7 @@ var $elm$core$Array$fromListHelp = F3(
 				return A2(
 					$elm$core$Array$builderToArray,
 					true,
-					{e: nodeList, a: nodeListSize, d: jsArray});
+					{d: nodeList, a: nodeListSize, b: jsArray});
 			} else {
 				var $temp$list = remainingItems,
 					$temp$nodeList = A2(
@@ -6836,7 +6839,6 @@ var $elm$core$Tuple$second = function (_v0) {
 	var y = _v0.b;
 	return y;
 };
-var $elm_explorations$linear_algebra$Math$Vector2$vec2 = _MJS_v2;
 var $author$project$BoardDecoder$boxDecoder = A5(
 	$elm$json$Json$Decode$map4,
 	$author$project$Types$Box,
@@ -6917,7 +6919,7 @@ var $author$project$Types$StartDragging = function (a) {
 	return {$: 2, a: a};
 };
 var $author$project$Types$ViewNote = function (a) {
-	return {$: 4, a: a};
+	return {$: 3, a: a};
 };
 var $zaboco$elm_draggable$Draggable$Config = $elm$core$Basics$identity;
 var $zaboco$elm_draggable$Internal$defaultConfig = {
@@ -7163,22 +7165,6 @@ var $author$project$BoardTiles$stopDragging = function (group) {
 			L: $elm$core$Maybe$Nothing
 		});
 };
-var $author$project$BoardTiles$toggleClicked = function (box) {
-	return _Utils_update(
-		box,
-		{bI: !box.bI});
-};
-var $author$project$BoardTiles$toggleBoxClicked = F2(
-	function (id, group) {
-		var possiblyToggleBox = function (box) {
-			return _Utils_eq(box.aK, id) ? $author$project$BoardTiles$toggleClicked(box) : box;
-		};
-		return _Utils_update(
-			group,
-			{
-				E: A2($elm$core$List$map, possiblyToggleBox, group.E)
-			});
-	});
 var $zaboco$elm_draggable$Cmd$Extra$message = function (x) {
 	return A2(
 		$elm$core$Task$perform,
@@ -7200,7 +7186,7 @@ var $zaboco$elm_draggable$Internal$DraggingTentative = F2(
 	});
 var $zaboco$elm_draggable$Internal$distanceTo = F2(
 	function (end, start) {
-		return _Utils_Tuple2(end.f - start.f, end.g - start.g);
+		return _Utils_Tuple2(end.e - start.e, end.f - start.f);
 	});
 var $zaboco$elm_draggable$Internal$updateAndEmit = F3(
 	function (config, msg, drag) {
@@ -7303,7 +7289,7 @@ var $author$project$Main$update = F2(
 						model,
 						{c: newBoxGroup}),
 					savePostsCmd);
-			case 5:
+			case 4:
 				var newBoxGroup = $author$project$BoardTiles$stopDragging(model.c);
 				var savePostsCmd = $author$project$Main$saveNotes(newBoxGroup.E);
 				return _Utils_Tuple2(
@@ -7311,44 +7297,21 @@ var $author$project$Main$update = F2(
 						model,
 						{c: newBoxGroup}),
 					savePostsCmd);
-			case 3:
-				var id = msg.a;
-				var newBoxGroup = A2($author$project$BoardTiles$toggleBoxClicked, id, boxGroup);
-				var savePostsCmd = $author$project$Main$saveNotes(newBoxGroup.E);
-				var boxOpt = $elm$core$List$head(
-					A2(
-						$elm$core$List$filter,
-						function (b) {
-							return _Utils_eq(b.aK, id);
-						},
-						boxGroup.E));
-				var viewNote = function () {
-					if (!boxOpt.$) {
-						var b = boxOpt.a;
-						return b.b7;
-					} else {
-						return $author$project$Types$emptyNote;
-					}
-				}();
-				return _Utils_Tuple2(
-					_Utils_update(
-						model,
-						{c: newBoxGroup, b: viewNote}),
-					savePostsCmd);
 			case 0:
 				var dragMsg = msg.a;
 				return A3($zaboco$elm_draggable$Draggable$update, $author$project$BoardTiles$dragConfig, dragMsg, model);
-			case 6:
+			case 5:
 				var t = msg.a;
 				var d = msg.b;
 				var tilePosition = A2($elm_explorations$linear_algebra$Math$Vector2$vec2, model.bd.a, model.bd.b);
+				var isEmpty = $elm$core$String$isEmpty(t) && $elm$core$String$isEmpty(d);
+				var currentBox = model.h.b7;
 				var note = A4(
 					$author$project$Types$buildNote,
 					$elm$core$List$length(model.c.E),
 					t,
 					d,
-					model.b.bK);
-				var isEmpty = $elm$core$String$isEmpty(t) && $elm$core$String$isEmpty(d);
+					currentBox.bK);
 				var idleBoxes = isEmpty ? boxGroup.E : A2(
 					$elm$core$List$cons,
 					A3($author$project$Types$makeBox, note.aK, note, tilePosition),
@@ -7361,21 +7324,22 @@ var $author$project$Main$update = F2(
 							c: _Utils_update(
 								boxGroup,
 								{E: idleBoxes}),
-							b: $author$project$Types$emptyNote,
+							h: $author$project$Types$emptyBox,
 							bw: false
 						}),
 					savePostsCmd);
-			case 14:
+			case 13:
 				var t = msg.a;
 				var d = msg.b;
 				var updateNote = function (box) {
-					if (_Utils_eq(box.aK, model.b.aK)) {
+					if (_Utils_eq(box.aK, model.h.aK)) {
 						var newTitle = $elm$core$String$isEmpty(t) ? box.b7.cC : t;
 						var newDescription = $elm$core$String$isEmpty(d) ? box.b7.bQ : d;
+						var currentBox = model.h.b7;
 						var color = function () {
-							var _v2 = model.b.bK;
-							if (!_v2.$) {
-								return model.b.bK;
+							var _v1 = currentBox.bK;
+							if (!_v1.$) {
+								return currentBox.bK;
 							} else {
 								return box.b7.bK;
 							}
@@ -7404,11 +7368,10 @@ var $author$project$Main$update = F2(
 							c: _Utils_update(
 								boxGroup,
 								{E: newIdleBoxes}),
-							C: false,
-							b: $author$project$Types$emptyNote
+							C: false
 						}),
 					savePostsCmd);
-			case 7:
+			case 6:
 				var i = msg.a;
 				var newBoxGroup = _Utils_update(
 					boxGroup,
@@ -7430,7 +7393,7 @@ var $author$project$Main$update = F2(
 						model,
 						{c: newBoxGroup}),
 					savePostsCmd);
-			case 8:
+			case 7:
 				var i = msg.a;
 				var idleBoxesFiltered = A2(
 					$elm$core$List$filter,
@@ -7448,37 +7411,51 @@ var $author$project$Main$update = F2(
 								{E: idleBoxesFiltered})
 						}),
 					savePostsCmd);
-			case 11:
+			case 10:
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
 						{B: true}),
 					$elm$core$Platform$Cmd$none);
-			case 12:
+			case 11:
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{B: false, C: false, b: $author$project$Types$emptyNote}),
+						{B: false, h: $author$project$Types$emptyBox, C: false}),
+					$elm$core$Platform$Cmd$none);
+			case 8:
+				var t = msg.a;
+				var box = model.h;
+				var note = box.b7;
+				var newBox = _Utils_update(
+					box,
+					{
+						b7: _Utils_update(
+							note,
+							{cC: t})
+					});
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{h: newBox}),
 					$elm$core$Platform$Cmd$none);
 			case 9:
-				var t = msg.a;
-				return _Utils_Tuple2(
-					_Utils_update(
-						model,
-						{
-							b: {bK: $elm$core$Maybe$Nothing, bQ: model.b.bQ, bR: false, aK: model.b.aK, cC: t}
-						}),
-					$elm$core$Platform$Cmd$none);
-			case 10:
 				var d = msg.a;
+				var box = model.h;
+				var note = box.b7;
+				var newBox = _Utils_update(
+					box,
+					{
+						b7: _Utils_update(
+							note,
+							{bQ: d})
+					});
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{
-							b: {bK: $elm$core$Maybe$Nothing, bQ: d, bR: false, aK: model.b.aK, cC: model.b.cC}
-						}),
+						{h: newBox}),
 					$elm$core$Platform$Cmd$none);
-			case 13:
+			case 12:
 				var value = msg.a;
 				var localData = $author$project$BoardDecoder$boxListDecoder(value);
 				var newBoxGroup = $elm$core$List$isEmpty(localData) ? boxGroup : _Utils_update(
@@ -7489,7 +7466,7 @@ var $author$project$Main$update = F2(
 						model,
 						{c: newBoxGroup, aN: localData}),
 					$elm$core$Platform$Cmd$none);
-			case 4:
+			case 3:
 				var id = msg.a;
 				var boxOpt = $elm$core$List$head(
 					A2(
@@ -7498,24 +7475,24 @@ var $author$project$Main$update = F2(
 							return _Utils_eq(b.aK, id);
 						},
 						boxGroup.E));
-				var viewNote = function () {
+				var viewBox = function () {
 					if (!boxOpt.$) {
 						var b = boxOpt.a;
-						return b.b7;
+						return b;
 					} else {
-						return $author$project$Types$emptyNote;
+						return $author$project$Types$emptyBox;
 					}
 				}();
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{B: true, C: true, b: viewNote}),
+						{B: true, h: viewBox, C: true}),
 					$elm$core$Platform$Cmd$none);
-			case 15:
+			case 14:
 				return _Utils_Tuple2(
 					model,
 					$author$project$Main$saveNotes(model.c.E));
-			case 16:
+			case 15:
 				var x = msg.a;
 				var y = msg.b;
 				return _Utils_Tuple2(
@@ -7527,22 +7504,27 @@ var $author$project$Main$update = F2(
 					$elm$core$Platform$Cmd$none);
 			default:
 				var tileColor = msg.a;
-				var note = model.b;
-				var newNote = _Utils_update(
-					note,
+				var box = model.h;
+				var note = box.b7;
+				var newBox = _Utils_update(
+					box,
 					{
-						bK: $elm$core$Maybe$Just(tileColor)
+						b7: _Utils_update(
+							note,
+							{
+								bK: $elm$core$Maybe$Just(tileColor)
+							})
 					});
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{b: newNote}),
+						{h: newBox}),
 					$elm$core$Platform$Cmd$none);
 		}
 	});
-var $author$project$Types$CancelNoteForm = {$: 12};
-var $author$project$Types$SaveBoard = {$: 15};
-var $author$project$Types$StartNoteForm = {$: 11};
+var $author$project$Types$CancelNoteForm = {$: 11};
+var $author$project$Types$SaveBoard = {$: 14};
+var $author$project$Types$StartNoteForm = {$: 10};
 var $elm$html$Html$button = _VirtualDom_node('button');
 var $elm$html$Html$Attributes$stringProperty = F2(
 	function (key, string) {
@@ -7574,10 +7556,10 @@ var $elm$virtual_dom$VirtualDom$style = _VirtualDom_style;
 var $elm$html$Html$Attributes$style = $elm$virtual_dom$VirtualDom$style;
 var $elm$html$Html$ul = _VirtualDom_node('ul');
 var $author$project$Types$CheckNote = function (a) {
-	return {$: 7, a: a};
+	return {$: 6, a: a};
 };
 var $author$project$Types$ClearNote = function (a) {
-	return {$: 8, a: a};
+	return {$: 7, a: a};
 };
 var $lattyware$elm_fontawesome$FontAwesome$Icon$Icon = F5(
 	function (prefix, name, width, height, paths) {
@@ -7704,7 +7686,7 @@ var $lattyware$elm_fontawesome$FontAwesome$Transforms$Internal$add = F2(
 				var y = _v2.b;
 				return _Utils_update(
 					combined,
-					{f: combined.f + x, g: combined.g + y});
+					{e: combined.e + x, f: combined.f + y});
 			case 2:
 				var rotation = transform.a;
 				return _Utils_update(
@@ -7725,7 +7707,7 @@ var $lattyware$elm_fontawesome$FontAwesome$Transforms$Internal$add = F2(
 		}
 	});
 var $lattyware$elm_fontawesome$FontAwesome$Transforms$Internal$baseSize = 16;
-var $lattyware$elm_fontawesome$FontAwesome$Transforms$Internal$meaninglessTransform = {bW: false, bX: false, cp: 0, bp: $lattyware$elm_fontawesome$FontAwesome$Transforms$Internal$baseSize, f: 0, g: 0};
+var $lattyware$elm_fontawesome$FontAwesome$Transforms$Internal$meaninglessTransform = {bW: false, bX: false, cp: 0, bp: $lattyware$elm_fontawesome$FontAwesome$Transforms$Internal$baseSize, e: 0, f: 0};
 var $lattyware$elm_fontawesome$FontAwesome$Transforms$Internal$combine = function (transforms) {
 	return A3($elm$core$List$foldl, $lattyware$elm_fontawesome$FontAwesome$Transforms$Internal$add, $lattyware$elm_fontawesome$FontAwesome$Transforms$Internal$meaninglessTransform, transforms);
 };
@@ -7759,7 +7741,7 @@ var $lattyware$elm_fontawesome$FontAwesome$Transforms$Internal$transformForSvg =
 	function (containerWidth, iconWidth, transform) {
 		var path = 'translate(' + ($elm$core$String$fromFloat((iconWidth / 2) * (-1)) + ' -256)');
 		var outer = 'translate(' + ($elm$core$String$fromFloat(containerWidth / 2) + ' 256)');
-		var innerTranslate = 'translate(' + ($elm$core$String$fromFloat(transform.f * 32) + (',' + ($elm$core$String$fromFloat(transform.g * 32) + ') ')));
+		var innerTranslate = 'translate(' + ($elm$core$String$fromFloat(transform.e * 32) + (',' + ($elm$core$String$fromFloat(transform.f * 32) + ') ')));
 		var innerRotate = 'rotate(' + ($elm$core$String$fromFloat(transform.cp) + ' 0 0)');
 		var flipY = transform.bX ? (-1) : 1;
 		var scaleY = (transform.bp / $lattyware$elm_fontawesome$FontAwesome$Transforms$Internal$baseSize) * flipY;
@@ -8133,13 +8115,13 @@ var $lattyware$elm_fontawesome$FontAwesome$Solid$save = A5(
 var $author$project$Types$BoardGreen = 0;
 var $author$project$Types$Position = F2(
 	function (a, b) {
-		return {$: 16, a: a, b: b};
+		return {$: 15, a: a, b: b};
 	});
 var $elm$json$Json$Decode$at = F2(
 	function (fields, decoder) {
 		return A3($elm$core$List$foldr, $elm$json$Json$Decode$field, decoder, fields);
 	});
-var $author$project$Types$StopDragging = {$: 5};
+var $author$project$Types$StopDragging = {$: 4};
 var $author$project$Types$White = 1;
 var $elm$core$String$append = _String_append;
 var $author$project$Config$boxSize = A2($elm_explorations$linear_algebra$Math$Vector2$vec2, 199, 50);
@@ -8412,20 +8394,20 @@ var $author$project$Main$svgBox = function (model) {
 };
 var $author$project$Types$AddNote = F2(
 	function (a, b) {
-		return {$: 6, a: a, b: b};
+		return {$: 5, a: a, b: b};
 	});
 var $author$project$Types$ChangeDesc = function (a) {
-	return {$: 10, a: a};
+	return {$: 9, a: a};
 };
 var $author$project$Types$ChangeTitle = function (a) {
-	return {$: 9, a: a};
+	return {$: 8, a: a};
 };
 var $author$project$Types$UpdateNote = F2(
 	function (a, b) {
-		return {$: 14, a: a, b: b};
+		return {$: 13, a: a, b: b};
 	});
 var $author$project$Types$UpdateTitleColor = function (a) {
-	return {$: 17, a: a};
+	return {$: 16, a: a};
 };
 var $author$project$Config$colorPallet = _List_fromArray(
 	['#c2d421', '#91b1fd', '#fdb9fd', '#fec685', '#5F9A80']);
@@ -8522,7 +8504,8 @@ var $author$project$Main$viewTextArea = F4(
 			_List_Nil);
 	});
 var $author$project$Main$addNotePanel = F2(
-	function (note, isEdit) {
+	function (box, isEdit) {
+		var note = box.b7;
 		return A2(
 			$elm$html$Html$div,
 			_List_fromArray(
@@ -8559,7 +8542,7 @@ var $author$project$Main$addNotePanel = F2(
 					$elm$html$Html$div,
 					_List_fromArray(
 						[
-							$elm$html$Html$Attributes$class('add-notes-c')
+							$elm$html$Html$Attributes$class('add-notes-ctrl')
 						]),
 					_List_fromArray(
 						[
@@ -8610,7 +8593,7 @@ var $author$project$Main$viewNoteForm = function (model) {
 					[
 						$elm$html$Html$text('Slate')
 					])),
-				A2($author$project$Main$addNotePanel, model.b, model.C)
+				A2($author$project$Main$addNotePanel, model.h, model.C)
 			]));
 };
 var $author$project$Main$view = function (model) {
