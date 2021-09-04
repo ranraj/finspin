@@ -25,8 +25,8 @@ import BoardDecoder exposing (boxListDecoder)
 import BoardEncoder exposing (boxListEncoder)
 import Ports
 import Types exposing (Model,Box,BoxGroup,Note,Color(..),Msg(..))
-import Types exposing (defaultBoxGroup,buildNote,makeBox,emptyNote,emptyGroup,getColor)
-
+import Types exposing (buildNote,makeBox,emptyNote,emptyGroup,getColor)
+import Config exposing (colorPallet)
 
 boxesView : BoxGroup -> Svg Msg
 boxesView boxGroup =
@@ -36,13 +36,16 @@ boxesView boxGroup =
         |> List.map boxView
         |> Svg.node "g" []
 
-svgBoard : Svg msg
-svgBoard =
-    Svg.rect
-        [ 
-        ]
-        []    
-
+-- TODO : SVG foreign object
+svgTextarea model =
+    let
+        textspace =
+            Svg.foreignObject
+             [Attr.x "100"
+             , Attr.y "100"]
+             [ textarea [ style "position" "fixed"] [text "helloklskhkjdsf skdfhdskfhdskfhdkfhdsk fh"] ]
+    in  
+        textspace
 
 -- Notes View Html --
 
@@ -52,7 +55,7 @@ addNotePanel note isEdit =
         [ div [ class "li-header"] [ viewInput "text" "Title" "form-input" note.title (ChangeTitle)]
         , div [ class "line-seperator"] []
         , div [] [ viewTextArea "Description" "form-input" note.description (ChangeDesc)]   
-        , div [] 
+        , div [class "add-notes-c"] 
             [
                button [ onClick ((if isEdit then UpdateNote else AddNote) note.title note.description), class "form-btn"] [text "Save"]
                ,button [ onClick CancelNoteForm, class "form-btn" ] [text "Clear"]            
@@ -62,9 +65,8 @@ addNotePanel note isEdit =
 
 colorPickerView : Html Msg
 colorPickerView = 
-            let
-                list = ["#c2d421","#91b1fd","#fdb9fd","#fec685"]
-                colorPicker = List.map (\color -> div [] [button [onClick (UpdateTitleColor color), class "color-picker", style "background-color" color] [text ""]]) list
+            let                
+                colorPicker = List.map (\color -> div [] [button [onClick (UpdateTitleColor color), class "color-picker", style "background-color" color] [text ""]]) colorPallet
             in
                 div [class "color-picker-holder"] colorPicker                                                      
 viewNoteComponent : Box -> Html Msg
@@ -91,16 +93,13 @@ viewTextArea : String -> String -> String -> (String -> Msg) -> Html Msg
 viewTextArea ph c v msg = 
     textarea [ placeholder ph, class c, value v, onInput msg ] []
 
-viewNoteForm : Note -> Html Msg
-viewNoteForm note =
+-- Note popup
+viewNoteForm : Model -> Html Msg
+viewNoteForm model =
     div [ class "form" ]
-    [ h4 [] [ text "Add Note" ] 
-    , viewInput "text" "title" "form-input" note.title (ChangeTitle)
-    , viewInput "text" "description" "form-input" note.description (ChangeDesc)
-    , div [] 
-        [ button [ onClick CancelNoteForm, class "form-btn" ] [text "Cancel"]
-        , button [ onClick (AddNote note.title note.description), class "form-btn"] [text "Save"]
-        ]
+    [ 
+        h4 [] [ text "Slate" ] 
+        ,addNotePanel model.noteToAdd model.editNote
     ]
 
 getNotes : BoxGroup -> Html Msg
@@ -149,7 +148,7 @@ svgBox model =
                 ]
                 []
                 --, svgBoard 
-                , boxesView (model.boxGroup)                 
+                , boxesView (model.boxGroup)                     
             ]
 
 -- Elm Architecture --
@@ -204,9 +203,8 @@ view model =
         , button 
             [ onClick (SaveBoard)
              , style "border" "none", style "svgPanelBackground-color" "transparent",style "color" "skyblue"
-             ] [ Icon.viewStyled [ Icon.fa2x ] Icon.save]
-        , ul [ class "list", style "color" "black" ] [addNotePanel model.noteToAdd model.editNote]    
-        , (if model.addingNote then viewNoteForm model.noteToAdd else div [ style "hidden" "true" ] [])        
+             ] [ Icon.viewStyled [ Icon.fa2x ] Icon.save]        
+        , (if model.addingNote then viewNoteForm model else div [ style "hidden" "true" ] [])        
         , getNotes model.boxGroup
         ]
     ]
@@ -267,7 +265,10 @@ update msg ({ boxGroup } as model) =
                                         let
                                             newTitle = if String.isEmpty t then box.note.title else t
                                             newDescription = if String.isEmpty d then box.note.description else d
-                                            newNote = Note box.note.id box.note.done newTitle newDescription model.noteToAdd.color
+                                            color = case model.noteToAdd.color of
+                                                        Just _ -> model.noteToAdd.color
+                                                        Nothing -> box.note.color
+                                            newNote = Note box.note.id box.note.done newTitle newDescription color
                                         in    
                                             {box | note = newNote}
                                     else 
@@ -348,7 +349,7 @@ update msg ({ boxGroup } as model) =
                                         Just b -> b.note
                                         Nothing -> emptyNote                                
                         in    
-                            ( {model | noteToAdd = viewNote, editNote = True} , Cmd.none)
+                            ( {model | addingNote = True,noteToAdd = viewNote, editNote = True} , Cmd.none)
         SaveBoard -> (model,saveNotes model.boxGroup.idleBoxes)
         Position x y -> ({ model | position = (x, y) },Cmd.none)
         UpdateTitleColor tileColor -> 

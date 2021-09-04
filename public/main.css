@@ -1,6 +1,5 @@
 body {
     font-family: 'Source Sans Pro', 'Trebuchet MS', 'Lucida Grande', 'Bitstream Vera Sans', 'Helvetica Neue', sans-serif;
-    margin: 20;
     color: #293c4b;
     background-color: #f3faff;
 }
@@ -24,11 +23,18 @@ body.h1 {
     background-color: white;
     border-radius: 1em;
     z-index: 1;
-    height: 80vh;
-    width: 50vw;
-    top: 5%;
+    height: 28vh;
+    width: 20vw;
+    top: 30%;
     left: 25%;
     box-shadow: 0 0 2em 100em #3335;
+}
+
+.add-notes-ctrl {
+    display: flex;
+    flex-flow: row;
+    justify-content: center;
+    align-items: center;
 }
 
 .form-btn {
@@ -182,4 +188,22 @@ select:focus {
     background-color: powderblue;
     box-shadow: none;
     border-radius: 0px;
+}
+
+foreignobject {
+    margin: 0;
+    padding: 0;
+    width: 250px;
+    height: 250px
+}
+
+foreignobject span {
+    margin: 0;
+    padding: 0;
+    width: 249px;
+    height: 249px;
+    background-color: #fffdb6;
+    border: 2px solid green;
+    overflow-y: scroll;
+    position: fixed
 }

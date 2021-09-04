@@ -6192,7 +6192,7 @@ var $elm$core$Task$perform = F2(
 var $elm$browser$Browser$element = _Browser_element;
 var $author$project$Types$BoxGroup = F3(
 	function (uid, movingBox, idleBoxes) {
-		return {D: idleBoxes, L: movingBox, ar: uid};
+		return {E: idleBoxes, L: movingBox, ar: uid};
 	});
 var $author$project$Types$emptyGroup = A3($author$project$Types$BoxGroup, 0, $elm$core$Maybe$Nothing, _List_Nil);
 var $author$project$Types$emptyNote = {bK: $elm$core$Maybe$Nothing, bQ: '', bR: false, aK: '', cC: ''};
@@ -6204,10 +6204,10 @@ var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
 var $author$project$Main$init = function (_v0) {
 	return _Utils_Tuple2(
 		{
-			I: false,
+			B: false,
 			c: $author$project$Types$emptyGroup,
 			aA: $zaboco$elm_draggable$Draggable$init,
-			B: false,
+			C: false,
 			b2: $elm$core$Maybe$Nothing,
 			aN: _List_Nil,
 			b: $author$project$Types$emptyNote,
@@ -7123,7 +7123,7 @@ var $elm$core$List$partition = F2(
 	});
 var $author$project$BoardTiles$startDragging = F2(
 	function (id, group) {
-		var idleBoxes = group.D;
+		var idleBoxes = group.E;
 		var _v0 = A2(
 			$elm$core$List$partition,
 			A2(
@@ -7138,13 +7138,13 @@ var $author$project$BoardTiles$startDragging = F2(
 		return _Utils_update(
 			group,
 			{
-				D: others,
+				E: others,
 				L: $elm$core$List$head(targetAsList)
 			});
 	});
 var $author$project$BoardTiles$allBoxes = function (_v0) {
 	var movingBox = _v0.L;
-	var idleBoxes = _v0.D;
+	var idleBoxes = _v0.E;
 	return A2(
 		$elm$core$Maybe$withDefault,
 		idleBoxes,
@@ -7159,7 +7159,7 @@ var $author$project$BoardTiles$stopDragging = function (group) {
 	return _Utils_update(
 		group,
 		{
-			D: $author$project$BoardTiles$allBoxes(group),
+			E: $author$project$BoardTiles$allBoxes(group),
 			L: $elm$core$Maybe$Nothing
 		});
 };
@@ -7176,7 +7176,7 @@ var $author$project$BoardTiles$toggleBoxClicked = F2(
 		return _Utils_update(
 			group,
 			{
-				D: A2($elm$core$List$map, possiblyToggleBox, group.D)
+				E: A2($elm$core$List$map, possiblyToggleBox, group.E)
 			});
 	});
 var $zaboco$elm_draggable$Cmd$Extra$message = function (x) {
@@ -7297,7 +7297,7 @@ var $author$project$Main$update = F2(
 			case 2:
 				var id = msg.a;
 				var newBoxGroup = A2($author$project$BoardTiles$startDragging, id, model.c);
-				var savePostsCmd = $author$project$Main$saveNotes(newBoxGroup.D);
+				var savePostsCmd = $author$project$Main$saveNotes(newBoxGroup.E);
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
@@ -7305,7 +7305,7 @@ var $author$project$Main$update = F2(
 					savePostsCmd);
 			case 5:
 				var newBoxGroup = $author$project$BoardTiles$stopDragging(model.c);
-				var savePostsCmd = $author$project$Main$saveNotes(newBoxGroup.D);
+				var savePostsCmd = $author$project$Main$saveNotes(newBoxGroup.E);
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
@@ -7314,14 +7314,14 @@ var $author$project$Main$update = F2(
 			case 3:
 				var id = msg.a;
 				var newBoxGroup = A2($author$project$BoardTiles$toggleBoxClicked, id, boxGroup);
-				var savePostsCmd = $author$project$Main$saveNotes(newBoxGroup.D);
+				var savePostsCmd = $author$project$Main$saveNotes(newBoxGroup.E);
 				var boxOpt = $elm$core$List$head(
 					A2(
 						$elm$core$List$filter,
 						function (b) {
 							return _Utils_eq(b.aK, id);
 						},
-						boxGroup.D));
+						boxGroup.E));
 				var viewNote = function () {
 					if (!boxOpt.$) {
 						var b = boxOpt.a;
@@ -7344,15 +7344,15 @@ var $author$project$Main$update = F2(
 				var tilePosition = A2($elm_explorations$linear_algebra$Math$Vector2$vec2, model.bd.a, model.bd.b);
 				var note = A4(
 					$author$project$Types$buildNote,
-					$elm$core$List$length(model.c.D),
+					$elm$core$List$length(model.c.E),
 					t,
 					d,
 					model.b.bK);
 				var isEmpty = $elm$core$String$isEmpty(t) && $elm$core$String$isEmpty(d);
-				var idleBoxes = isEmpty ? boxGroup.D : A2(
+				var idleBoxes = isEmpty ? boxGroup.E : A2(
 					$elm$core$List$cons,
 					A3($author$project$Types$makeBox, note.aK, note, tilePosition),
-					boxGroup.D);
+					boxGroup.E);
 				var savePostsCmd = isEmpty ? $elm$core$Platform$Cmd$none : $author$project$Main$saveNotes(idleBoxes);
 				return _Utils_Tuple2(
 					_Utils_update(
@@ -7360,7 +7360,7 @@ var $author$project$Main$update = F2(
 						{
 							c: _Utils_update(
 								boxGroup,
-								{D: idleBoxes}),
+								{E: idleBoxes}),
 							b: $author$project$Types$emptyNote,
 							bw: false
 						}),
@@ -7372,7 +7372,15 @@ var $author$project$Main$update = F2(
 					if (_Utils_eq(box.aK, model.b.aK)) {
 						var newTitle = $elm$core$String$isEmpty(t) ? box.b7.cC : t;
 						var newDescription = $elm$core$String$isEmpty(d) ? box.b7.bQ : d;
-						var newNote = A5($author$project$Types$Note, box.b7.aK, box.b7.bR, newTitle, newDescription, model.b.bK);
+						var color = function () {
+							var _v2 = model.b.bK;
+							if (!_v2.$) {
+								return model.b.bK;
+							} else {
+								return box.b7.bK;
+							}
+						}();
+						var newNote = A5($author$project$Types$Note, box.b7.aK, box.b7.bR, newTitle, newDescription, color);
 						return _Utils_update(
 							box,
 							{b7: newNote});
@@ -7381,13 +7389,13 @@ var $author$project$Main$update = F2(
 					}
 				};
 				var isEmpty = $elm$core$String$isEmpty(t) && $elm$core$String$isEmpty(d);
-				var edit = model.B;
-				var newIdleBoxes = (edit && isEmpty) ? boxGroup.D : A2(
+				var edit = model.C;
+				var newIdleBoxes = (edit && isEmpty) ? boxGroup.E : A2(
 					$elm$core$List$map,
 					function (box) {
 						return updateNote(box);
 					},
-					boxGroup.D);
+					boxGroup.E);
 				var savePostsCmd = isEmpty ? $elm$core$Platform$Cmd$none : $author$project$Main$saveNotes(newIdleBoxes);
 				return _Utils_Tuple2(
 					_Utils_update(
@@ -7395,8 +7403,8 @@ var $author$project$Main$update = F2(
 						{
 							c: _Utils_update(
 								boxGroup,
-								{D: newIdleBoxes}),
-							B: false,
+								{E: newIdleBoxes}),
+							C: false,
 							b: $author$project$Types$emptyNote
 						}),
 					savePostsCmd);
@@ -7405,7 +7413,7 @@ var $author$project$Main$update = F2(
 				var newBoxGroup = _Utils_update(
 					boxGroup,
 					{
-						D: A2(
+						E: A2(
 							$elm$core$List$map,
 							function (box) {
 								return _Utils_eq(box.b7.aK, i) ? _Utils_update(
@@ -7414,9 +7422,9 @@ var $author$project$Main$update = F2(
 										b7: {bK: $elm$core$Maybe$Nothing, bQ: box.b7.bQ, bR: !box.b7.bR, aK: box.b7.aK, cC: box.b7.cC}
 									}) : box;
 							},
-							boxGroup.D)
+							boxGroup.E)
 					});
-				var savePostsCmd = $author$project$Main$saveNotes(newBoxGroup.D);
+				var savePostsCmd = $author$project$Main$saveNotes(newBoxGroup.E);
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
@@ -7429,7 +7437,7 @@ var $author$project$Main$update = F2(
 					function (box) {
 						return !_Utils_eq(box.b7.aK, i);
 					},
-					model.c.D);
+					model.c.E);
 				var savePostsCmd = $author$project$Main$saveNotes(idleBoxesFiltered);
 				return _Utils_Tuple2(
 					_Utils_update(
@@ -7437,20 +7445,20 @@ var $author$project$Main$update = F2(
 						{
 							c: _Utils_update(
 								boxGroup,
-								{D: idleBoxesFiltered})
+								{E: idleBoxesFiltered})
 						}),
 					savePostsCmd);
 			case 11:
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{I: true}),
+						{B: true}),
 					$elm$core$Platform$Cmd$none);
 			case 12:
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{I: false, B: false, b: $author$project$Types$emptyNote}),
+						{B: false, C: false, b: $author$project$Types$emptyNote}),
 					$elm$core$Platform$Cmd$none);
 			case 9:
 				var t = msg.a;
@@ -7475,7 +7483,7 @@ var $author$project$Main$update = F2(
 				var localData = $author$project$BoardDecoder$boxListDecoder(value);
 				var newBoxGroup = $elm$core$List$isEmpty(localData) ? boxGroup : _Utils_update(
 					boxGroup,
-					{D: localData});
+					{E: localData});
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
@@ -7489,7 +7497,7 @@ var $author$project$Main$update = F2(
 						function (b) {
 							return _Utils_eq(b.aK, id);
 						},
-						boxGroup.D));
+						boxGroup.E));
 				var viewNote = function () {
 					if (!boxOpt.$) {
 						var b = boxOpt.a;
@@ -7501,12 +7509,12 @@ var $author$project$Main$update = F2(
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{B: true, b: viewNote}),
+						{B: true, C: true, b: viewNote}),
 					$elm$core$Platform$Cmd$none);
 			case 15:
 				return _Utils_Tuple2(
 					model,
-					$author$project$Main$saveNotes(model.c.D));
+					$author$project$Main$saveNotes(model.c.E));
 			case 16:
 				var x = msg.a;
 				var y = msg.b;
@@ -7535,20 +7543,6 @@ var $author$project$Main$update = F2(
 var $author$project$Types$CancelNoteForm = {$: 12};
 var $author$project$Types$SaveBoard = {$: 15};
 var $author$project$Types$StartNoteForm = {$: 11};
-var $author$project$Types$AddNote = F2(
-	function (a, b) {
-		return {$: 6, a: a, b: b};
-	});
-var $author$project$Types$ChangeDesc = function (a) {
-	return {$: 10, a: a};
-};
-var $author$project$Types$ChangeTitle = function (a) {
-	return {$: 9, a: a};
-};
-var $author$project$Types$UpdateNote = F2(
-	function (a, b) {
-		return {$: 14, a: a, b: b};
-	});
 var $elm$html$Html$button = _VirtualDom_node('button');
 var $elm$html$Html$Attributes$stringProperty = F2(
 	function (key, string) {
@@ -7558,203 +7552,13 @@ var $elm$html$Html$Attributes$stringProperty = F2(
 			$elm$json$Json$Encode$string(string));
 	});
 var $elm$html$Html$Attributes$class = $elm$html$Html$Attributes$stringProperty('className');
-var $author$project$Types$UpdateTitleColor = function (a) {
-	return {$: 17, a: a};
-};
-var $elm$html$Html$div = _VirtualDom_node('div');
-var $elm$virtual_dom$VirtualDom$Normal = function (a) {
-	return {$: 0, a: a};
-};
-var $elm$virtual_dom$VirtualDom$on = _VirtualDom_on;
-var $elm$html$Html$Events$on = F2(
-	function (event, decoder) {
-		return A2(
-			$elm$virtual_dom$VirtualDom$on,
-			event,
-			$elm$virtual_dom$VirtualDom$Normal(decoder));
-	});
-var $elm$html$Html$Events$onClick = function (msg) {
-	return A2(
-		$elm$html$Html$Events$on,
-		'click',
-		$elm$json$Json$Decode$succeed(msg));
-};
-var $elm$virtual_dom$VirtualDom$style = _VirtualDom_style;
-var $elm$html$Html$Attributes$style = $elm$virtual_dom$VirtualDom$style;
-var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
-var $elm$html$Html$text = $elm$virtual_dom$VirtualDom$text;
-var $author$project$Main$colorPickerView = function () {
-	var list = _List_fromArray(
-		['#c2d421', '#91b1fd', '#fdb9fd', '#fec685']);
-	var colorPicker = A2(
-		$elm$core$List$map,
-		function (color) {
-			return A2(
-				$elm$html$Html$div,
-				_List_Nil,
-				_List_fromArray(
-					[
-						A2(
-						$elm$html$Html$button,
-						_List_fromArray(
-							[
-								$elm$html$Html$Events$onClick(
-								$author$project$Types$UpdateTitleColor(color)),
-								$elm$html$Html$Attributes$class('color-picker'),
-								A2($elm$html$Html$Attributes$style, 'background-color', color)
-							]),
-						_List_fromArray(
-							[
-								$elm$html$Html$text('')
-							]))
-					]));
-		},
-		list);
-	return A2(
-		$elm$html$Html$div,
-		_List_fromArray(
-			[
-				$elm$html$Html$Attributes$class('color-picker-holder')
-			]),
-		colorPicker);
-}();
-var $elm$html$Html$input = _VirtualDom_node('input');
-var $elm$html$Html$Events$alwaysStop = function (x) {
-	return _Utils_Tuple2(x, true);
-};
-var $elm$virtual_dom$VirtualDom$MayStopPropagation = function (a) {
-	return {$: 1, a: a};
-};
-var $elm$html$Html$Events$stopPropagationOn = F2(
-	function (event, decoder) {
-		return A2(
-			$elm$virtual_dom$VirtualDom$on,
-			event,
-			$elm$virtual_dom$VirtualDom$MayStopPropagation(decoder));
-	});
-var $elm$json$Json$Decode$at = F2(
-	function (fields, decoder) {
-		return A3($elm$core$List$foldr, $elm$json$Json$Decode$field, decoder, fields);
-	});
-var $elm$html$Html$Events$targetValue = A2(
-	$elm$json$Json$Decode$at,
-	_List_fromArray(
-		['target', 'value']),
-	$elm$json$Json$Decode$string);
-var $elm$html$Html$Events$onInput = function (tagger) {
-	return A2(
-		$elm$html$Html$Events$stopPropagationOn,
-		'input',
-		A2(
-			$elm$json$Json$Decode$map,
-			$elm$html$Html$Events$alwaysStop,
-			A2($elm$json$Json$Decode$map, tagger, $elm$html$Html$Events$targetValue)));
-};
-var $elm$html$Html$Attributes$placeholder = $elm$html$Html$Attributes$stringProperty('placeholder');
-var $elm$html$Html$Attributes$type_ = $elm$html$Html$Attributes$stringProperty('type');
-var $elm$html$Html$Attributes$value = $elm$html$Html$Attributes$stringProperty('value');
-var $author$project$Main$viewInput = F5(
-	function (t, ph, c, v, msg) {
-		return A2(
-			$elm$html$Html$input,
-			_List_fromArray(
-				[
-					$elm$html$Html$Attributes$type_(t),
-					$elm$html$Html$Attributes$placeholder(ph),
-					$elm$html$Html$Attributes$class(c),
-					$elm$html$Html$Attributes$value(v),
-					$elm$html$Html$Events$onInput(msg)
-				]),
-			_List_Nil);
-	});
-var $elm$html$Html$textarea = _VirtualDom_node('textarea');
-var $author$project$Main$viewTextArea = F4(
-	function (ph, c, v, msg) {
-		return A2(
-			$elm$html$Html$textarea,
-			_List_fromArray(
-				[
-					$elm$html$Html$Attributes$placeholder(ph),
-					$elm$html$Html$Attributes$class(c),
-					$elm$html$Html$Attributes$value(v),
-					$elm$html$Html$Events$onInput(msg)
-				]),
-			_List_Nil);
-	});
-var $author$project$Main$addNotePanel = F2(
-	function (note, isEdit) {
-		return A2(
-			$elm$html$Html$div,
-			_List_fromArray(
-				[
-					$elm$html$Html$Attributes$class('add-to-panel')
-				]),
-			_List_fromArray(
-				[
-					A2(
-					$elm$html$Html$div,
-					_List_fromArray(
-						[
-							$elm$html$Html$Attributes$class('li-header')
-						]),
-					_List_fromArray(
-						[
-							A5($author$project$Main$viewInput, 'text', 'Title', 'form-input', note.cC, $author$project$Types$ChangeTitle)
-						])),
-					A2(
-					$elm$html$Html$div,
-					_List_fromArray(
-						[
-							$elm$html$Html$Attributes$class('line-seperator')
-						]),
-					_List_Nil),
-					A2(
-					$elm$html$Html$div,
-					_List_Nil,
-					_List_fromArray(
-						[
-							A4($author$project$Main$viewTextArea, 'Description', 'form-input', note.bQ, $author$project$Types$ChangeDesc)
-						])),
-					A2(
-					$elm$html$Html$div,
-					_List_Nil,
-					_List_fromArray(
-						[
-							A2(
-							$elm$html$Html$button,
-							_List_fromArray(
-								[
-									$elm$html$Html$Events$onClick(
-									A2(
-										isEdit ? $author$project$Types$UpdateNote : $author$project$Types$AddNote,
-										note.cC,
-										note.bQ)),
-									$elm$html$Html$Attributes$class('form-btn')
-								]),
-							_List_fromArray(
-								[
-									$elm$html$Html$text('Save')
-								])),
-							A2(
-							$elm$html$Html$button,
-							_List_fromArray(
-								[
-									$elm$html$Html$Events$onClick($author$project$Types$CancelNoteForm),
-									$elm$html$Html$Attributes$class('form-btn')
-								]),
-							_List_fromArray(
-								[
-									$elm$html$Html$text('Clear')
-								]))
-						])),
-					$author$project$Main$colorPickerView
-				]));
-	});
 var $elm$virtual_dom$VirtualDom$node = function (tag) {
 	return _VirtualDom_node(
 		_VirtualDom_noScript(tag));
 };
 var $elm$html$Html$node = $elm$virtual_dom$VirtualDom$node;
+var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
+var $elm$html$Html$text = $elm$virtual_dom$VirtualDom$text;
 var $lattyware$elm_fontawesome$FontAwesome$Styles$css = A3(
 	$elm$html$Html$node,
 	'style',
@@ -7763,8 +7567,11 @@ var $lattyware$elm_fontawesome$FontAwesome$Styles$css = A3(
 		[
 			$elm$html$Html$text('svg:not(:root).svg-inline--fa {  overflow: visible;}.svg-inline--fa {  display: inline-block;  font-size: inherit;  height: 1em;  overflow: visible;  vertical-align: -0.125em;}.svg-inline--fa.fa-lg {  vertical-align: -0.225em;}.svg-inline--fa.fa-w-1 {  width: 0.0625em;}.svg-inline--fa.fa-w-2 {  width: 0.125em;}.svg-inline--fa.fa-w-3 {  width: 0.1875em;}.svg-inline--fa.fa-w-4 {  width: 0.25em;}.svg-inline--fa.fa-w-5 {  width: 0.3125em;}.svg-inline--fa.fa-w-6 {  width: 0.375em;}.svg-inline--fa.fa-w-7 {  width: 0.4375em;}.svg-inline--fa.fa-w-8 {  width: 0.5em;}.svg-inline--fa.fa-w-9 {  width: 0.5625em;}.svg-inline--fa.fa-w-10 {  width: 0.625em;}.svg-inline--fa.fa-w-11 {  width: 0.6875em;}.svg-inline--fa.fa-w-12 {  width: 0.75em;}.svg-inline--fa.fa-w-13 {  width: 0.8125em;}.svg-inline--fa.fa-w-14 {  width: 0.875em;}.svg-inline--fa.fa-w-15 {  width: 0.9375em;}.svg-inline--fa.fa-w-16 {  width: 1em;}.svg-inline--fa.fa-w-17 {  width: 1.0625em;}.svg-inline--fa.fa-w-18 {  width: 1.125em;}.svg-inline--fa.fa-w-19 {  width: 1.1875em;}.svg-inline--fa.fa-w-20 {  width: 1.25em;}.svg-inline--fa.fa-pull-left {  margin-right: 0.3em;  width: auto;}.svg-inline--fa.fa-pull-right {  margin-left: 0.3em;  width: auto;}.svg-inline--fa.fa-border {  height: 1.5em;}.svg-inline--fa.fa-li {  width: 2em;}.svg-inline--fa.fa-fw {  width: 1.25em;}.fa-layers svg.svg-inline--fa {  bottom: 0;  left: 0;  margin: auto;  position: absolute;  right: 0;  top: 0;}.fa-layers {  display: inline-block;  height: 1em;  position: relative;  text-align: center;  vertical-align: -0.125em;  width: 1em;}.fa-layers svg.svg-inline--fa {  -webkit-transform-origin: center center;          transform-origin: center center;}.fa-layers-counter, .fa-layers-text {  display: inline-block;  position: absolute;  text-align: center;}.fa-layers-text {  left: 50%;  top: 50%;  -webkit-transform: translate(-50%, -50%);          transform: translate(-50%, -50%);  -webkit-transform-origin: center center;          transform-origin: center center;}.fa-layers-counter {  background-color: #ff253a;  border-radius: 1em;  -webkit-box-sizing: border-box;          box-sizing: border-box;  color: #fff;  height: 1.5em;  line-height: 1;  max-width: 5em;  min-width: 1.5em;  overflow: hidden;  padding: 0.25em;  right: 0;  text-overflow: ellipsis;  top: 0;  -webkit-transform: scale(0.25);          transform: scale(0.25);  -webkit-transform-origin: top right;          transform-origin: top right;}.fa-layers-bottom-right {  bottom: 0;  right: 0;  top: auto;  -webkit-transform: scale(0.25);          transform: scale(0.25);  -webkit-transform-origin: bottom right;          transform-origin: bottom right;}.fa-layers-bottom-left {  bottom: 0;  left: 0;  right: auto;  top: auto;  -webkit-transform: scale(0.25);          transform: scale(0.25);  -webkit-transform-origin: bottom left;          transform-origin: bottom left;}.fa-layers-top-right {  right: 0;  top: 0;  -webkit-transform: scale(0.25);          transform: scale(0.25);  -webkit-transform-origin: top right;          transform-origin: top right;}.fa-layers-top-left {  left: 0;  right: auto;  top: 0;  -webkit-transform: scale(0.25);          transform: scale(0.25);  -webkit-transform-origin: top left;          transform-origin: top left;}.fa-lg {  font-size: 1.3333333333em;  line-height: 0.75em;  vertical-align: -0.0667em;}.fa-xs {  font-size: 0.75em;}.fa-sm {  font-size: 0.875em;}.fa-1x {  font-size: 1em;}.fa-2x {  font-size: 2em;}.fa-3x {  font-size: 3em;}.fa-4x {  font-size: 4em;}.fa-5x {  font-size: 5em;}.fa-6x {  font-size: 6em;}.fa-7x {  font-size: 7em;}.fa-8x {  font-size: 8em;}.fa-9x {  font-size: 9em;}.fa-10x {  font-size: 10em;}.fa-fw {  text-align: center;  width: 1.25em;}.fa-ul {  list-style-type: none;  margin-left: 2.5em;  padding-left: 0;}.fa-ul > li {  position: relative;}.fa-li {  left: -2em;  position: absolute;  text-align: center;  width: 2em;  line-height: inherit;}.fa-border {  border: solid 0.08em #eee;  border-radius: 0.1em;  padding: 0.2em 0.25em 0.15em;}.fa-pull-left {  float: left;}.fa-pull-right {  float: right;}.fa.fa-pull-left,.fas.fa-pull-left,.far.fa-pull-left,.fal.fa-pull-left,.fab.fa-pull-left {  margin-right: 0.3em;}.fa.fa-pull-right,.fas.fa-pull-right,.far.fa-pull-right,.fal.fa-pull-right,.fab.fa-pull-right {  margin-left: 0.3em;}.fa-spin {  -webkit-animation: fa-spin 2s infinite linear;          animation: fa-spin 2s infinite linear;}.fa-pulse {  -webkit-animation: fa-spin 1s infinite steps(8);          animation: fa-spin 1s infinite steps(8);}@-webkit-keyframes fa-spin {  0% {    -webkit-transform: rotate(0deg);            transform: rotate(0deg);  }  100% {    -webkit-transform: rotate(360deg);            transform: rotate(360deg);  }}@keyframes fa-spin {  0% {    -webkit-transform: rotate(0deg);            transform: rotate(0deg);  }  100% {    -webkit-transform: rotate(360deg);            transform: rotate(360deg);  }}.fa-rotate-90 {  -ms-filter: \"progid:DXImageTransform.Microsoft.BasicImage(rotation=1)\";  -webkit-transform: rotate(90deg);          transform: rotate(90deg);}.fa-rotate-180 {  -ms-filter: \"progid:DXImageTransform.Microsoft.BasicImage(rotation=2)\";  -webkit-transform: rotate(180deg);          transform: rotate(180deg);}.fa-rotate-270 {  -ms-filter: \"progid:DXImageTransform.Microsoft.BasicImage(rotation=3)\";  -webkit-transform: rotate(270deg);          transform: rotate(270deg);}.fa-flip-horizontal {  -ms-filter: \"progid:DXImageTransform.Microsoft.BasicImage(rotation=0, mirror=1)\";  -webkit-transform: scale(-1, 1);          transform: scale(-1, 1);}.fa-flip-vertical {  -ms-filter: \"progid:DXImageTransform.Microsoft.BasicImage(rotation=2, mirror=1)\";  -webkit-transform: scale(1, -1);          transform: scale(1, -1);}.fa-flip-both, .fa-flip-horizontal.fa-flip-vertical {  -ms-filter: \"progid:DXImageTransform.Microsoft.BasicImage(rotation=2, mirror=1)\";  -webkit-transform: scale(-1, -1);          transform: scale(-1, -1);}:root .fa-rotate-90,:root .fa-rotate-180,:root .fa-rotate-270,:root .fa-flip-horizontal,:root .fa-flip-vertical,:root .fa-flip-both {  -webkit-filter: none;          filter: none;}.fa-stack {  display: inline-block;  height: 2em;  position: relative;  width: 2.5em;}.fa-stack-1x,.fa-stack-2x {  bottom: 0;  left: 0;  margin: auto;  position: absolute;  right: 0;  top: 0;}.svg-inline--fa.fa-stack-1x {  height: 1em;  width: 1.25em;}.svg-inline--fa.fa-stack-2x {  height: 2em;  width: 2.5em;}.fa-inverse {  color: #fff;}.sr-only {  border: 0;  clip: rect(0, 0, 0, 0);  height: 1px;  margin: -1px;  overflow: hidden;  padding: 0;  position: absolute;  width: 1px;}.sr-only-focusable:active, .sr-only-focusable:focus {  clip: auto;  height: auto;  margin: 0;  overflow: visible;  position: static;  width: auto;}.svg-inline--fa .fa-primary {  fill: var(--fa-primary-color, currentColor);  opacity: 1;  opacity: var(--fa-primary-opacity, 1);}.svg-inline--fa .fa-secondary {  fill: var(--fa-secondary-color, currentColor);  opacity: 0.4;  opacity: var(--fa-secondary-opacity, 0.4);}.svg-inline--fa.fa-swap-opacity .fa-primary {  opacity: 0.4;  opacity: var(--fa-secondary-opacity, 0.4);}.svg-inline--fa.fa-swap-opacity .fa-secondary {  opacity: 1;  opacity: var(--fa-primary-opacity, 1);}.svg-inline--fa mask .fa-primary,.svg-inline--fa mask .fa-secondary {  fill: black;}.fad.fa-inverse {  color: #fff;}')
 		]));
+var $elm$html$Html$div = _VirtualDom_node('div');
 var $elm$svg$Svg$Attributes$class = _VirtualDom_attribute('class');
 var $lattyware$elm_fontawesome$FontAwesome$Attributes$fa2x = $elm$svg$Svg$Attributes$class('fa-2x');
+var $elm$virtual_dom$VirtualDom$style = _VirtualDom_style;
+var $elm$html$Html$Attributes$style = $elm$virtual_dom$VirtualDom$style;
 var $elm$html$Html$ul = _VirtualDom_node('ul');
 var $author$project$Types$CheckNote = function (a) {
 	return {$: 7, a: a};
@@ -7785,6 +7592,23 @@ var $lattyware$elm_fontawesome$FontAwesome$Solid$checkSquare = A5(
 	_List_fromArray(
 		['M400 480H48c-26.51 0-48-21.49-48-48V80c0-26.51 21.49-48 48-48h352c26.51 0 48 21.49 48 48v352c0 26.51-21.49 48-48 48zm-204.686-98.059l184-184c6.248-6.248 6.248-16.379 0-22.627l-22.627-22.627c-6.248-6.248-16.379-6.249-22.628 0L184 302.745l-70.059-70.059c-6.248-6.248-16.379-6.248-22.628 0l-22.627 22.627c-6.248 6.248-6.248 16.379 0 22.627l104 104c6.249 6.25 16.379 6.25 22.628.001z']));
 var $elm$html$Html$li = _VirtualDom_node('li');
+var $elm$virtual_dom$VirtualDom$Normal = function (a) {
+	return {$: 0, a: a};
+};
+var $elm$virtual_dom$VirtualDom$on = _VirtualDom_on;
+var $elm$html$Html$Events$on = F2(
+	function (event, decoder) {
+		return A2(
+			$elm$virtual_dom$VirtualDom$on,
+			event,
+			$elm$virtual_dom$VirtualDom$Normal(decoder));
+	});
+var $elm$html$Html$Events$onClick = function (msg) {
+	return A2(
+		$elm$html$Html$Events$on,
+		'click',
+		$elm$json$Json$Decode$succeed(msg));
+};
 var $lattyware$elm_fontawesome$FontAwesome$Attributes$sm = $elm$svg$Svg$Attributes$class('fa-sm');
 var $lattyware$elm_fontawesome$FontAwesome$Solid$square = A5(
 	$lattyware$elm_fontawesome$FontAwesome$Icon$Icon,
@@ -8287,7 +8111,7 @@ var $author$project$Main$getNotes = function (boxGroup) {
 				$elm$html$Html$Attributes$class('note-list'),
 				A2($elm$html$Html$Attributes$style, 'color', 'black')
 			]),
-		A2($elm$core$List$map, $author$project$Main$viewNoteComponent, boxGroup.D));
+		A2($elm$core$List$map, $author$project$Main$viewNoteComponent, boxGroup.E));
 };
 var $elm$html$Html$p = _VirtualDom_node('p');
 var $lattyware$elm_fontawesome$FontAwesome$Solid$plusCircle = A5(
@@ -8310,6 +8134,10 @@ var $author$project$Types$BoardGreen = 0;
 var $author$project$Types$Position = F2(
 	function (a, b) {
 		return {$: 16, a: a, b: b};
+	});
+var $elm$json$Json$Decode$at = F2(
+	function (fields, decoder) {
+		return A3($elm$core$List$foldr, $elm$json$Json$Decode$field, decoder, fields);
 	});
 var $author$project$Types$StopDragging = {$: 5};
 var $author$project$Types$White = 1;
@@ -8582,8 +8410,191 @@ var $author$project$Main$svgBox = function (model) {
 				$author$project$Main$boxesView(model.c)
 			]));
 };
+var $author$project$Types$AddNote = F2(
+	function (a, b) {
+		return {$: 6, a: a, b: b};
+	});
+var $author$project$Types$ChangeDesc = function (a) {
+	return {$: 10, a: a};
+};
+var $author$project$Types$ChangeTitle = function (a) {
+	return {$: 9, a: a};
+};
+var $author$project$Types$UpdateNote = F2(
+	function (a, b) {
+		return {$: 14, a: a, b: b};
+	});
+var $author$project$Types$UpdateTitleColor = function (a) {
+	return {$: 17, a: a};
+};
+var $author$project$Config$colorPallet = _List_fromArray(
+	['#c2d421', '#91b1fd', '#fdb9fd', '#fec685', '#5F9A80']);
+var $author$project$Main$colorPickerView = function () {
+	var colorPicker = A2(
+		$elm$core$List$map,
+		function (color) {
+			return A2(
+				$elm$html$Html$div,
+				_List_Nil,
+				_List_fromArray(
+					[
+						A2(
+						$elm$html$Html$button,
+						_List_fromArray(
+							[
+								$elm$html$Html$Events$onClick(
+								$author$project$Types$UpdateTitleColor(color)),
+								$elm$html$Html$Attributes$class('color-picker'),
+								A2($elm$html$Html$Attributes$style, 'background-color', color)
+							]),
+						_List_fromArray(
+							[
+								$elm$html$Html$text('')
+							]))
+					]));
+		},
+		$author$project$Config$colorPallet);
+	return A2(
+		$elm$html$Html$div,
+		_List_fromArray(
+			[
+				$elm$html$Html$Attributes$class('color-picker-holder')
+			]),
+		colorPicker);
+}();
+var $elm$html$Html$input = _VirtualDom_node('input');
+var $elm$html$Html$Events$alwaysStop = function (x) {
+	return _Utils_Tuple2(x, true);
+};
+var $elm$virtual_dom$VirtualDom$MayStopPropagation = function (a) {
+	return {$: 1, a: a};
+};
+var $elm$html$Html$Events$stopPropagationOn = F2(
+	function (event, decoder) {
+		return A2(
+			$elm$virtual_dom$VirtualDom$on,
+			event,
+			$elm$virtual_dom$VirtualDom$MayStopPropagation(decoder));
+	});
+var $elm$html$Html$Events$targetValue = A2(
+	$elm$json$Json$Decode$at,
+	_List_fromArray(
+		['target', 'value']),
+	$elm$json$Json$Decode$string);
+var $elm$html$Html$Events$onInput = function (tagger) {
+	return A2(
+		$elm$html$Html$Events$stopPropagationOn,
+		'input',
+		A2(
+			$elm$json$Json$Decode$map,
+			$elm$html$Html$Events$alwaysStop,
+			A2($elm$json$Json$Decode$map, tagger, $elm$html$Html$Events$targetValue)));
+};
+var $elm$html$Html$Attributes$placeholder = $elm$html$Html$Attributes$stringProperty('placeholder');
+var $elm$html$Html$Attributes$type_ = $elm$html$Html$Attributes$stringProperty('type');
+var $elm$html$Html$Attributes$value = $elm$html$Html$Attributes$stringProperty('value');
+var $author$project$Main$viewInput = F5(
+	function (t, ph, c, v, msg) {
+		return A2(
+			$elm$html$Html$input,
+			_List_fromArray(
+				[
+					$elm$html$Html$Attributes$type_(t),
+					$elm$html$Html$Attributes$placeholder(ph),
+					$elm$html$Html$Attributes$class(c),
+					$elm$html$Html$Attributes$value(v),
+					$elm$html$Html$Events$onInput(msg)
+				]),
+			_List_Nil);
+	});
+var $elm$html$Html$textarea = _VirtualDom_node('textarea');
+var $author$project$Main$viewTextArea = F4(
+	function (ph, c, v, msg) {
+		return A2(
+			$elm$html$Html$textarea,
+			_List_fromArray(
+				[
+					$elm$html$Html$Attributes$placeholder(ph),
+					$elm$html$Html$Attributes$class(c),
+					$elm$html$Html$Attributes$value(v),
+					$elm$html$Html$Events$onInput(msg)
+				]),
+			_List_Nil);
+	});
+var $author$project$Main$addNotePanel = F2(
+	function (note, isEdit) {
+		return A2(
+			$elm$html$Html$div,
+			_List_fromArray(
+				[
+					$elm$html$Html$Attributes$class('add-to-panel')
+				]),
+			_List_fromArray(
+				[
+					A2(
+					$elm$html$Html$div,
+					_List_fromArray(
+						[
+							$elm$html$Html$Attributes$class('li-header')
+						]),
+					_List_fromArray(
+						[
+							A5($author$project$Main$viewInput, 'text', 'Title', 'form-input', note.cC, $author$project$Types$ChangeTitle)
+						])),
+					A2(
+					$elm$html$Html$div,
+					_List_fromArray(
+						[
+							$elm$html$Html$Attributes$class('line-seperator')
+						]),
+					_List_Nil),
+					A2(
+					$elm$html$Html$div,
+					_List_Nil,
+					_List_fromArray(
+						[
+							A4($author$project$Main$viewTextArea, 'Description', 'form-input', note.bQ, $author$project$Types$ChangeDesc)
+						])),
+					A2(
+					$elm$html$Html$div,
+					_List_fromArray(
+						[
+							$elm$html$Html$Attributes$class('add-notes-c')
+						]),
+					_List_fromArray(
+						[
+							A2(
+							$elm$html$Html$button,
+							_List_fromArray(
+								[
+									$elm$html$Html$Events$onClick(
+									A2(
+										isEdit ? $author$project$Types$UpdateNote : $author$project$Types$AddNote,
+										note.cC,
+										note.bQ)),
+									$elm$html$Html$Attributes$class('form-btn')
+								]),
+							_List_fromArray(
+								[
+									$elm$html$Html$text('Save')
+								])),
+							A2(
+							$elm$html$Html$button,
+							_List_fromArray(
+								[
+									$elm$html$Html$Events$onClick($author$project$Types$CancelNoteForm),
+									$elm$html$Html$Attributes$class('form-btn')
+								]),
+							_List_fromArray(
+								[
+									$elm$html$Html$text('Clear')
+								]))
+						])),
+					$author$project$Main$colorPickerView
+				]));
+	});
 var $elm$html$Html$h4 = _VirtualDom_node('h4');
-var $author$project$Main$viewNoteForm = function (note) {
+var $author$project$Main$viewNoteForm = function (model) {
 	return A2(
 		$elm$html$Html$div,
 		_List_fromArray(
@@ -8597,39 +8608,9 @@ var $author$project$Main$viewNoteForm = function (note) {
 				_List_Nil,
 				_List_fromArray(
 					[
-						$elm$html$Html$text('Add Note')
+						$elm$html$Html$text('Slate')
 					])),
-				A5($author$project$Main$viewInput, 'text', 'title', 'form-input', note.cC, $author$project$Types$ChangeTitle),
-				A5($author$project$Main$viewInput, 'text', 'description', 'form-input', note.bQ, $author$project$Types$ChangeDesc),
-				A2(
-				$elm$html$Html$div,
-				_List_Nil,
-				_List_fromArray(
-					[
-						A2(
-						$elm$html$Html$button,
-						_List_fromArray(
-							[
-								$elm$html$Html$Events$onClick($author$project$Types$CancelNoteForm),
-								$elm$html$Html$Attributes$class('form-btn')
-							]),
-						_List_fromArray(
-							[
-								$elm$html$Html$text('Cancel')
-							])),
-						A2(
-						$elm$html$Html$button,
-						_List_fromArray(
-							[
-								$elm$html$Html$Events$onClick(
-								A2($author$project$Types$AddNote, note.cC, note.bQ)),
-								$elm$html$Html$Attributes$class('form-btn')
-							]),
-						_List_fromArray(
-							[
-								$elm$html$Html$text('Save')
-							]))
-					]))
+				A2($author$project$Main$addNotePanel, model.b, model.C)
 			]));
 };
 var $author$project$Main$view = function (model) {
@@ -8666,7 +8647,7 @@ var $author$project$Main$view = function (model) {
 						_List_fromArray(
 							[
 								$elm$html$Html$Events$onClick(
-								model.I ? $author$project$Types$CancelNoteForm : $author$project$Types$StartNoteForm),
+								model.B ? $author$project$Types$CancelNoteForm : $author$project$Types$StartNoteForm),
 								A2($elm$html$Html$Attributes$style, 'border', 'none'),
 								A2($elm$html$Html$Attributes$style, 'svgPanelBackground-color', 'transparent'),
 								A2($elm$html$Html$Attributes$style, 'color', 'skyblue')
@@ -8696,18 +8677,7 @@ var $author$project$Main$view = function (model) {
 									[$lattyware$elm_fontawesome$FontAwesome$Attributes$fa2x]),
 								$lattyware$elm_fontawesome$FontAwesome$Solid$save)
 							])),
-						A2(
-						$elm$html$Html$ul,
-						_List_fromArray(
-							[
-								$elm$html$Html$Attributes$class('list'),
-								A2($elm$html$Html$Attributes$style, 'color', 'black')
-							]),
-						_List_fromArray(
-							[
-								A2($author$project$Main$addNotePanel, model.b, model.B)
-							])),
-						model.I ? $author$project$Main$viewNoteForm(model.b) : A2(
+						model.B ? $author$project$Main$viewNoteForm(model) : A2(
 						$elm$html$Html$div,
 						_List_fromArray(
 							[
