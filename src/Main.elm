@@ -19,9 +19,8 @@ import Json.Decode as Decode exposing (Error(..))
 import Svg.Events as Events
 import Svg.Attributes as Attributes
 import Tuple exposing (first,second)
-import Math.Vector2 as Vector2 exposing (Vec2)
+import Math.Vector2 as Vector2
 
-import Config exposing (defaultNewTilePosition)
 import BoardDecoder exposing (boxListDecoder)
 import BoardEncoder exposing (boxListEncoder)
 import Ports
@@ -49,7 +48,7 @@ svgBoard =
 
 addNotePanel : Note -> Bool -> Html Msg
 addNotePanel note isEdit =
-    li [class "add-to-panel"]
+    div [class "add-to-panel"]
         [ div [ class "li-header"] [ viewInput "text" "Title" "form-input" note.title (ChangeTitle)]
         , div [ class "line-seperator"] []
         , div [] [ viewTextArea "Description" "form-input" note.description (ChangeDesc)]   
@@ -57,9 +56,17 @@ addNotePanel note isEdit =
             [
                button [ onClick ((if isEdit then UpdateNote else AddNote) note.title note.description), class "form-btn"] [text "Save"]
                ,button [ onClick CancelNoteForm, class "form-btn" ] [text "Clear"]            
-            ]             
+            ] 
+        ,colorPickerView           
         ]
 
+colorPickerView : Html Msg
+colorPickerView = 
+            let
+                list = ["#c2d421","#91b1fd","#fdb9fd","#fec685"]
+                colorPicker = List.map (\color -> div [] [button [onClick (UpdateTitleColor color), class "color-picker", style "background-color" color] [text ""]]) list
+            in
+                div [class "color-picker-holder"] colorPicker                                                      
 viewNoteComponent : Box -> Html Msg
 viewNoteComponent box =
     let
@@ -241,8 +248,7 @@ update msg ({ boxGroup } as model) =
 
         AddNote t d ->                     
             let 
-                note  = buildNote (List.length model.boxGroup.idleBoxes) t d                
-                
+                note  = buildNote (List.length model.boxGroup.idleBoxes) t d model.noteToAdd.color                            
                 isEmpty = String.isEmpty t && String.isEmpty d
                 savePostsCmd = if isEmpty then Cmd.none else saveNotes idleBoxes
                 tilePosition = Vector2.vec2 (toFloat (first model.position)) (toFloat (second model.position))
@@ -261,7 +267,7 @@ update msg ({ boxGroup } as model) =
                                         let
                                             newTitle = if String.isEmpty t then box.note.title else t
                                             newDescription = if String.isEmpty d then box.note.description else d
-                                            newNote = Note box.note.id box.note.done newTitle newDescription
+                                            newNote = Note box.note.id box.note.done newTitle newDescription model.noteToAdd.color
                                         in    
                                             {box | note = newNote}
                                     else 
@@ -289,6 +295,7 @@ update msg ({ boxGroup } as model) =
                                                     , done = not box.note.done
                                                     , title = box.note.title
                                                     , description = box.note.description
+                                                    , color = Nothing
                                                      }
                                             }
                                         else box) boxGroup.idleBoxes 
@@ -316,6 +323,7 @@ update msg ({ boxGroup } as model) =
             , title = t
             , description = model.noteToAdd.description
             , done = False
+            , color = Nothing
             } }, Cmd.none)
         ChangeDesc d ->
             ({ model | noteToAdd = 
@@ -323,6 +331,7 @@ update msg ({ boxGroup } as model) =
             , title = model.noteToAdd.title
             , description = d
             , done = False
+            , color = Nothing
             } }, Cmd.none)
         ReceivedDataFromJS value ->              
             let                 
@@ -342,6 +351,12 @@ update msg ({ boxGroup } as model) =
                             ( {model | noteToAdd = viewNote, editNote = True} , Cmd.none)
         SaveBoard -> (model,saveNotes model.boxGroup.idleBoxes)
         Position x y -> ({ model | position = (x, y) },Cmd.none)
+        UpdateTitleColor tileColor -> 
+                        let
+                            note = model.noteToAdd                            
+                            newNote = {note | color = Just tileColor}
+                        in
+                            ({model | noteToAdd = newNote} , Cmd.none)
 subscriptions : Model -> Sub Msg
 subscriptions { drag } = 
     Draggable.subscriptions DragMsg drag

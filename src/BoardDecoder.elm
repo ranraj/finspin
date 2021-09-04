@@ -20,11 +20,12 @@ notePositionDecoder x y =
 
 noteDecoder : Decoder Note
 noteDecoder =
-  JD.map4 Note
+  JD.map5 Note
     (field "id" string)
     (field "done" bool)
     (field "title" string)
     (field "description" string)
+    (JD.maybe (field "color" string))
 
 
 positionDecoder : String -> (Float, Float)

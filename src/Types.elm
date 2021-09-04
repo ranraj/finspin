@@ -5,10 +5,6 @@ import Json.Decode exposing (Error(..))
 import Math.Vector2 as Vector2 exposing (Vec2)
 import Tuple exposing (first,second)
 
-
-
-
-
 type alias Id =
     String
 
@@ -18,6 +14,7 @@ type alias Note =
     , done : Bool
     , title : String
     , description : String        
+    , color : Maybe String
     }
 
 welcomeNotes : List Note
@@ -27,11 +24,13 @@ welcomeNotes =
         , title = "You completed a Task"
         , description = "Simply click on the message to strick  out "
         , done = True
+        , color = Nothing
         }
     ,   { id = "1 - start"
         , title = "Welcome to the Finspin"
         , description = "Easy planner board"
-        , done = False                  
+        , done = False   
+        , color = Nothing               
         }
     ]
 
@@ -41,6 +40,7 @@ emptyNote =
     , done = False
     , title = ""
     , description = ""
+    , color = Nothing
     }
 
 -------------------------------Box-----------------------------------
@@ -67,12 +67,13 @@ emptyGroup : BoxGroup
 emptyGroup =
     BoxGroup 0 Nothing []
 
-buildNote : Int -> String -> String -> Note
-buildNote length t d= { 
+buildNote : Int -> String -> String -> Maybe String -> Note
+buildNote length t d color = { 
             id = ((String.fromInt length ++ String.slice 0 5 t))
             , done = False
             , title = t
             , description = d 
+            , color = color
             }
 
 addBoxInBoxGroup : Note -> Vec2 -> BoxGroup -> BoxGroup
@@ -128,6 +129,7 @@ type Msg
     | UpdateNote String String
     | SaveBoard 
     | Position Int Int
+    | UpdateTitleColor String
 
 -------------------------------Colour-----------------------------------
 type Color = BoardGreen | White
@@ -139,6 +141,6 @@ getColor color =
 
 type alias LocalStore = 
     {
-     welcomeTour : Bool
+      welcomeTour : Bool
      ,boxGroups : List BoxGroup
     }

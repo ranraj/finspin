@@ -17,50 +17,48 @@ import Config exposing (boxSize)
 boxView : Box -> Svg Msg
 boxView { id, position, clicked,note } =
     let
-        color =
-            if clicked then
-                "gray"
-            else
-                getColor BoardGreen
+        color = case note.color of 
+                    Just c -> c
+                    Nothing -> getColor BoardGreen                
         isDone = if note.done then
                     "done"
                  else
-                    ""       
+                    ""                             
     in
-    Svg.svg
-        [Draggable.mouseTrigger id DragMsg
-            , onMouseUp StopDragging
-            ] 
-        [
-            Svg.rect
-            [ convertToNum Attr.width <| getX boxSize
-            , convertToNum Attr.height <| getY boxSize
-            , convertToNum Attr.x (getX position)
-            , convertToNum Attr.y (getY position)
-            , Attr.fill color
-            , Attr.stroke (getColor White)
-            , Attr.cursor "move"
+        Svg.svg
+            [Draggable.mouseTrigger id DragMsg
+                , onMouseUp StopDragging
+                ] 
+            [
+                Svg.rect
+                [ convertToNum Attr.width <| getX boxSize
+                , convertToNum Attr.height <| getY boxSize
+                , convertToNum Attr.x (getX position)
+                , convertToNum Attr.y (getY position)
+                , Attr.fill color
+                , Attr.stroke (getColor White)
+                , Attr.cursor "move"
+                ]
+                []
+                ,text_
+                [ convertToNum Attr.x ((getX (position)) + 20)
+                , convertToNum Attr.y  ((getY (position)) + 20) 
+                , Attr.stroke (getColor White)
+                , Attr.fill (getColor White)
+                , Attr.cursor "move"
+                , Attr.class isDone             
+                ]
+                [text (String.slice 0 20 note.title) ]
+                ,text_
+                [ convertToNum Attr.x ((getX (position)) + 20)
+                , convertToNum Attr.y  ((getY (position)) + 35) 
+                , Attr.stroke (getColor White)
+                , Attr.fill (getColor White)
+                , Attr.cursor "move" 
+                , Attr.class isDone                           
+                ]
+                [text (String.append (String.slice 0 20 note.description)  "...")    ]        
             ]
-            []
-            ,text_
-            [ convertToNum Attr.x ((getX (position)) + 20)
-            , convertToNum Attr.y  ((getY (position)) + 20) 
-            , Attr.stroke (getColor White)
-            , Attr.fill (getColor White)
-            , Attr.cursor "move"
-            , Attr.class isDone             
-            ]
-            [text (String.slice 0 20 note.title) ]
-            ,text_
-            [ convertToNum Attr.x ((getX (position)) + 20)
-            , convertToNum Attr.y  ((getY (position)) + 35) 
-            , Attr.stroke (getColor White)
-            , Attr.fill (getColor White)
-            , Attr.cursor "move" 
-            , Attr.class isDone                           
-            ]
-            [text (String.append (String.slice 0 20 note.description)  "...")    ]        
-        ]
 
 
 convertToNum : (String -> Svg.Attribute msg) -> Float -> Svg.Attribute msg
