@@ -280,7 +280,7 @@ update msg ({ boxGroup } as model) =
                 savePostsCmd = if isEmpty then Cmd.none else saveNotes newIdleBoxes
                 
             in
-                 ({ model | noteToAdd = emptyNote,boxGroup = { boxGroup | idleBoxes = newIdleBoxes}}
+                 ({ model | editNote = False,noteToAdd = emptyNote,boxGroup = { boxGroup | idleBoxes = newIdleBoxes}}
                 , savePostsCmd)
 
         CheckNote i ->

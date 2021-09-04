@@ -6192,7 +6192,7 @@ var $elm$core$Task$perform = F2(
 var $elm$browser$Browser$element = _Browser_element;
 var $author$project$Types$BoxGroup = F3(
 	function (uid, movingBox, idleBoxes) {
-		return {C: idleBoxes, L: movingBox, ar: uid};
+		return {D: idleBoxes, L: movingBox, ar: uid};
 	});
 var $author$project$Types$emptyGroup = A3($author$project$Types$BoxGroup, 0, $elm$core$Maybe$Nothing, _List_Nil);
 var $author$project$Types$emptyNote = {bK: $elm$core$Maybe$Nothing, bQ: '', bR: false, aK: '', cC: ''};
@@ -6204,10 +6204,10 @@ var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
 var $author$project$Main$init = function (_v0) {
 	return _Utils_Tuple2(
 		{
-			H: false,
+			I: false,
 			c: $author$project$Types$emptyGroup,
 			aA: $zaboco$elm_draggable$Draggable$init,
-			J: false,
+			B: false,
 			b2: $elm$core$Maybe$Nothing,
 			aN: _List_Nil,
 			b: $author$project$Types$emptyNote,
@@ -7123,7 +7123,7 @@ var $elm$core$List$partition = F2(
 	});
 var $author$project$BoardTiles$startDragging = F2(
 	function (id, group) {
-		var idleBoxes = group.C;
+		var idleBoxes = group.D;
 		var _v0 = A2(
 			$elm$core$List$partition,
 			A2(
@@ -7138,13 +7138,13 @@ var $author$project$BoardTiles$startDragging = F2(
 		return _Utils_update(
 			group,
 			{
-				C: others,
+				D: others,
 				L: $elm$core$List$head(targetAsList)
 			});
 	});
 var $author$project$BoardTiles$allBoxes = function (_v0) {
 	var movingBox = _v0.L;
-	var idleBoxes = _v0.C;
+	var idleBoxes = _v0.D;
 	return A2(
 		$elm$core$Maybe$withDefault,
 		idleBoxes,
@@ -7159,7 +7159,7 @@ var $author$project$BoardTiles$stopDragging = function (group) {
 	return _Utils_update(
 		group,
 		{
-			C: $author$project$BoardTiles$allBoxes(group),
+			D: $author$project$BoardTiles$allBoxes(group),
 			L: $elm$core$Maybe$Nothing
 		});
 };
@@ -7176,7 +7176,7 @@ var $author$project$BoardTiles$toggleBoxClicked = F2(
 		return _Utils_update(
 			group,
 			{
-				C: A2($elm$core$List$map, possiblyToggleBox, group.C)
+				D: A2($elm$core$List$map, possiblyToggleBox, group.D)
 			});
 	});
 var $zaboco$elm_draggable$Cmd$Extra$message = function (x) {
@@ -7297,7 +7297,7 @@ var $author$project$Main$update = F2(
 			case 2:
 				var id = msg.a;
 				var newBoxGroup = A2($author$project$BoardTiles$startDragging, id, model.c);
-				var savePostsCmd = $author$project$Main$saveNotes(newBoxGroup.C);
+				var savePostsCmd = $author$project$Main$saveNotes(newBoxGroup.D);
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
@@ -7305,7 +7305,7 @@ var $author$project$Main$update = F2(
 					savePostsCmd);
 			case 5:
 				var newBoxGroup = $author$project$BoardTiles$stopDragging(model.c);
-				var savePostsCmd = $author$project$Main$saveNotes(newBoxGroup.C);
+				var savePostsCmd = $author$project$Main$saveNotes(newBoxGroup.D);
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
@@ -7314,14 +7314,14 @@ var $author$project$Main$update = F2(
 			case 3:
 				var id = msg.a;
 				var newBoxGroup = A2($author$project$BoardTiles$toggleBoxClicked, id, boxGroup);
-				var savePostsCmd = $author$project$Main$saveNotes(newBoxGroup.C);
+				var savePostsCmd = $author$project$Main$saveNotes(newBoxGroup.D);
 				var boxOpt = $elm$core$List$head(
 					A2(
 						$elm$core$List$filter,
 						function (b) {
 							return _Utils_eq(b.aK, id);
 						},
-						boxGroup.C));
+						boxGroup.D));
 				var viewNote = function () {
 					if (!boxOpt.$) {
 						var b = boxOpt.a;
@@ -7344,15 +7344,15 @@ var $author$project$Main$update = F2(
 				var tilePosition = A2($elm_explorations$linear_algebra$Math$Vector2$vec2, model.bd.a, model.bd.b);
 				var note = A4(
 					$author$project$Types$buildNote,
-					$elm$core$List$length(model.c.C),
+					$elm$core$List$length(model.c.D),
 					t,
 					d,
 					model.b.bK);
 				var isEmpty = $elm$core$String$isEmpty(t) && $elm$core$String$isEmpty(d);
-				var idleBoxes = isEmpty ? boxGroup.C : A2(
+				var idleBoxes = isEmpty ? boxGroup.D : A2(
 					$elm$core$List$cons,
 					A3($author$project$Types$makeBox, note.aK, note, tilePosition),
-					boxGroup.C);
+					boxGroup.D);
 				var savePostsCmd = isEmpty ? $elm$core$Platform$Cmd$none : $author$project$Main$saveNotes(idleBoxes);
 				return _Utils_Tuple2(
 					_Utils_update(
@@ -7360,7 +7360,7 @@ var $author$project$Main$update = F2(
 						{
 							c: _Utils_update(
 								boxGroup,
-								{C: idleBoxes}),
+								{D: idleBoxes}),
 							b: $author$project$Types$emptyNote,
 							bw: false
 						}),
@@ -7381,13 +7381,13 @@ var $author$project$Main$update = F2(
 					}
 				};
 				var isEmpty = $elm$core$String$isEmpty(t) && $elm$core$String$isEmpty(d);
-				var edit = model.J;
-				var newIdleBoxes = (edit && isEmpty) ? boxGroup.C : A2(
+				var edit = model.B;
+				var newIdleBoxes = (edit && isEmpty) ? boxGroup.D : A2(
 					$elm$core$List$map,
 					function (box) {
 						return updateNote(box);
 					},
-					boxGroup.C);
+					boxGroup.D);
 				var savePostsCmd = isEmpty ? $elm$core$Platform$Cmd$none : $author$project$Main$saveNotes(newIdleBoxes);
 				return _Utils_Tuple2(
 					_Utils_update(
@@ -7395,7 +7395,8 @@ var $author$project$Main$update = F2(
 						{
 							c: _Utils_update(
 								boxGroup,
-								{C: newIdleBoxes}),
+								{D: newIdleBoxes}),
+							B: false,
 							b: $author$project$Types$emptyNote
 						}),
 					savePostsCmd);
@@ -7404,7 +7405,7 @@ var $author$project$Main$update = F2(
 				var newBoxGroup = _Utils_update(
 					boxGroup,
 					{
-						C: A2(
+						D: A2(
 							$elm$core$List$map,
 							function (box) {
 								return _Utils_eq(box.b7.aK, i) ? _Utils_update(
@@ -7413,9 +7414,9 @@ var $author$project$Main$update = F2(
 										b7: {bK: $elm$core$Maybe$Nothing, bQ: box.b7.bQ, bR: !box.b7.bR, aK: box.b7.aK, cC: box.b7.cC}
 									}) : box;
 							},
-							boxGroup.C)
+							boxGroup.D)
 					});
-				var savePostsCmd = $author$project$Main$saveNotes(newBoxGroup.C);
+				var savePostsCmd = $author$project$Main$saveNotes(newBoxGroup.D);
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
@@ -7428,7 +7429,7 @@ var $author$project$Main$update = F2(
 					function (box) {
 						return !_Utils_eq(box.b7.aK, i);
 					},
-					model.c.C);
+					model.c.D);
 				var savePostsCmd = $author$project$Main$saveNotes(idleBoxesFiltered);
 				return _Utils_Tuple2(
 					_Utils_update(
@@ -7436,20 +7437,20 @@ var $author$project$Main$update = F2(
 						{
 							c: _Utils_update(
 								boxGroup,
-								{C: idleBoxesFiltered})
+								{D: idleBoxesFiltered})
 						}),
 					savePostsCmd);
 			case 11:
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{H: true}),
+						{I: true}),
 					$elm$core$Platform$Cmd$none);
 			case 12:
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{H: false, J: false, b: $author$project$Types$emptyNote}),
+						{I: false, B: false, b: $author$project$Types$emptyNote}),
 					$elm$core$Platform$Cmd$none);
 			case 9:
 				var t = msg.a;
@@ -7474,7 +7475,7 @@ var $author$project$Main$update = F2(
 				var localData = $author$project$BoardDecoder$boxListDecoder(value);
 				var newBoxGroup = $elm$core$List$isEmpty(localData) ? boxGroup : _Utils_update(
 					boxGroup,
-					{C: localData});
+					{D: localData});
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
@@ -7488,7 +7489,7 @@ var $author$project$Main$update = F2(
 						function (b) {
 							return _Utils_eq(b.aK, id);
 						},
-						boxGroup.C));
+						boxGroup.D));
 				var viewNote = function () {
 					if (!boxOpt.$) {
 						var b = boxOpt.a;
@@ -7500,12 +7501,12 @@ var $author$project$Main$update = F2(
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{J: true, b: viewNote}),
+						{B: true, b: viewNote}),
 					$elm$core$Platform$Cmd$none);
 			case 15:
 				return _Utils_Tuple2(
 					model,
-					$author$project$Main$saveNotes(model.c.C));
+					$author$project$Main$saveNotes(model.c.D));
 			case 16:
 				var x = msg.a;
 				var y = msg.b;
@@ -8286,7 +8287,7 @@ var $author$project$Main$getNotes = function (boxGroup) {
 				$elm$html$Html$Attributes$class('note-list'),
 				A2($elm$html$Html$Attributes$style, 'color', 'black')
 			]),
-		A2($elm$core$List$map, $author$project$Main$viewNoteComponent, boxGroup.C));
+		A2($elm$core$List$map, $author$project$Main$viewNoteComponent, boxGroup.D));
 };
 var $elm$html$Html$p = _VirtualDom_node('p');
 var $lattyware$elm_fontawesome$FontAwesome$Solid$plusCircle = A5(
@@ -8665,7 +8666,7 @@ var $author$project$Main$view = function (model) {
 						_List_fromArray(
 							[
 								$elm$html$Html$Events$onClick(
-								model.H ? $author$project$Types$CancelNoteForm : $author$project$Types$StartNoteForm),
+								model.I ? $author$project$Types$CancelNoteForm : $author$project$Types$StartNoteForm),
 								A2($elm$html$Html$Attributes$style, 'border', 'none'),
 								A2($elm$html$Html$Attributes$style, 'svgPanelBackground-color', 'transparent'),
 								A2($elm$html$Html$Attributes$style, 'color', 'skyblue')
@@ -8704,9 +8705,9 @@ var $author$project$Main$view = function (model) {
 							]),
 						_List_fromArray(
 							[
-								A2($author$project$Main$addNotePanel, model.b, model.J)
+								A2($author$project$Main$addNotePanel, model.b, model.B)
 							])),
-						model.H ? $author$project$Main$viewNoteForm(model.b) : A2(
+						model.I ? $author$project$Main$viewNoteForm(model.b) : A2(
 						$elm$html$Html$div,
 						_List_fromArray(
 							[
