@@ -6,8 +6,8 @@ import Svg exposing (Svg)
 import Svg.Attributes as Attr
 import BoardTiles exposing (..)
 
-import Html exposing (Html, button, text,p, div, h4, li, ul, input, i,textarea)
-import Html.Attributes exposing ( class, style, type_, placeholder, value,id)
+import Html exposing (Html, button, text,p, div, h4, li, ul, input, i,textarea,header,section,footer)
+import Html.Attributes exposing ( class, style, type_, placeholder, value,id,attribute)
 import Html.Events exposing (onInput, onClick)
 import FontAwesome.Attributes as Icon
 import FontAwesome.Brands as Icon
@@ -25,7 +25,7 @@ import BoardDecoder exposing (boxListDecoder)
 import BoardEncoder exposing (boxListEncoder)
 import Ports
 import Types exposing (Model,Box,BoxGroup,Note,Color(..),Msg(..))
-import Types exposing (buildNote,makeBox,emptyNote,emptyGroup,getColor,emptyBox)
+import Types exposing (buildNote,makeBox,emptyNote,emptyGroup,getColor,emptyBox,updateNoteBox)
 import Config exposing (colorPallet)
 
 boxesView : BoxGroup -> Svg Msg
@@ -96,14 +96,20 @@ viewTextArea : String -> String -> String -> (String -> Msg) -> Html Msg
 viewTextArea ph c v msg = 
     textarea [ placeholder ph, class c, value v, onInput msg ] []
 
--- Note popup
-viewNoteForm : Model -> Html Msg
-viewNoteForm model =
-    div [ class "form" ]
-    [ 
-        h4 [] [ text "Slate" ] 
-        ,addNotePanel model.currentBox model.editNote
-    ]
+viewNotePopupModal : Model -> Html Msg
+viewNotePopupModal model =
+        let
+            note = model.currentBox.note 
+        in              
+            div [ class "modal-core" ]
+            [                                                             
+                div [class "status-icon-close", onClick (CancelNoteForm)] [Icon.viewStyled [ Icon.lg, style "color" "gray" ] Icon.timesCircle]                                                                      
+                ,addNotePanel model.currentBox model.editNote
+                ,div [class "notes-status-ctrl"] [
+                    div [class "status-icon-check", onClick (CheckNote model.currentBox.id)] [Icon.viewStyled [ Icon.sm, style "color" "gray" ] (if note.done then Icon.checkSquare else Icon.square)]
+                    , div [class "status-icon-trash", onClick (ClearNote model.currentBox.id)] [ Icon.viewStyled [ Icon.sm, style "color" "gray" ] Icon.trash]
+                ]                                    
+            ]       
 
 getNotes : BoxGroup -> Html Msg
 getNotes boxGroup =
@@ -135,7 +141,7 @@ svgBox model =
                 ]                
                []              
                 , Svg.text_
-                [ Attributes.x "10"
+                [ Attributes.x "120"
                 , Attributes.y "20"
                 , Attributes.fill "white"                
                 ]
@@ -168,7 +174,7 @@ init : flags -> ( Model, Cmd Msg )
 init _ =
     ( { boxGroup = emptyGroup
       , drag = Draggable.init
-      , addingNote = False
+      , isPopUpActive = False
       , editNote = False
       , currentBox = emptyBox
       , localData = []
@@ -182,33 +188,23 @@ init _ =
 view : Model -> Html Msg
 view model =    
    div [class "content-container"] [
-        svgBox model
-        -- ,div [class "content-display"] 
-        -- [
-        --     div
-        --      []
-        --         [ 
-        --        h4 [] [ text "Finspin Board" ]                  
-        --         ,p
-        --             [ style "padding-left" "8px" ]
-        --             [ text "Drag any box around. Click it to view details." ]                
-        --         ]
-        -- ]
+        svgBox model        
         ,div [class "content-controller"]
-        [ Icon.css  
-        ,p
-            [ style "padding-left" "8px" ]
-            [ text "Add or Edit note" ]             
+        [ Icon.css          
         , button 
-            [ onClick (if model.addingNote then CancelNoteForm else StartNoteForm)
-             , style "border" "none", style "svgPanelBackground-color" "transparent",style "color" "skyblue"
+            [ onClick (if model.isPopUpActive then CancelNoteForm else StartNoteForm)             
+             ,class "content-controller-item"
              ] [ Icon.viewStyled [ Icon.fa2x ] Icon.plusCircle]
         , button 
             [ onClick (SaveBoard)
-             , style "border" "none", style "svgPanelBackground-color" "transparent",style "color" "skyblue"
-             ] [ Icon.viewStyled [ Icon.fa2x ] Icon.save]        
-        , (if model.addingNote then viewNoteForm model else div [ style "hidden" "true" ] [])        
-        , getNotes model.boxGroup
+             ,class "content-controller-item"
+             ] [ Icon.viewStyled [ Icon.fa2x ] Icon.save]
+        , button 
+            [ onClick (SaveBoard)
+             ,class "content-controller-item"
+             ] [ Icon.viewStyled [ Icon.fa2x ] Icon.pen]             
+        , (if model.isPopUpActive then viewNotePopupModal model else div [ style "hidden" "true" ] [])        
+        --, getNotes model.boxGroup        //TODO : Move this in next page Bookmark
         ]
     ]
     
@@ -239,8 +235,9 @@ update msg ({ boxGroup } as model) =
 
         AddNote t d ->                     
             let 
-                currentBox = model.currentBox.note
-                note  = buildNote (List.length model.boxGroup.idleBoxes) t d currentBox.color                            
+                currentBox = model.currentBox
+                
+                note  = buildNote (List.length model.boxGroup.idleBoxes) t d                             
                 isEmpty = String.isEmpty t && String.isEmpty d
                 savePostsCmd = if isEmpty then Cmd.none else saveNotes idleBoxes
                 tilePosition = Vector2.vec2 (toFloat (first model.position)) (toFloat (second model.position))
@@ -248,31 +245,17 @@ update msg ({ boxGroup } as model) =
                     if isEmpty then 
                         boxGroup.idleBoxes
                     else 
-                        makeBox note.id note tilePosition :: boxGroup.idleBoxes
+                        makeBox note.id note tilePosition currentBox.color:: boxGroup.idleBoxes
             in
                  ({ model | welcomeTour = False,currentBox = emptyBox,boxGroup = {boxGroup | idleBoxes = idleBoxes}}
                 , savePostsCmd)  
 
         UpdateNote t d ->                     
-            let 
-                updateNote box = if (box.id == model.currentBox.id) then
-                                        let
-                                            currentBox = model.currentBox.note
-                                            newTitle = if String.isEmpty t then box.note.title else t
-                                            newDescription = if String.isEmpty d then box.note.description else d
-                                            color = case currentBox.color of
-                                                        Just _ -> currentBox.color
-                                                        Nothing -> box.note.color
-                                            newNote = Note box.note.id box.note.done newTitle newDescription color
-                                        in    
-                                            {box | note = newNote}
-                                    else 
-                                        box
-
+            let                  
                 edit = model.editNote                                
                 isEmpty = String.isEmpty t && String.isEmpty d                
 
-                newIdleBoxes = if edit && isEmpty then boxGroup.idleBoxes else List.map (\box -> updateNote box) boxGroup.idleBoxes                                                                                    
+                newIdleBoxes = if edit && isEmpty then boxGroup.idleBoxes else List.map (\box -> updateNoteBox model box t d) boxGroup.idleBoxes                                                                                    
                 savePostsCmd = if isEmpty then Cmd.none else saveNotes newIdleBoxes
                 
             in
@@ -290,8 +273,7 @@ update msg ({ boxGroup } as model) =
                                                     { id = box.note.id
                                                     , done = not box.note.done
                                                     , title = box.note.title
-                                                    , description = box.note.description
-                                                    , color = Nothing
+                                                    , description = box.note.description                                                    
                                                      }
                                             }
                                         else box) boxGroup.idleBoxes 
@@ -305,13 +287,13 @@ update msg ({ boxGroup } as model) =
                 idleBoxesFiltered = List.filter (\box -> box.note.id /= i) model.boxGroup.idleBoxes 
                 savePostsCmd = saveNotes idleBoxesFiltered
             in
-            ({ model | boxGroup = { boxGroup | idleBoxes = idleBoxesFiltered }}, savePostsCmd)
+            ({ model | isPopUpActive = False, boxGroup = { boxGroup | idleBoxes = idleBoxesFiltered }}, savePostsCmd)
 
         StartNoteForm ->
-            ({ model | addingNote = True }, Cmd.none)
+            ({ model | isPopUpActive = True }, Cmd.none)
         
         CancelNoteForm ->
-            ({ model | addingNote = False,editNote=False, currentBox = emptyBox }, Cmd.none)
+            ({ model | isPopUpActive = False,editNote=False, currentBox = emptyBox }, Cmd.none)
         
         ChangeTitle t ->
                 let
@@ -342,16 +324,17 @@ update msg ({ boxGroup } as model) =
                                         Just b -> b
                                         Nothing -> emptyBox
                         in    
-                            ( {model | addingNote = True,currentBox = viewBox, editNote = True} , Cmd.none)
+                            ( {model | isPopUpActive = True,currentBox = viewBox, editNote = True} , Cmd.none)
         SaveBoard -> (model,saveNotes model.boxGroup.idleBoxes)
         Position x y -> ({ model | position = (x, y) },Cmd.none)
         UpdateTitleColor tileColor -> 
                         let
                             box = model.currentBox
                             note = box.note                                                                                    
-                            newBox = {box | note = {note | color = Just tileColor}}                            
+                            newBox = {box | color = Just tileColor}                            
                         in
                             ({model | currentBox = newBox} , Cmd.none)
+            
 subscriptions : Model -> Sub Msg
 subscriptions { drag } = 
     Draggable.subscriptions DragMsg drag

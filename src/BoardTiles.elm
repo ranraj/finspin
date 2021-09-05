@@ -15,9 +15,9 @@ import Types exposing (Box,Msg,getColor,Color(..), Msg(..),Id,BoxGroup)
 import Config exposing (boxSize)
 
 boxView : Box -> Svg Msg
-boxView { id, position, clicked,note } =
+boxView { id, position, clicked,note,color} =
     let
-        color = case note.color of 
+        newColor = case color of 
                     Just c -> c
                     Nothing -> getColor BoardGreen                
         isDone = if note.done then
@@ -35,9 +35,9 @@ boxView { id, position, clicked,note } =
                 , convertToNum Attr.height <| getY boxSize
                 , convertToNum Attr.x (getX position)
                 , convertToNum Attr.y (getY position)
-                , Attr.fill color
+                , Attr.fill newColor
                 , Attr.stroke (getColor White)
-                , Attr.cursor "move"
+                , Attr.cursor "move"                
                 ]
                 []
                 ,text_
@@ -47,6 +47,7 @@ boxView { id, position, clicked,note } =
                 , Attr.fill (getColor White)
                 , Attr.cursor "move"
                 , Attr.class isDone             
+                
                 ]
                 [text (String.slice 0 20 note.title) ]
                 ,text_
@@ -55,7 +56,8 @@ boxView { id, position, clicked,note } =
                 , Attr.stroke (getColor White)
                 , Attr.fill (getColor White)
                 , Attr.cursor "move" 
-                , Attr.class isDone                           
+                , Attr.class isDone                   
+                        
                 ]
                 [text (String.append (String.slice 0 20 note.description)  "...")    ]        
             ]

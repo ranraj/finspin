@@ -20,12 +20,12 @@ notePositionDecoder x y =
 
 noteDecoder : Decoder Note
 noteDecoder =
-  JD.map5 Note
+  JD.map4 Note
     (field "id" string)
     (field "done" bool)
     (field "title" string)
     (field "description" string)
-    (JD.maybe (field "color" string))
+    
 
 
 positionDecoder : String -> (Float, Float)
@@ -43,11 +43,12 @@ positionDecoder pos =
         
 boxDecoder:  Decoder Box
 boxDecoder =
-  JD.map4 Box
+  JD.map5 Box
     (field "id" string)
     (field "position" string |>  JD.map ( \pos -> positionDecoder pos |> (\vec -> Vector2.vec2 (first vec) (second vec))))
     (field "clicked" bool )
     (field "note" noteDecoder)
+    (JD.maybe (field "color" string))
 
 boxListDecoder : String -> List Box
 boxListDecoder value = 

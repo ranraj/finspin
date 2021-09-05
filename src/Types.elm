@@ -14,8 +14,7 @@ type alias Note =
     { id : Id
     , done : Bool
     , title : String
-    , description : String        
-    , color : Maybe String
+    , description : String            
     }
 
 welcomeNotes : List Note
@@ -24,14 +23,12 @@ welcomeNotes =
         { id = "0 - learn"
         , title = "You completed a Task"
         , description = "Simply click on the message to strick  out "
-        , done = True
-        , color = Nothing
+        , done = True        
         }
     ,   { id = "1 - start"
         , title = "Welcome to the Finspin"
         , description = "Easy planner board"
-        , done = False   
-        , color = Nothing               
+        , done = False              
         }
     ]
 
@@ -40,8 +37,7 @@ emptyNote =
     { id = "" 
     , done = False
     , title = ""
-    , description = ""
-    , color = Nothing
+    , description = ""    
     }
 
 -------------------------------Box-----------------------------------
@@ -50,15 +46,31 @@ type alias Box =
     , position : Vec2
     , clicked : Bool
     , note : Note
+    , color : Maybe String
     }
 
 emptyBox : Box
-emptyBox = Box "" defaultNewTilePosition False emptyNote
+emptyBox = Box "" defaultNewTilePosition False emptyNote Nothing
 
-makeBox : Id -> Note -> Vec2 -> Box
-makeBox id note position =
-    Box id position False note
+makeBox : Id -> Note -> Vec2 -> Maybe String -> Box
+makeBox id note position color =
+    Box id position False note color
 
+updateNoteBox : Model -> Box -> String -> String -> Box
+updateNoteBox model box t d = if (box.id == model.currentBox.id) then
+                                        let
+                                            currentBox = model.currentBox
+                                            newTitle = if String.isEmpty t then box.note.title else t
+                                            newDescription = if String.isEmpty d then box.note.description else d
+                                            color = case currentBox.color of
+                                                        Just _ -> currentBox.color
+                                                        Nothing -> box.color
+                                            note = box.note             
+                                            newNote = {note | title = newTitle,description = newDescription}
+                                        in    
+                                            {box | color = color, note = newNote}
+                                    else 
+                                        box
 -------------------------------BoxGroup-----------------------------------
 type alias BoxGroup =
     { uid : Int
@@ -70,19 +82,18 @@ emptyGroup : BoxGroup
 emptyGroup =
     BoxGroup 0 Nothing []
 
-buildNote : Int -> String -> String -> Maybe String -> Note
-buildNote length t d color = { 
+buildNote : Int -> String -> String ->  Note
+buildNote length t d  = { 
             id = ((String.fromInt length ++ String.slice 0 5 t))
             , done = False
             , title = t
-            , description = d 
-            , color = color
+            , description = d             
             }
 
 addBoxInBoxGroup : Note -> Vec2 -> BoxGroup -> BoxGroup
 addBoxInBoxGroup note position ({ uid, idleBoxes } as group) =
     { group
-        | idleBoxes = (makeBox (String.fromInt uid) note position) :: idleBoxes
+        | idleBoxes = (makeBox (String.fromInt uid) note position) Nothing :: idleBoxes
         , uid = uid + 1
     }    
 
@@ -103,7 +114,7 @@ defaultBoxGroup =
 -------------------------------Model-----------------------------------
 type alias Model =
     { boxGroup : BoxGroup
-    , addingNote : Bool
+    , isPopUpActive : Bool
     , welcomeTour : Bool
     , editNote : Bool
     , currentBox : Box
@@ -131,7 +142,7 @@ type Msg
     | UpdateNote String String
     | SaveBoard 
     | Position Int Int
-    | UpdateTitleColor String
+    | UpdateTitleColor String    
 
 -------------------------------Colour-----------------------------------
 type Color = BoardGreen | White

@@ -9,8 +9,7 @@ noteEncoder note = Encode.object
         [ ("id", Encode.string note.id)
         , ("done", Encode.bool note.done)
         , ("title", Encode.string note.title)
-        , ("description", Encode.string note.description)   
-        , ("color", note.color|> Maybe.map Encode.string |> Maybe.withDefault Encode.null)
+        , ("description", Encode.string note.description)           
         ]
 
 noteBoxEncoder : Box -> Encode.Value
@@ -23,6 +22,7 @@ noteBoxEncoder noteBox =
         , ("position", Encode.string positionStr)
         , ("note", noteEncoder noteBox.note)
         , ("clicked", Encode.bool noteBox.clicked)        
+        , ("color", noteBox.color|> Maybe.map Encode.string |> Maybe.withDefault Encode.null)
         ]
 
 boxListEncoder : List Box -> Encode.Value
