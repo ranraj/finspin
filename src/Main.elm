@@ -2,13 +2,16 @@ module Main exposing (..)
 
 import Browser
 import Draggable
+
 import Svg exposing (Svg)
 import Svg.Attributes as Attr
-import BoardTiles exposing (..)
+import Svg.Events as Events
 
-import Html exposing (Html, button, text,p, div, h4, li, ul, input, i,textarea,header,section,footer)
+import BoardTiles exposing (..)
+import Svg.String as SvgStr
+import Html exposing (Html, button, text,p, div, h4, li, ul, input, i,textarea,header,section,footer,span)
 import Html.Attributes exposing ( class, style, type_, placeholder, value,id,attribute)
-import Html.Events exposing (onInput, onClick)
+import Html.Events exposing (onInput, onClick,preventDefaultOn)
 import FontAwesome.Attributes as Icon
 import FontAwesome.Brands as Icon
 import FontAwesome.Icon as Icon
@@ -16,17 +19,22 @@ import FontAwesome.Layering as Icon
 import FontAwesome.Solid as Icon
 import FontAwesome.Styles as Icon
 import Json.Decode as Decode exposing (Error(..))
-import Svg.Events as Events
-import Svg.Attributes as Attributes
+
 import Tuple exposing (first,second)
 import Math.Vector2 as Vector2
+import File.Download as Download
+import File.Select as Select
+import Task
+import File exposing (File)
 
 import BoardDecoder exposing (boxListDecoder)
 import BoardEncoder exposing (boxListEncoder)
-import Ports
 import Types exposing (Model,Box,BoxGroup,Note,Color(..),Msg(..))
 import Types exposing (buildNote,makeBox,emptyNote,emptyGroup,getColor,emptyBox,updateNoteBox)
 import Config exposing (colorPallet)
+import Ports
+import Json.Encode as Encode
+import Json.Decode as Decode
 
 boxesView : BoxGroup -> Svg Msg
 boxesView boxGroup =
@@ -36,16 +44,13 @@ boxesView boxGroup =
         |> List.map boxView
         |> Svg.node "g" []
 
--- TODO : SVG foreign object
-svgTextarea model =
-    let
-        textspace =
-            Svg.foreignObject
-             [Attr.x "100"
-             , Attr.y "100"]
-             [ textarea [ style "position" "fixed"] [text "helloklskhkjdsf skdfhdskfhdskfhdkfhdsk fh"] ]
-    in  
-        textspace
+download : String -> Cmd msg
+download jsonContent =
+  Download.string "finspin-default.json" "application/json" jsonContent
+
+read : File -> Cmd Msg
+read file =
+  Task.perform MarkdownLoaded (File.toString file)
 
 -- Notes View Html --
 
@@ -141,19 +146,19 @@ svgBox model =
                 ]                
                []              
                 , Svg.text_
-                [ Attributes.x "120"
-                , Attributes.y "20"
-                , Attributes.fill "white"                
+                [ Attr.x "120"
+                , Attr.y "20"
+                , Attr.fill "white"                
                 ]
                 [ Svg.text "Finspin Board"
                 ]
                 , Svg.circle
-                [ Attributes.cx <| String.fromInt cx
-                , Attributes.cy <| String.fromInt cy
-                , Attributes.r <| String.fromInt radius
-                , Attributes.fill "white"
-                , Attributes.stroke "black"
-                , Attributes.strokeWidth "2"
+                [ Attr.cx <| String.fromInt cx
+                , Attr.cy <| String.fromInt cy
+                , Attr.r <| String.fromInt radius
+                , Attr.fill "white"
+                , Attr.stroke "black"
+                , Attr.strokeWidth "2"
                 ]
                 []
                 --, svgBoard 
@@ -181,6 +186,8 @@ init _ =
       , jsonError = Nothing
       , welcomeTour = True
       , position =  (160, 120)
+      , hover = False
+      , files = []
       }
     , Cmd.none
     )
@@ -200,15 +207,41 @@ view model =
              ,class "content-controller-item"
              ] [ Icon.viewStyled [ Icon.fa2x ] Icon.save]
         , button 
-            [ onClick (SaveBoard)
+            [ onClick <| DownloadSVG <| Encode.encode 5 <| boxListEncoder model.boxGroup.idleBoxes
              ,class "content-controller-item"
-             ] [ Icon.viewStyled [ Icon.fa2x ] Icon.pen]             
+             ] [ Icon.viewStyled [ Icon.fa2x ] Icon.download]             
+        , viewFileUpload model     
         , (if model.isPopUpActive then viewNotePopupModal model else div [ style "hidden" "true" ] [])        
         --, getNotes model.boxGroup        //TODO : Move this in next page Bookmark
         ]
     ]
-    
-               
+
+viewFileUpload : Model -> Html Msg    
+viewFileUpload model = div
+    [ class "file-upload-holder"
+    ,class (if model.hover then "file-upload-holder-on" else "file-upload-holder-off")    
+    , hijackOn "dragenter" (Decode.succeed DragEnter)
+    , hijackOn "dragover" (Decode.succeed DragEnter)
+    , hijackOn "dragleave" (Decode.succeed DragLeave)
+    , hijackOn "drop" dropDecoder
+    ]
+    [ button [ onClick Pick , class "content-controller-item" ] [ Icon.viewStyled [ Icon.fa2x ] Icon.upload]             
+    , span [ style "color" "#ccc" ] [ text (Debug.toString model.files) ]
+    ]               
+
+dropDecoder : Decode.Decoder Msg
+dropDecoder =
+  Decode.at ["dataTransfer","files"] (Decode.oneOrMore GotFiles File.decoder)
+
+
+hijackOn : String -> Decode.Decoder msg -> Html.Attribute msg
+hijackOn event decoder =
+  preventDefaultOn event (Decode.map hijack decoder)
+
+
+hijack : msg -> (msg, Bool)
+hijack msg =
+  (msg, True)
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg ({ boxGroup } as model) =
@@ -334,7 +367,39 @@ update msg ({ boxGroup } as model) =
                             newBox = {box | color = Just tileColor}                            
                         in
                             ({model | currentBox = newBox} , Cmd.none)
-            
+        DownloadSVG content -> (model,download content)
+        Pick ->
+            ( model
+            , Select.files ["json/*"] GotFiles
+            )
+        DragEnter ->
+            ( { model | hover = True }
+            , Cmd.none
+            )
+        DragLeave ->
+            ( { model | hover = False }
+            , Cmd.none
+            )
+        GotFiles file files ->
+            ( { model
+                    | files = file :: files                    
+                    , hover = False
+                }
+            , read file
+            )
+        MarkdownLoaded fileContent -> 
+            let
+                newIdelBoxes = boxListDecoder <| fileContent
+                newBoxGroup = {boxGroup | idleBoxes = newIdelBoxes}
+            in  
+                ({model | boxGroup = newBoxGroup },Cmd.none)
+
+someSvg : SvgStr.Html Msg
+someSvg =
+    SvgStr.svg [ ]
+        [ SvgStr.rect [ ] []
+        ]
+
 subscriptions : Model -> Sub Msg
 subscriptions { drag } = 
     Draggable.subscriptions DragMsg drag

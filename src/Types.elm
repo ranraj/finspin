@@ -5,6 +5,7 @@ import Json.Decode exposing (Error(..))
 import Math.Vector2 as Vector2 exposing (Vec2)
 import Tuple exposing (first,second)
 import Config exposing (defaultNewTilePosition)
+import File exposing (File)
 
 type alias Id =
     String
@@ -122,6 +123,8 @@ type alias Model =
     , localData : List Box
     , jsonError : Maybe Error
     , position :  (Int, Int)
+    , hover : Bool
+    , files : List File
     }
 
 -------------------------------Message-----------------------------------
@@ -142,7 +145,13 @@ type Msg
     | UpdateNote String String
     | SaveBoard 
     | Position Int Int
-    | UpdateTitleColor String    
+    | UpdateTitleColor String
+    | DownloadSVG String  
+    | Pick
+    | DragEnter
+    | DragLeave
+    | GotFiles File (List File)  
+    | MarkdownLoaded String
 
 -------------------------------Colour-----------------------------------
 type Color = BoardGreen | White

@@ -232,3 +232,23 @@ select:focus {
 .model-title {
     align-self: flex-start;
 }
+
+.file-upload-holder {
+    border-radius: 20px;
+    width: 20%;
+    height: 50px;
+    margin: 0 auto;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.file-upload-holder-on {
+    border: 6px dashed green;
+}
+
+.file-upload-holder-off {
+    border: 6px dashed #ccc;
+}
