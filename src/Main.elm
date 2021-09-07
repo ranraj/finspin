@@ -184,6 +184,7 @@ init _ =
       , isPopUpActive = False
       , editNote = False
       , currentBox = emptyBox
+      , saveDefault = True
       , localData = []
       , jsonError = Nothing
       , welcomeTour = True
@@ -199,19 +200,30 @@ view model =
    div [class "content-container"] [
         svgBox model        
         ,div [class "content-controller"]
-        [ Icon.css          
+        [ Icon.css  
+        --, div [class "content-controller-item", onClick (CheckNote model.currentBox.id)] 
+        --[Icon.viewStyled [ Icon.sm, style "color" "gray" ] (if model.saveDefault then Icon.toggleOn else Icon.toggleOff)]
+        , span [class "content-controller-label"] [text "Auto Save"]        
+        , button 
+            [ onClick ToggleAutoSave             
+             ,class "content-controller-item"
+             ] [ Icon.viewStyled [ Icon.fa2x ] (if model.saveDefault then Icon.toggleOn else Icon.toggleOff)]
+        , span [class "content-controller-label"] [text "Add note"]                             
         , button 
             [ onClick (if model.isPopUpActive then CancelNoteForm else StartNoteForm)             
              ,class "content-controller-item"
              ] [ Icon.viewStyled [ Icon.fa2x ] Icon.plusCircle]
+        , span [class "content-controller-label"] [text "Save"]             
         , button 
             [ onClick (SaveBoard)
              ,class "content-controller-item"
              ] [ Icon.viewStyled [ Icon.fa2x ] Icon.save]
+        , span [class "content-controller-label"] [text "Export"]             
         , button 
             [ onClick <| InitDownloadSVG <| Encode.encode 5 <| boxListEncoder model.boxGroup.idleBoxes
              ,class "content-controller-item"
-             ] [ Icon.viewStyled [ Icon.fa2x ] Icon.download]             
+             ] [ Icon.viewStyled [ Icon.fa2x ] Icon.fileExport]            
+        , span [class "content-controller-label"] [text "Import"]                    
         , viewFileUpload model     
         , (if model.isPopUpActive then viewNotePopupModal model else div [ style "hidden" "true" ] [])        
         --, getNotes model.boxGroup        //TODO : Move this in next page Bookmark
@@ -227,7 +239,7 @@ viewFileUpload model = div
     , hijackOn "dragleave" (Decode.succeed DragLeave)
     , hijackOn "drop" dropDecoder
     ]
-    [ button [ onClick Pick , class "content-controller-item" ] [ Icon.viewStyled [ Icon.fa2x ] Icon.upload]             
+    [ button [ onClick Pick , class "content-controller-item" ] [ Icon.viewStyled [ Icon.fa2x ] Icon.fileImport]             
     , span [ style "color" "#ccc" ] [ text (Debug.toString model.files) ]
     ]               
 
@@ -254,14 +266,14 @@ update msg ({ boxGroup } as model) =
         StartDragging id ->
                 let
                    newBoxGroup = model.boxGroup |> startDragging  id
-                   savePostsCmd = saveNotes newBoxGroup.idleBoxes  
+                   savePostsCmd = if model.saveDefault then saveNotes newBoxGroup.idleBoxes else Cmd.none  
                 in 
                     ( { model | boxGroup = newBoxGroup }, savePostsCmd )
 
         StopDragging ->            
                 let
                    newBoxGroup = model.boxGroup |> stopDragging 
-                   savePostsCmd = saveNotes newBoxGroup.idleBoxes  
+                   savePostsCmd = if model.saveDefault then saveNotes newBoxGroup.idleBoxes else Cmd.none  
                 in    
                     ({ model | boxGroup = newBoxGroup }, savePostsCmd )
 
@@ -274,7 +286,7 @@ update msg ({ boxGroup } as model) =
                 
                 note  = buildNote (List.length model.boxGroup.idleBoxes) t d                             
                 isEmpty = String.isEmpty t && String.isEmpty d
-                savePostsCmd = if isEmpty then Cmd.none else saveNotes idleBoxes
+                savePostsCmd = if isEmpty || not model.saveDefault then Cmd.none else saveNotes idleBoxes
                 tilePosition = Vector2.vec2 (toFloat (first model.position)) (toFloat (second model.position))
                 idleBoxes = 
                     if isEmpty then 
@@ -291,7 +303,7 @@ update msg ({ boxGroup } as model) =
                 isEmpty = String.isEmpty t && String.isEmpty d                
 
                 newIdleBoxes = if edit && isEmpty then boxGroup.idleBoxes else List.map (\box -> updateNoteBox model box t d) boxGroup.idleBoxes                                                                                    
-                savePostsCmd = if isEmpty then Cmd.none else saveNotes newIdleBoxes
+                savePostsCmd = if isEmpty || not model.saveDefault then Cmd.none else saveNotes newIdleBoxes
                 
             in
                  ({ model | editNote = False,boxGroup = { boxGroup | idleBoxes = newIdleBoxes}}
@@ -313,14 +325,14 @@ update msg ({ boxGroup } as model) =
                                             }
                                         else box) boxGroup.idleBoxes 
                     }
-                savePostsCmd = saveNotes newBoxGroup.idleBoxes 
+                savePostsCmd = if model.saveDefault then saveNotes newBoxGroup.idleBoxes else Cmd.none
             in
             ({ model | boxGroup = newBoxGroup}, savePostsCmd)
 
         ClearNote i ->
             let
                 idleBoxesFiltered = List.filter (\box -> box.note.id /= i) model.boxGroup.idleBoxes 
-                savePostsCmd = saveNotes idleBoxesFiltered
+                savePostsCmd = if model.saveDefault then saveNotes idleBoxesFiltered else Cmd.none
             in
             ({ model | isPopUpActive = False, boxGroup = { boxGroup | idleBoxes = idleBoxesFiltered }}, savePostsCmd)
 
@@ -353,7 +365,7 @@ update msg ({ boxGroup } as model) =
             in    
              ( { model | localData = localData, boxGroup = newBoxGroup }, Cmd.none )
 
-        ViewNote id -> let            
+        ViewNote id -> let       
                             boxOpt = boxGroup.idleBoxes |> List.filter (\b -> b.id == id) |> List.head
                             viewBox = case boxOpt of
                                         Just b -> b
@@ -386,6 +398,7 @@ update msg ({ boxGroup } as model) =
             ( { model
                     | files = file :: files                    
                     , hover = False
+                    , saveDefault = False
                 }
             , read file
             )
@@ -395,7 +408,7 @@ update msg ({ boxGroup } as model) =
                 newBoxGroup = {boxGroup | idleBoxes = newIdelBoxes}
             in  
                 ({model | boxGroup = newBoxGroup },Cmd.none)
-
+        ToggleAutoSave -> ({model | saveDefault = not model.saveDefault}, Cmd.none)
 someSvg : SvgStr.Html Msg
 someSvg =
     SvgStr.svg [ ]

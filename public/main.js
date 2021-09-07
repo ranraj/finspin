@@ -6583,6 +6583,7 @@ var $author$project$Main$init = function (_v0) {
 			jsonError: $elm$core$Maybe$Nothing,
 			localData: _List_Nil,
 			position: _Utils_Tuple2(160, 120),
+			saveDefault: true,
 			welcomeTour: true
 		},
 		$elm$core$Platform$Cmd$none);
@@ -9089,7 +9090,7 @@ var $author$project$Main$update = F2(
 			case 'StartDragging':
 				var id = msg.a;
 				var newBoxGroup = A2($author$project$BoardTiles$startDragging, id, model.boxGroup);
-				var savePostsCmd = $author$project$Main$saveNotes(newBoxGroup.idleBoxes);
+				var savePostsCmd = model.saveDefault ? $author$project$Main$saveNotes(newBoxGroup.idleBoxes) : $elm$core$Platform$Cmd$none;
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
@@ -9097,7 +9098,7 @@ var $author$project$Main$update = F2(
 					savePostsCmd);
 			case 'StopDragging':
 				var newBoxGroup = $author$project$BoardTiles$stopDragging(model.boxGroup);
-				var savePostsCmd = $author$project$Main$saveNotes(newBoxGroup.idleBoxes);
+				var savePostsCmd = model.saveDefault ? $author$project$Main$saveNotes(newBoxGroup.idleBoxes) : $elm$core$Platform$Cmd$none;
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
@@ -9121,7 +9122,7 @@ var $author$project$Main$update = F2(
 					$elm$core$List$cons,
 					A4($author$project$Types$makeBox, note.id, note, tilePosition, currentBox.color),
 					boxGroup.idleBoxes);
-				var savePostsCmd = isEmpty ? $elm$core$Platform$Cmd$none : $author$project$Main$saveNotes(idleBoxes);
+				var savePostsCmd = (isEmpty || (!model.saveDefault)) ? $elm$core$Platform$Cmd$none : $author$project$Main$saveNotes(idleBoxes);
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
@@ -9144,7 +9145,7 @@ var $author$project$Main$update = F2(
 						return A4($author$project$Types$updateNoteBox, model, box, t, d);
 					},
 					boxGroup.idleBoxes);
-				var savePostsCmd = isEmpty ? $elm$core$Platform$Cmd$none : $author$project$Main$saveNotes(newIdleBoxes);
+				var savePostsCmd = (isEmpty || (!model.saveDefault)) ? $elm$core$Platform$Cmd$none : $author$project$Main$saveNotes(newIdleBoxes);
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
@@ -9171,7 +9172,7 @@ var $author$project$Main$update = F2(
 							},
 							boxGroup.idleBoxes)
 					});
-				var savePostsCmd = $author$project$Main$saveNotes(newBoxGroup.idleBoxes);
+				var savePostsCmd = model.saveDefault ? $author$project$Main$saveNotes(newBoxGroup.idleBoxes) : $elm$core$Platform$Cmd$none;
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
@@ -9185,7 +9186,7 @@ var $author$project$Main$update = F2(
 						return !_Utils_eq(box.note.id, i);
 					},
 					model.boxGroup.idleBoxes);
-				var savePostsCmd = $author$project$Main$saveNotes(idleBoxesFiltered);
+				var savePostsCmd = model.saveDefault ? $author$project$Main$saveNotes(idleBoxesFiltered) : $elm$core$Platform$Cmd$none;
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
@@ -9295,7 +9296,6 @@ var $author$project$Main$update = F2(
 					{
 						color: $elm$core$Maybe$Just(tileColor)
 					});
-				var note = box.note;
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
@@ -9346,10 +9346,11 @@ var $author$project$Main$update = F2(
 						model,
 						{
 							files: A2($elm$core$List$cons, file, files),
-							hover: false
+							hover: false,
+							saveDefault: false
 						}),
 					$author$project$Main$read(file));
-			default:
+			case 'MarkdownLoaded':
 				var fileContent = msg.a;
 				var newIdelBoxes = $author$project$BoardDecoder$boxListDecoder(fileContent);
 				var newBoxGroup = _Utils_update(
@@ -9360,6 +9361,12 @@ var $author$project$Main$update = F2(
 						model,
 						{boxGroup: newBoxGroup}),
 					$elm$core$Platform$Cmd$none);
+			default:
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{saveDefault: !model.saveDefault}),
+					$elm$core$Platform$Cmd$none);
 		}
 	});
 var $author$project$Types$CancelNoteForm = {$: 'CancelNoteForm'};
@@ -9368,6 +9375,7 @@ var $author$project$Types$InitDownloadSVG = function (a) {
 };
 var $author$project$Types$SaveBoard = {$: 'SaveBoard'};
 var $author$project$Types$StartNoteForm = {$: 'StartNoteForm'};
+var $author$project$Types$ToggleAutoSave = {$: 'ToggleAutoSave'};
 var $elm$html$Html$button = _VirtualDom_node('button');
 var $elm$html$Html$Attributes$stringProperty = F2(
 	function (key, string) {
@@ -9393,20 +9401,20 @@ var $lattyware$elm_fontawesome$FontAwesome$Styles$css = A3(
 			$elm$html$Html$text('svg:not(:root).svg-inline--fa {  overflow: visible;}.svg-inline--fa {  display: inline-block;  font-size: inherit;  height: 1em;  overflow: visible;  vertical-align: -0.125em;}.svg-inline--fa.fa-lg {  vertical-align: -0.225em;}.svg-inline--fa.fa-w-1 {  width: 0.0625em;}.svg-inline--fa.fa-w-2 {  width: 0.125em;}.svg-inline--fa.fa-w-3 {  width: 0.1875em;}.svg-inline--fa.fa-w-4 {  width: 0.25em;}.svg-inline--fa.fa-w-5 {  width: 0.3125em;}.svg-inline--fa.fa-w-6 {  width: 0.375em;}.svg-inline--fa.fa-w-7 {  width: 0.4375em;}.svg-inline--fa.fa-w-8 {  width: 0.5em;}.svg-inline--fa.fa-w-9 {  width: 0.5625em;}.svg-inline--fa.fa-w-10 {  width: 0.625em;}.svg-inline--fa.fa-w-11 {  width: 0.6875em;}.svg-inline--fa.fa-w-12 {  width: 0.75em;}.svg-inline--fa.fa-w-13 {  width: 0.8125em;}.svg-inline--fa.fa-w-14 {  width: 0.875em;}.svg-inline--fa.fa-w-15 {  width: 0.9375em;}.svg-inline--fa.fa-w-16 {  width: 1em;}.svg-inline--fa.fa-w-17 {  width: 1.0625em;}.svg-inline--fa.fa-w-18 {  width: 1.125em;}.svg-inline--fa.fa-w-19 {  width: 1.1875em;}.svg-inline--fa.fa-w-20 {  width: 1.25em;}.svg-inline--fa.fa-pull-left {  margin-right: 0.3em;  width: auto;}.svg-inline--fa.fa-pull-right {  margin-left: 0.3em;  width: auto;}.svg-inline--fa.fa-border {  height: 1.5em;}.svg-inline--fa.fa-li {  width: 2em;}.svg-inline--fa.fa-fw {  width: 1.25em;}.fa-layers svg.svg-inline--fa {  bottom: 0;  left: 0;  margin: auto;  position: absolute;  right: 0;  top: 0;}.fa-layers {  display: inline-block;  height: 1em;  position: relative;  text-align: center;  vertical-align: -0.125em;  width: 1em;}.fa-layers svg.svg-inline--fa {  -webkit-transform-origin: center center;          transform-origin: center center;}.fa-layers-counter, .fa-layers-text {  display: inline-block;  position: absolute;  text-align: center;}.fa-layers-text {  left: 50%;  top: 50%;  -webkit-transform: translate(-50%, -50%);          transform: translate(-50%, -50%);  -webkit-transform-origin: center center;          transform-origin: center center;}.fa-layers-counter {  background-color: #ff253a;  border-radius: 1em;  -webkit-box-sizing: border-box;          box-sizing: border-box;  color: #fff;  height: 1.5em;  line-height: 1;  max-width: 5em;  min-width: 1.5em;  overflow: hidden;  padding: 0.25em;  right: 0;  text-overflow: ellipsis;  top: 0;  -webkit-transform: scale(0.25);          transform: scale(0.25);  -webkit-transform-origin: top right;          transform-origin: top right;}.fa-layers-bottom-right {  bottom: 0;  right: 0;  top: auto;  -webkit-transform: scale(0.25);          transform: scale(0.25);  -webkit-transform-origin: bottom right;          transform-origin: bottom right;}.fa-layers-bottom-left {  bottom: 0;  left: 0;  right: auto;  top: auto;  -webkit-transform: scale(0.25);          transform: scale(0.25);  -webkit-transform-origin: bottom left;          transform-origin: bottom left;}.fa-layers-top-right {  right: 0;  top: 0;  -webkit-transform: scale(0.25);          transform: scale(0.25);  -webkit-transform-origin: top right;          transform-origin: top right;}.fa-layers-top-left {  left: 0;  right: auto;  top: 0;  -webkit-transform: scale(0.25);          transform: scale(0.25);  -webkit-transform-origin: top left;          transform-origin: top left;}.fa-lg {  font-size: 1.3333333333em;  line-height: 0.75em;  vertical-align: -0.0667em;}.fa-xs {  font-size: 0.75em;}.fa-sm {  font-size: 0.875em;}.fa-1x {  font-size: 1em;}.fa-2x {  font-size: 2em;}.fa-3x {  font-size: 3em;}.fa-4x {  font-size: 4em;}.fa-5x {  font-size: 5em;}.fa-6x {  font-size: 6em;}.fa-7x {  font-size: 7em;}.fa-8x {  font-size: 8em;}.fa-9x {  font-size: 9em;}.fa-10x {  font-size: 10em;}.fa-fw {  text-align: center;  width: 1.25em;}.fa-ul {  list-style-type: none;  margin-left: 2.5em;  padding-left: 0;}.fa-ul > li {  position: relative;}.fa-li {  left: -2em;  position: absolute;  text-align: center;  width: 2em;  line-height: inherit;}.fa-border {  border: solid 0.08em #eee;  border-radius: 0.1em;  padding: 0.2em 0.25em 0.15em;}.fa-pull-left {  float: left;}.fa-pull-right {  float: right;}.fa.fa-pull-left,.fas.fa-pull-left,.far.fa-pull-left,.fal.fa-pull-left,.fab.fa-pull-left {  margin-right: 0.3em;}.fa.fa-pull-right,.fas.fa-pull-right,.far.fa-pull-right,.fal.fa-pull-right,.fab.fa-pull-right {  margin-left: 0.3em;}.fa-spin {  -webkit-animation: fa-spin 2s infinite linear;          animation: fa-spin 2s infinite linear;}.fa-pulse {  -webkit-animation: fa-spin 1s infinite steps(8);          animation: fa-spin 1s infinite steps(8);}@-webkit-keyframes fa-spin {  0% {    -webkit-transform: rotate(0deg);            transform: rotate(0deg);  }  100% {    -webkit-transform: rotate(360deg);            transform: rotate(360deg);  }}@keyframes fa-spin {  0% {    -webkit-transform: rotate(0deg);            transform: rotate(0deg);  }  100% {    -webkit-transform: rotate(360deg);            transform: rotate(360deg);  }}.fa-rotate-90 {  -ms-filter: \"progid:DXImageTransform.Microsoft.BasicImage(rotation=1)\";  -webkit-transform: rotate(90deg);          transform: rotate(90deg);}.fa-rotate-180 {  -ms-filter: \"progid:DXImageTransform.Microsoft.BasicImage(rotation=2)\";  -webkit-transform: rotate(180deg);          transform: rotate(180deg);}.fa-rotate-270 {  -ms-filter: \"progid:DXImageTransform.Microsoft.BasicImage(rotation=3)\";  -webkit-transform: rotate(270deg);          transform: rotate(270deg);}.fa-flip-horizontal {  -ms-filter: \"progid:DXImageTransform.Microsoft.BasicImage(rotation=0, mirror=1)\";  -webkit-transform: scale(-1, 1);          transform: scale(-1, 1);}.fa-flip-vertical {  -ms-filter: \"progid:DXImageTransform.Microsoft.BasicImage(rotation=2, mirror=1)\";  -webkit-transform: scale(1, -1);          transform: scale(1, -1);}.fa-flip-both, .fa-flip-horizontal.fa-flip-vertical {  -ms-filter: \"progid:DXImageTransform.Microsoft.BasicImage(rotation=2, mirror=1)\";  -webkit-transform: scale(-1, -1);          transform: scale(-1, -1);}:root .fa-rotate-90,:root .fa-rotate-180,:root .fa-rotate-270,:root .fa-flip-horizontal,:root .fa-flip-vertical,:root .fa-flip-both {  -webkit-filter: none;          filter: none;}.fa-stack {  display: inline-block;  height: 2em;  position: relative;  width: 2.5em;}.fa-stack-1x,.fa-stack-2x {  bottom: 0;  left: 0;  margin: auto;  position: absolute;  right: 0;  top: 0;}.svg-inline--fa.fa-stack-1x {  height: 1em;  width: 1.25em;}.svg-inline--fa.fa-stack-2x {  height: 2em;  width: 2.5em;}.fa-inverse {  color: #fff;}.sr-only {  border: 0;  clip: rect(0, 0, 0, 0);  height: 1px;  margin: -1px;  overflow: hidden;  padding: 0;  position: absolute;  width: 1px;}.sr-only-focusable:active, .sr-only-focusable:focus {  clip: auto;  height: auto;  margin: 0;  overflow: visible;  position: static;  width: auto;}.svg-inline--fa .fa-primary {  fill: var(--fa-primary-color, currentColor);  opacity: 1;  opacity: var(--fa-primary-opacity, 1);}.svg-inline--fa .fa-secondary {  fill: var(--fa-secondary-color, currentColor);  opacity: 0.4;  opacity: var(--fa-secondary-opacity, 0.4);}.svg-inline--fa.fa-swap-opacity .fa-primary {  opacity: 0.4;  opacity: var(--fa-secondary-opacity, 0.4);}.svg-inline--fa.fa-swap-opacity .fa-secondary {  opacity: 1;  opacity: var(--fa-primary-opacity, 1);}.svg-inline--fa mask .fa-primary,.svg-inline--fa mask .fa-secondary {  fill: black;}.fad.fa-inverse {  color: #fff;}')
 		]));
 var $elm$html$Html$div = _VirtualDom_node('div');
+var $elm$svg$Svg$Attributes$class = _VirtualDom_attribute('class');
+var $lattyware$elm_fontawesome$FontAwesome$Attributes$fa2x = $elm$svg$Svg$Attributes$class('fa-2x');
 var $lattyware$elm_fontawesome$FontAwesome$Icon$Icon = F5(
 	function (prefix, name, width, height, paths) {
 		return {height: height, name: name, paths: paths, prefix: prefix, width: width};
 	});
-var $lattyware$elm_fontawesome$FontAwesome$Solid$download = A5(
+var $lattyware$elm_fontawesome$FontAwesome$Solid$fileExport = A5(
 	$lattyware$elm_fontawesome$FontAwesome$Icon$Icon,
 	'fas',
-	'download',
-	512,
+	'file-export',
+	576,
 	512,
 	_List_fromArray(
-		['M216 0h80c13.3 0 24 10.7 24 24v168h87.7c17.8 0 26.7 21.5 14.1 34.1L269.7 378.3c-7.5 7.5-19.8 7.5-27.3 0L90.1 226.1c-12.6-12.6-3.7-34.1 14.1-34.1H192V24c0-13.3 10.7-24 24-24zm296 376v112c0 13.3-10.7 24-24 24H24c-13.3 0-24-10.7-24-24V376c0-13.3 10.7-24 24-24h146.7l49 49c20.1 20.1 52.5 20.1 72.6 0l49-49H488c13.3 0 24 10.7 24 24zm-124 88c0-11-9-20-20-20s-20 9-20 20 9 20 20 20 20-9 20-20zm64 0c0-11-9-20-20-20s-20 9-20 20 9 20 20 20 20-9 20-20z']));
-var $elm$svg$Svg$Attributes$class = _VirtualDom_attribute('class');
-var $lattyware$elm_fontawesome$FontAwesome$Attributes$fa2x = $elm$svg$Svg$Attributes$class('fa-2x');
+		['M384 121.9c0-6.3-2.5-12.4-7-16.9L279.1 7c-4.5-4.5-10.6-7-17-7H256v128h128zM571 308l-95.7-96.4c-10.1-10.1-27.4-3-27.4 11.3V288h-64v64h64v65.2c0 14.3 17.3 21.4 27.4 11.3L571 332c6.6-6.6 6.6-17.4 0-24zm-379 28v-32c0-8.8 7.2-16 16-16h176V160H248c-13.2 0-24-10.8-24-24V0H24C10.7 0 0 10.7 0 24v464c0 13.3 10.7 24 24 24h336c13.3 0 24-10.7 24-24V352H208c-8.8 0-16-7.2-16-16z']));
 var $elm$virtual_dom$VirtualDom$Normal = function (a) {
 	return {$: 'Normal', a: a};
 };
@@ -9440,6 +9448,7 @@ var $lattyware$elm_fontawesome$FontAwesome$Solid$save = A5(
 	512,
 	_List_fromArray(
 		['M433.941 129.941l-83.882-83.882A48 48 0 0 0 316.118 32H48C21.49 32 0 53.49 0 80v352c0 26.51 21.49 48 48 48h352c26.51 0 48-21.49 48-48V163.882a48 48 0 0 0-14.059-33.941zM224 416c-35.346 0-64-28.654-64-64 0-35.346 28.654-64 64-64s64 28.654 64 64c0 35.346-28.654 64-64 64zm96-304.52V212c0 6.627-5.373 12-12 12H76c-6.627 0-12-5.373-12-12V108c0-6.627 5.373-12 12-12h228.52c3.183 0 6.235 1.264 8.485 3.515l3.48 3.48A11.996 11.996 0 0 1 320 111.48z']));
+var $elm$html$Html$span = _VirtualDom_node('span');
 var $elm$virtual_dom$VirtualDom$style = _VirtualDom_style;
 var $elm$html$Html$Attributes$style = $elm$virtual_dom$VirtualDom$style;
 var $author$project$Types$BoardGreen = {$: 'BoardGreen'};
@@ -9731,6 +9740,22 @@ var $author$project$Main$svgBox = function (model) {
 				$author$project$Main$boxesView(model.boxGroup)
 			]));
 };
+var $lattyware$elm_fontawesome$FontAwesome$Solid$toggleOff = A5(
+	$lattyware$elm_fontawesome$FontAwesome$Icon$Icon,
+	'fas',
+	'toggle-off',
+	576,
+	512,
+	_List_fromArray(
+		['M384 64H192C85.961 64 0 149.961 0 256s85.961 192 192 192h192c106.039 0 192-85.961 192-192S490.039 64 384 64zM64 256c0-70.741 57.249-128 128-128 70.741 0 128 57.249 128 128 0 70.741-57.249 128-128 128-70.741 0-128-57.249-128-128zm320 128h-48.905c65.217-72.858 65.236-183.12 0-256H384c70.741 0 128 57.249 128 128 0 70.74-57.249 128-128 128z']));
+var $lattyware$elm_fontawesome$FontAwesome$Solid$toggleOn = A5(
+	$lattyware$elm_fontawesome$FontAwesome$Icon$Icon,
+	'fas',
+	'toggle-on',
+	576,
+	512,
+	_List_fromArray(
+		['M384 64H192C86 64 0 150 0 256s86 192 192 192h192c106 0 192-86 192-192S490 64 384 64zm0 320c-70.8 0-128-57.3-128-128 0-70.8 57.3-128 128-128 70.8 0 128 57.3 128 128 0 70.8-57.3 128-128 128z']));
 var $author$project$Types$DragEnter = {$: 'DragEnter'};
 var $author$project$Types$DragLeave = {$: 'DragLeave'};
 var $author$project$Types$Pick = {$: 'Pick'};
@@ -9758,6 +9783,14 @@ var $author$project$Main$dropDecoder = A2(
 	_List_fromArray(
 		['dataTransfer', 'files']),
 	A2($elm$json$Json$Decode$oneOrMore, $author$project$Types$GotFiles, $elm$file$File$decoder));
+var $lattyware$elm_fontawesome$FontAwesome$Solid$fileImport = A5(
+	$lattyware$elm_fontawesome$FontAwesome$Icon$Icon,
+	'fas',
+	'file-import',
+	512,
+	512,
+	_List_fromArray(
+		['M16 288c-8.8 0-16 7.2-16 16v32c0 8.8 7.2 16 16 16h112v-64zm489-183L407.1 7c-4.5-4.5-10.6-7-17-7H384v128h128v-6.1c0-6.3-2.5-12.4-7-16.9zm-153 31V0H152c-13.3 0-24 10.7-24 24v264h128v-65.2c0-14.3 17.3-21.4 27.4-11.3L379 308c6.6 6.7 6.6 17.4 0 24l-95.7 96.4c-10.1 10.1-27.4 3-27.4-11.3V352H128v136c0 13.3 10.7 24 24 24h336c13.3 0 24-10.7 24-24V160H376c-13.2 0-24-10.8-24-24z']));
 var $author$project$Main$hijack = function (msg) {
 	return _Utils_Tuple2(msg, true);
 };
@@ -9778,16 +9811,7 @@ var $author$project$Main$hijackOn = F2(
 			event,
 			A2($elm$json$Json$Decode$map, $author$project$Main$hijack, decoder));
 	});
-var $elm$html$Html$span = _VirtualDom_node('span');
 var $elm$core$Debug$toString = _Debug_toString;
-var $lattyware$elm_fontawesome$FontAwesome$Solid$upload = A5(
-	$lattyware$elm_fontawesome$FontAwesome$Icon$Icon,
-	'fas',
-	'upload',
-	512,
-	512,
-	_List_fromArray(
-		['M296 384h-80c-13.3 0-24-10.7-24-24V192h-87.7c-17.8 0-26.7-21.5-14.1-34.1L242.3 5.7c7.5-7.5 19.8-7.5 27.3 0l152.2 152.2c12.6 12.6 3.7 34.1-14.1 34.1H320v168c0 13.3-10.7 24-24 24zm216-8v112c0 13.3-10.7 24-24 24H24c-13.3 0-24-10.7-24-24V376c0-13.3 10.7-24 24-24h136v8c0 30.9 25.1 56 56 56h80c30.9 0 56-25.1 56-56v-8h136c13.3 0 24 10.7 24 24zm-124 88c0-11-9-20-20-20s-20 9-20 20 9 20 20 20 20-9 20-20zm64 0c0-11-9-20-20-20s-20 9-20 20 9 20 20 20 20-9 20-20z']));
 var $lattyware$elm_fontawesome$FontAwesome$Icon$Presentation = function (a) {
 	return {$: 'Presentation', a: a};
 };
@@ -10239,7 +10263,7 @@ var $author$project$Main$viewFileUpload = function (model) {
 						$lattyware$elm_fontawesome$FontAwesome$Icon$viewStyled,
 						_List_fromArray(
 							[$lattyware$elm_fontawesome$FontAwesome$Attributes$fa2x]),
-						$lattyware$elm_fontawesome$FontAwesome$Solid$upload)
+						$lattyware$elm_fontawesome$FontAwesome$Solid$fileImport)
 					])),
 				A2(
 				$elm$html$Html$span,
@@ -10576,6 +10600,41 @@ var $author$project$Main$view = function (model) {
 					[
 						$lattyware$elm_fontawesome$FontAwesome$Styles$css,
 						A2(
+						$elm$html$Html$span,
+						_List_fromArray(
+							[
+								$elm$html$Html$Attributes$class('content-controller-label')
+							]),
+						_List_fromArray(
+							[
+								$elm$html$Html$text('Auto Save')
+							])),
+						A2(
+						$elm$html$Html$button,
+						_List_fromArray(
+							[
+								$elm$html$Html$Events$onClick($author$project$Types$ToggleAutoSave),
+								$elm$html$Html$Attributes$class('content-controller-item')
+							]),
+						_List_fromArray(
+							[
+								A2(
+								$lattyware$elm_fontawesome$FontAwesome$Icon$viewStyled,
+								_List_fromArray(
+									[$lattyware$elm_fontawesome$FontAwesome$Attributes$fa2x]),
+								model.saveDefault ? $lattyware$elm_fontawesome$FontAwesome$Solid$toggleOn : $lattyware$elm_fontawesome$FontAwesome$Solid$toggleOff)
+							])),
+						A2(
+						$elm$html$Html$span,
+						_List_fromArray(
+							[
+								$elm$html$Html$Attributes$class('content-controller-label')
+							]),
+						_List_fromArray(
+							[
+								$elm$html$Html$text('Add note')
+							])),
+						A2(
 						$elm$html$Html$button,
 						_List_fromArray(
 							[
@@ -10592,6 +10651,16 @@ var $author$project$Main$view = function (model) {
 								$lattyware$elm_fontawesome$FontAwesome$Solid$plusCircle)
 							])),
 						A2(
+						$elm$html$Html$span,
+						_List_fromArray(
+							[
+								$elm$html$Html$Attributes$class('content-controller-label')
+							]),
+						_List_fromArray(
+							[
+								$elm$html$Html$text('Save')
+							])),
+						A2(
 						$elm$html$Html$button,
 						_List_fromArray(
 							[
@@ -10605,6 +10674,16 @@ var $author$project$Main$view = function (model) {
 								_List_fromArray(
 									[$lattyware$elm_fontawesome$FontAwesome$Attributes$fa2x]),
 								$lattyware$elm_fontawesome$FontAwesome$Solid$save)
+							])),
+						A2(
+						$elm$html$Html$span,
+						_List_fromArray(
+							[
+								$elm$html$Html$Attributes$class('content-controller-label')
+							]),
+						_List_fromArray(
+							[
+								$elm$html$Html$text('Export')
 							])),
 						A2(
 						$elm$html$Html$button,
@@ -10624,7 +10703,17 @@ var $author$project$Main$view = function (model) {
 								$lattyware$elm_fontawesome$FontAwesome$Icon$viewStyled,
 								_List_fromArray(
 									[$lattyware$elm_fontawesome$FontAwesome$Attributes$fa2x]),
-								$lattyware$elm_fontawesome$FontAwesome$Solid$download)
+								$lattyware$elm_fontawesome$FontAwesome$Solid$fileExport)
+							])),
+						A2(
+						$elm$html$Html$span,
+						_List_fromArray(
+							[
+								$elm$html$Html$Attributes$class('content-controller-label')
+							]),
+						_List_fromArray(
+							[
+								$elm$html$Html$text('Import')
 							])),
 						$author$project$Main$viewFileUpload(model),
 						model.isPopUpActive ? $author$project$Main$viewNotePopupModal(model) : A2(

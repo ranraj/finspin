@@ -119,6 +119,7 @@ type alias Model =
     , isPopUpActive : Bool
     , welcomeTour : Bool
     , editNote : Bool
+    , saveDefault : Bool
     , currentBox : Box
     , drag : Draggable.State Id
     , localData : List Box
@@ -154,6 +155,7 @@ type Msg
     | DragLeave
     | GotFiles File (List File)  
     | MarkdownLoaded String
+    | ToggleAutoSave
 
 -------------------------------Colour-----------------------------------
 type Color = BoardGreen | White
