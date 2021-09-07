@@ -26,6 +26,8 @@ import File.Download as Download
 import File.Select as Select
 import Task
 import File exposing (File)
+import Date exposing (Date, Interval(..), Unit(..))
+import Time 
 
 import BoardDecoder exposing (boxListDecoder)
 import BoardEncoder exposing (boxListEncoder)
@@ -44,9 +46,9 @@ boxesView boxGroup =
         |> List.map boxView
         |> Svg.node "g" []
 
-download : String -> Cmd msg
-download jsonContent =
-  Download.string "finspin-default.json" "application/json" jsonContent
+download : String -> String -> Cmd msg
+download content date =
+  Download.string ("finspin-"++ date ++".json") "application/json" content
 
 read : File -> Cmd Msg
 read file =
@@ -207,7 +209,7 @@ view model =
              ,class "content-controller-item"
              ] [ Icon.viewStyled [ Icon.fa2x ] Icon.save]
         , button 
-            [ onClick <| DownloadSVG <| Encode.encode 5 <| boxListEncoder model.boxGroup.idleBoxes
+            [ onClick <| InitDownloadSVG <| Encode.encode 5 <| boxListEncoder model.boxGroup.idleBoxes
              ,class "content-controller-item"
              ] [ Icon.viewStyled [ Icon.fa2x ] Icon.download]             
         , viewFileUpload model     
@@ -362,15 +364,15 @@ update msg ({ boxGroup } as model) =
         Position x y -> ({ model | position = (x, y) },Cmd.none)
         UpdateTitleColor tileColor -> 
                         let
-                            box = model.currentBox
-                            note = box.note                                                                                    
+                            box = model.currentBox                                                                    
                             newBox = {box | color = Just tileColor}                            
                         in
                             ({model | currentBox = newBox} , Cmd.none)
-        DownloadSVG content -> (model,download content)
+        InitDownloadSVG content ->(model,Task.perform  (DownloadSVG content) Date.today)                    
+        DownloadSVG content today -> (model,download content (Date.toIsoString today))
         Pick ->
             ( model
-            , Select.files ["json/*"] GotFiles
+            , Select.files ["json/*"] GotFiles  
             )
         DragEnter ->
             ( { model | hover = True }

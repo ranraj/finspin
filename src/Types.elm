@@ -6,6 +6,7 @@ import Math.Vector2 as Vector2 exposing (Vec2)
 import Tuple exposing (first,second)
 import Config exposing (defaultNewTilePosition)
 import File exposing (File)
+import Date exposing (Date)
 
 type alias Id =
     String
@@ -146,7 +147,8 @@ type Msg
     | SaveBoard 
     | Position Int Int
     | UpdateTitleColor String
-    | DownloadSVG String  
+    | InitDownloadSVG String
+    | DownloadSVG String Date
     | Pick
     | DragEnter
     | DragLeave
