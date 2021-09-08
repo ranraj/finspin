@@ -202,12 +202,7 @@ view model =
         ,div [class "content-controller"]
         [ Icon.css  
         --, div [class "content-controller-item", onClick (CheckNote model.currentBox.id)] 
-        --[Icon.viewStyled [ Icon.sm, style "color" "gray" ] (if model.saveDefault then Icon.toggleOn else Icon.toggleOff)]
-        , span [class "content-controller-label"] [text "Auto Save"]        
-        , button 
-            [ onClick ToggleAutoSave             
-             ,class "content-controller-item"
-             ] [ Icon.viewStyled [ Icon.fa2x ] (if model.saveDefault then Icon.toggleOn else Icon.toggleOff)]
+        --[Icon.viewStyled [ Icon.sm, style "color" "gray" ] (if model.saveDefault then Icon.toggleOn else Icon.toggleOff)]        
         , span [class "content-controller-label"] [text "Add note"]                             
         , button 
             [ onClick (if model.isPopUpActive then CancelNoteForm else StartNoteForm)             
@@ -218,6 +213,11 @@ view model =
             [ onClick (SaveBoard)
              ,class "content-controller-item"
              ] [ Icon.viewStyled [ Icon.fa2x ] Icon.save]
+        , span [class "content-controller-label"] [text "Auto Save"]        
+        , button 
+            [ onClick ToggleAutoSave             
+             ,class "content-controller-item"
+             ] [ Icon.viewStyled [ Icon.fa2x ] (if model.saveDefault then Icon.toggleOn else Icon.toggleOff)]     
         , span [class "content-controller-label"] [text "Export"]             
         , button 
             [ onClick <| InitDownloadSVG <| Encode.encode 5 <| boxListEncoder model.boxGroup.idleBoxes
@@ -240,7 +240,7 @@ viewFileUpload model = div
     , hijackOn "drop" dropDecoder
     ]
     [ button [ onClick Pick , class "content-controller-item" ] [ Icon.viewStyled [ Icon.fa2x ] Icon.fileImport]             
-    , span [ style "color" "#ccc" ] [ text (Debug.toString model.files) ]
+    , span [ style "color" "#ccc" ] [if not (List.isEmpty model.files) then Icon.viewStyled [ Icon.sm, style "color" "green" ] Icon.check else text ""]
     ]               
 
 dropDecoder : Decode.Decoder Msg
