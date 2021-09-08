@@ -8,7 +8,6 @@ import Svg.Attributes as Attr
 import Svg.Events as Events
 
 import BoardTiles exposing (..)
-import Svg.String as SvgStr
 import Html exposing (Html, button, text,p, div, h4, li, ul, input, i,textarea,header,section,footer,span)
 import Html.Attributes exposing ( class, style, type_, placeholder, value,id,attribute)
 import Html.Events exposing (onInput, onClick,preventDefaultOn)
@@ -27,7 +26,6 @@ import File.Select as Select
 import Task
 import File exposing (File)
 import Date exposing (Date, Interval(..), Unit(..))
-import Time 
 
 import BoardDecoder exposing (boxListDecoder)
 import BoardEncoder exposing (boxListEncoder)
@@ -409,11 +407,6 @@ update msg ({ boxGroup } as model) =
             in  
                 ({model | boxGroup = newBoxGroup },Cmd.none)
         ToggleAutoSave -> ({model | saveDefault = not model.saveDefault}, Cmd.none)
-someSvg : SvgStr.Html Msg
-someSvg =
-    SvgStr.svg [ ]
-        [ SvgStr.rect [ ] []
-        ]
 
 subscriptions : Model -> Sub Msg
 subscriptions { drag } = 
