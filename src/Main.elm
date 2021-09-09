@@ -9,7 +9,7 @@ import Svg.Events as Events
 
 import BoardTiles exposing (..)
 import Html exposing (Html, button, text,p, div, h4, li, ul, input, i,textarea,header,section,footer,span)
-import Html.Attributes exposing ( class, style, type_, placeholder, value,id,attribute)
+import Html.Attributes exposing ( class, style, type_, placeholder, value,id,attribute,autofocus)
 import Html.Events exposing (onInput, onClick,preventDefaultOn)
 import FontAwesome.Attributes as Icon
 import FontAwesome.Brands as Icon
@@ -60,7 +60,7 @@ addNotePanel box isEdit =
         note = box.note
     in    
         div [class "add-to-panel"]
-            [ div [ class "li-header"] [ viewInput "text" "Title" "form-input" note.title (ChangeTitle)]
+            [ div [ class "li-header", autofocus True] [ viewInput "text" "Title" "form-input" note.title (ChangeTitle)]
             , div [ class "line-seperator"] []
             , div [] [ viewTextArea "Description" "form-input" note.description (ChangeDesc)]   
             , div [class "add-notes-ctrl"] 

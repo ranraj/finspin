@@ -6,7 +6,7 @@ defaultNewTilePosition = Vector2.vec2 10 10
 
 boxSize : Vec2
 boxSize =
-    Vector2.vec2 199 50
+    Vector2.vec2 210 100
 
 colorPallet : List String
 colorPallet = ["#c2d421","#91b1fd","#fdb9fd","#fec685","#5F9A80"]
