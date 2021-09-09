@@ -1,5 +1,5 @@
-# finspin
-Finspin is intractive board for notes
+# Finspin
+Finspin is interactive board for notes - Progressive WebApp
 
 ## Idea
 
