@@ -1,5 +1,5 @@
-# finspin
-Finspin is intractive board for notes
+# Finspin
+Finspin is interactive board for notes - Progressive WebApp
 
 ## Idea
 
@@ -10,13 +10,13 @@ I see developers are using notepad for multipurpose. It is an offline web applic
 
 Note : Currently supports only PC version. 
 
-Live ['Demo'](https://ranraj.github.io/finspin/index.html)
+Live ['Demo'](https://finspin.netlify.app/)
 
 Tech Stack  
 ```
 Elm 19.0
 ```
-
+## Elm Dev Environment
 Run
 ```
   elm reactor
@@ -30,5 +30,22 @@ Test (Mac)
 ```
 open public/index.html
 ```
+
+## NPM Dev Environment
+
+Build
+```
+npm install 
+npm run build
+```
+Run
+```
+npm run start
+```
+Test
+```
+http://localhost:3000
+```
+
 App screenshot
 ![](https://ranraj.github.io/finspin/Screenshot.png)
