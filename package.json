@@ -1,0 +1,35 @@
+{
+    "name": "finspin",
+    "version": "1.0.0",
+    "description": "Finspin is intractive board for notes",
+    "main": "webpack.config.js",
+    "scripts": {
+        "build": "webpack --mode=production",
+        "start": "webpack-dev-server --port 3000 --mode=development"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/ranraj/finspin.git"
+    },
+    "author": "",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/ranraj/finspin/issues"
+    },
+    "homepage": "https://github.com/ranraj/finspin#readme",
+    "devDependencies": {
+        "webpack-cli": "^3.3.6",
+        "webpack-pwa-manifest": "^4.0.0"
+    },
+    "dependencies": {
+        "css-loader": "^5.1.1",
+        "elm": "^0.19.0-no-deps",
+        "elm-webpack-loader": "^6.0.0",
+        "file-loader": "^6.2.0",
+        "sass-loader": "^10.2.0",
+        "style-loader": "^2.0.0",
+        "sw-precache-webpack-plugin": "^1.0.0",
+        "webpack": "^4.39.1",
+        "webpack-dev-server": "^3.7.2"
+    }
+}

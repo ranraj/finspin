@@ -1,0 +1,17 @@
+{
+  "icons": [
+    {
+      "src": "static/img/icon_192x192.233356ec9f9ec94e7a0d81d7c5344abf.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    }
+  ],
+  "name": "Minimal progressive Elm App, to demonstrate the steps involved",
+  "short_name": "Progessive Elm",
+  "orientation": "portrait",
+  "display": "standalone",
+  "start_url": "/",
+  "description": "Minimal progressive Elm App. There is a Hello World page, with no images or css, so that there is less noise to detract from the code that is required to make it progressive.",
+  "background_color": "#ffffff",
+  "theme_color": "#000000"
+}

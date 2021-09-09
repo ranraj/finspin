@@ -1,3 +1,12 @@
+'use strict';
+import "./main.css";
+import "./gh-fork-ribbon.min.css";
+
+// Require index.html so it gets copied to dist
+require('./index.html');
+
+const { Elm } = require('./Main.elm');
+
 var observer = new MutationObserver(function(mutations) {
     mutations.forEach(function(mutation) {
         if (mutation.type === 'childList') {
@@ -30,12 +39,16 @@ const app = Elm.Main.init({
     node: document.getElementById('note')
 })
 
+const sendLocalData = () => {
+    let fileStore = localStorage.getItem('note-app-save');
+    if (fileStore != null || fileStore != undefined) {
+        app.ports.receiveData.send(fileStore);
+    }
+}
 app.ports.storeNotes.subscribe(function(notes) {
     var notesJson = JSON.stringify(notes);
     localStorage.setItem('note-app-save', notesJson);
-    let fileStore = localStorage.getItem('note-app-save');
-    app.ports.receiveData.send(fileStore);
+    sendLocalData();
 });
 //Init load
-let fileStore = localStorage.getItem('note-app-save');
-app.ports.receiveData.send(fileStore);
+sendLocalData();
