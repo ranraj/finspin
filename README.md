@@ -10,7 +10,7 @@ I see developers are using notepad for multipurpose. It is an offline web applic
 
 Note : Currently supports only PC version. 
 
-Live ['Demo'](https://ranraj.github.io/finspin/index.html)
+Live ['Demo'](https://finspin.netlify.app/)
 
 Tech Stack  
 ```
