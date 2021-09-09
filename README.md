@@ -16,7 +16,7 @@ Tech Stack
 ```
 Elm 19.0
 ```
-
+## Elm Dev Environment
 Run
 ```
   elm reactor
@@ -30,5 +30,22 @@ Test (Mac)
 ```
 open public/index.html
 ```
+
+## NPM Dev Environment
+
+Build
+```
+npm install 
+npm run build
+```
+Run
+```
+npm run start
+```
+Test
+```
+http://localhost:3000
+```
+
 App screenshot
 ![](https://ranraj.github.io/finspin/Screenshot.png)
