@@ -150,7 +150,7 @@ svgBox model =
                 , Attr.y "20"
                 , Attr.fill "white"                
                 ]
-                [ Svg.text "Finspin Board"
+                [ Svg.text "Finspin Board - Beta"
                 ]
                 , Svg.circle
                 [ Attr.cx <| String.fromInt cx
