@@ -48,9 +48,9 @@ downloadJson : String -> String -> Cmd msg
 downloadJson content date =
   Download.string ("finspin-"++ date ++".json") "application/json" content
 
-downloadSVG : String -> Cmd msg
-downloadSVG svgContent =
-  Download.string "floorplan.svg" "image/svg+xml" (svgContent |> svgWrapper)
+downloadSVG : String -> String -> Cmd msg
+downloadSVG svgContent date =
+  Download.string ("finspin-"++ date ++".svg") "image/svg" (svgContent |> svgWrapper)
 
 read : File -> Cmd Msg
 read file =
@@ -397,9 +397,7 @@ update msg ({ boxGroup } as model) =
                             box = model.currentBox                                                                    
                             newBox = {box | color = Just tileColor}                            
                         in
-                            ({model | currentBox = newBox} , Cmd.none)
-        InitDownloadSVG content ->(model,Task.perform  (DownloadSVG content) Date.today)                    
-        DownloadSVG content today -> (model,downloadJson content (Date.toIsoString today))
+                            ({model | currentBox = newBox} , Cmd.none)        
         Pick ->
             ( model
             , Select.files ["json/*"] GotFiles  
@@ -433,10 +431,12 @@ update msg ({ boxGroup } as model) =
                             newBox = {box | size = boxSize}                            
                         in
                             ({model | currentBox = newBox} , Cmd.none)
+        InitDownloadSVG content ->(model,Task.perform  (DownloadSVG content) Date.today)                    
+        DownloadSVG content today -> (model,downloadJson content (Date.toIsoString today))                    
         GetSvg ->
-            ( model, Ports.getSvg "boxesView" )
-        GotSvg output -> 
-            (model,downloadSVG output)     
+            ( model,Cmd.batch [Ports.getSvg "boxesView",Task.perform  (DownloadSVG "") Date.today]  )
+        GotSvg output ->             
+            ( model, downloadSVG output "type")     
 
 subscriptions : Model -> Sub Msg
 subscriptions { drag } = 
