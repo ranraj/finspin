@@ -52,3 +52,9 @@ app.ports.storeNotes.subscribe(function(notes) {
 });
 //Init load
 sendLocalData();
+
+app.ports.getSvg.subscribe(function(id) {
+    console.log("Svg Request ", id);
+    var node = document.getElementById(id);
+    app.ports.gotSvg.send(node.innerHTML);
+});

@@ -220,6 +220,23 @@ select:focus {
     border-radius: 0px;
 }
 
+.tile-size-picker-holder {
+    display: flex;
+    flex-wrap: wrap;
+    align-self: center;
+    flex-direction: row;
+}
+
+.tile-size-picker {
+    flex: 1 1 auto;
+    height: 28px;
+    width: 28px;
+    border: 1px gray solid;
+    margin: 2px;
+    box-shadow: none;
+    border-radius: 0px;
+}
+
 .modal_header {
     display: flex;
     flex-flow: flex-end;

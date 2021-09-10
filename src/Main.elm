@@ -30,8 +30,8 @@ import Date exposing (Date, Interval(..), Unit(..))
 import BoardDecoder exposing (boxListDecoder)
 import BoardEncoder exposing (boxListEncoder)
 import Types exposing (Model,Box,BoxGroup,Note,Color(..),Msg(..))
-import Types exposing (buildNote,makeBox,emptyNote,emptyGroup,getColor,emptyBox,updateNoteBox)
-import Config exposing (colorPallet)
+import Types exposing (buildNote,makeBox,emptyNote,emptyGroup,getColor,emptyBox,updateNoteBox,boxSizePallet,makeBoxDefaultSize)
+import Config exposing (colorPallet,svgWrapper)
 import Ports
 import Json.Encode as Encode
 import Json.Decode as Decode
@@ -42,11 +42,15 @@ boxesView boxGroup =
         |> allBoxes
         |> List.reverse
         |> List.map boxView
-        |> Svg.node "g" []
+        |> Svg.node "g" [Attr.id "boxesView"]
 
-download : String -> String -> Cmd msg
-download content date =
+downloadJson : String -> String -> Cmd msg
+downloadJson content date =
   Download.string ("finspin-"++ date ++".json") "application/json" content
+
+downloadSVG : String -> Cmd msg
+downloadSVG svgContent =
+  Download.string "floorplan.svg" "image/svg+xml" (svgContent |> svgWrapper)
 
 read : File -> Cmd Msg
 read file =
@@ -68,7 +72,8 @@ addNotePanel box isEdit =
                 button [ onClick ((if isEdit then UpdateNote else AddNote) note.title note.description), class "form-btn"] [text "Save"]
                 ,button [ onClick CancelNoteForm, class "form-btn" ] [text "Clear"]            
                 ] 
-            ,colorPickerView           
+            ,colorPickerView    
+            ,titleSizePickerView      
             ]
 
 colorPickerView : Html Msg
@@ -77,6 +82,15 @@ colorPickerView =
                 colorPicker = List.map (\color -> div [] [button [onClick (UpdateTitleColor color), class "color-picker", style "background-color" color] [text ""]]) colorPallet
             in
                 div [class "color-picker-holder"] colorPicker                                                      
+
+titleSizePickerView : Html Msg
+titleSizePickerView = 
+            let                
+                tileSizePicker = List.map (\tileSize -> div [] [button [onClick (UpdateBoxSize tileSize), class "tile-size-picker"] [text tileSize.title]]) boxSizePallet
+            in
+                div [class "tile-size-picker-holder"] tileSizePicker                                                      
+
+
 viewNoteComponent : Box -> Html Msg
 viewNoteComponent box =
     let
@@ -129,7 +143,8 @@ svgBox model =
         cy = y - radius // 2
     in
         Svg.svg
-            [ Attr.x "0"
+            [ Attr.id "svgBoard",
+            Attr.x "0"
             , Attr.y "0"
             , Attr.width "100%"
             , Attr.height "100%"
@@ -171,7 +186,7 @@ main =
     Browser.element
         { init = init
         , update = update
-        , subscriptions = \model -> Sub.batch [subscriptionsLocalStorage model,subscriptions model]
+        , subscriptions = \model -> Sub.batch [subscriptionsLocalStorage model,subscriptions model,subscriptionsSvgDownload model]
         , view = view
         }
 
@@ -195,7 +210,7 @@ init _ =
          
 view : Model -> Html Msg
 view model =    
-   div [class "content-container"] [
+   div [class "content-container", id "contentContainer"] [
         svgBox model        
         ,div [class "content-controller"]
         [ Icon.css  
@@ -224,8 +239,13 @@ view model =
         , span [class "content-controller-label"] [text "Import"]                    
         , viewFileUpload model     
         , (if model.isPopUpActive then viewNotePopupModal model else div [ style "hidden" "true" ] [])        
+        , span [class "content-controller-label"] [text "Download Svg"]
+        , button 
+            [ onClick GetSvg
+             ,class "content-controller-item"
+             ] [ Icon.viewStyled [ Icon.fa2x ] Icon.download]                    
         --, getNotes model.boxGroup        //TODO : Move this in next page Bookmark
-        ]
+        ]        
     ]
 
 viewFileUpload : Model -> Html Msg    
@@ -290,7 +310,7 @@ update msg ({ boxGroup } as model) =
                     if isEmpty then 
                         boxGroup.idleBoxes
                     else 
-                        makeBox note.id note tilePosition currentBox.color:: boxGroup.idleBoxes
+                        makeBox note.id note tilePosition currentBox.color currentBox.size :: boxGroup.idleBoxes
             in
                  ({ model | welcomeTour = False,currentBox = emptyBox,boxGroup = {boxGroup | idleBoxes = idleBoxes}}
                 , savePostsCmd)  
@@ -379,7 +399,7 @@ update msg ({ boxGroup } as model) =
                         in
                             ({model | currentBox = newBox} , Cmd.none)
         InitDownloadSVG content ->(model,Task.perform  (DownloadSVG content) Date.today)                    
-        DownloadSVG content today -> (model,download content (Date.toIsoString today))
+        DownloadSVG content today -> (model,downloadJson content (Date.toIsoString today))
         Pick ->
             ( model
             , Select.files ["json/*"] GotFiles  
@@ -407,6 +427,16 @@ update msg ({ boxGroup } as model) =
             in  
                 ({model | boxGroup = newBoxGroup },Cmd.none)
         ToggleAutoSave -> ({model | saveDefault = not model.saveDefault}, Cmd.none)
+        UpdateBoxSize boxSize -> 
+                        let
+                            box = model.currentBox                                                                    
+                            newBox = {box | size = boxSize}                            
+                        in
+                            ({model | currentBox = newBox} , Cmd.none)
+        GetSvg ->
+            ( model, Ports.getSvg "boxesView" )
+        GotSvg output -> 
+            (model,downloadSVG output)     
 
 subscriptions : Model -> Sub Msg
 subscriptions { drag } = 
@@ -419,3 +449,7 @@ saveNotes noteBoxes = boxListEncoder noteBoxes |> Ports.storeNotes
 subscriptionsLocalStorage : Model -> Sub Msg
 subscriptionsLocalStorage _ = 
         Ports.receiveData ReceivedDataFromJS    
+
+subscriptionsSvgDownload : Model -> Sub Msg
+subscriptionsSvgDownload _ = 
+          Ports.gotSvg GotSvg

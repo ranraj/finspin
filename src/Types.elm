@@ -49,14 +49,20 @@ type alias Box =
     , clicked : Bool
     , note : Note
     , color : Maybe String
+    , size : BoxSize
     }
 
 emptyBox : Box
-emptyBox = Box "" defaultNewTilePosition False emptyNote Nothing
+emptyBox = Box "" defaultNewTilePosition False emptyNote Nothing defaultBoxSize
 
-makeBox : Id -> Note -> Vec2 -> Maybe String -> Box
-makeBox id note position color =
-    Box id position False note color
+makeBox : Id -> Note -> Vec2 -> Maybe String -> BoxSize -> Box 
+makeBox id note position color size =
+    Box id position False note color size
+
+
+makeBoxDefaultSize : Id -> Note -> Vec2 -> Maybe String -> Box 
+makeBoxDefaultSize id note position color =
+    Box id position False note color defaultBoxSize
 
 updateNoteBox : Model -> Box -> String -> String -> Box
 updateNoteBox model box t d = if (box.id == model.currentBox.id) then
@@ -70,7 +76,7 @@ updateNoteBox model box t d = if (box.id == model.currentBox.id) then
                                             note = box.note             
                                             newNote = {note | title = newTitle,description = newDescription}
                                         in    
-                                            {box | color = color, note = newNote}
+                                            {box | color = color, size = currentBox.size, note = newNote}
                                     else 
                                         box
 -------------------------------BoxGroup-----------------------------------
@@ -95,7 +101,7 @@ buildNote length t d  = {
 addBoxInBoxGroup : Note -> Vec2 -> BoxGroup -> BoxGroup
 addBoxInBoxGroup note position ({ uid, idleBoxes } as group) =
     { group
-        | idleBoxes = (makeBox (String.fromInt uid) note position) Nothing :: idleBoxes
+        | idleBoxes = (makeBox (String.fromInt uid) note position) Nothing defaultBoxSize :: idleBoxes
         , uid = uid + 1
     }    
 
@@ -156,6 +162,10 @@ type Msg
     | GotFiles File (List File)  
     | MarkdownLoaded String
     | ToggleAutoSave
+    | UpdateBoxSize BoxSize
+    | GetSvg
+    | GotSvg String
+
 
 -------------------------------Colour-----------------------------------
 type Color = BoardGreen | White
@@ -170,3 +180,26 @@ type alias LocalStore =
       welcomeTour : Bool
      ,boxGroups : List BoxGroup
     }
+
+-------------------------------TileSize-----------------------------------
+type alias BoxSize = 
+        {
+            title : String,            
+            width : Float,
+            height : Float
+         }
+
+boxSize : Vec2
+boxSize =
+    Vector2.vec2 defaultBoxSize.width defaultBoxSize.height
+
+defaultBoxSize : BoxSize         
+defaultBoxSize = BoxSize "1x" 210.0 50.0   
+
+boxSizePallet : List BoxSize
+boxSizePallet = [
+                defaultBoxSize,
+                {defaultBoxSize | title = "2x", height=defaultBoxSize.height + 20},
+                {defaultBoxSize | title = "3x", height=defaultBoxSize.height + 40},
+                {defaultBoxSize | title = "4x", height=defaultBoxSize.height + 60}
+                ]

@@ -1,7 +1,7 @@
 module BoardDecoder exposing (boxListDecoder)
 
 import Json.Decode as JD exposing (Error(..), string,field,decodeString,bool,Decoder)
-import Types exposing (Note,Box)
+import Types exposing (Note,Box,BoxSize)
 import Tuple exposing (first,second)
 import Math.Vector2 as Vector2
 import Array
@@ -21,10 +21,10 @@ notePositionDecoder x y =
 noteDecoder : Decoder Note
 noteDecoder =
   JD.map4 Note
-    (field "id" string)
-    (field "done" bool)
-    (field "title" string)
-    (field "description" string)
+    (field "id" JD.string)
+    (field "done" JD.bool)
+    (field "title" JD.string)
+    (field "description" JD.string)
     
 
 
@@ -40,15 +40,23 @@ positionDecoder pos =
                 _ -> Nothing
         in
            notePositionDecoder  x y
-        
+
+boxSizeDecoder : Decoder BoxSize
+boxSizeDecoder =
+  JD.map3 BoxSize
+    (field "title" JD.string)
+    (field "width" JD.float)
+    (field "height" JD.float)    
+
 boxDecoder:  Decoder Box
 boxDecoder =
-  JD.map5 Box
+  JD.map6 Box
     (field "id" string)
     (field "position" string |>  JD.map ( \pos -> positionDecoder pos |> (\vec -> Vector2.vec2 (first vec) (second vec))))
     (field "clicked" bool )
     (field "note" noteDecoder)
     (JD.maybe (field "color" string))
+    (field "size" boxSizeDecoder)
 
 boxListDecoder : String -> List Box
 boxListDecoder value = 

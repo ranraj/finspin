@@ -12,10 +12,9 @@ import Draggable
 import Draggable.Events exposing (onDragBy, onDragStart)
 
 import Types exposing (Box,Msg,getColor,Color(..), Msg(..),Id,BoxGroup)
-import Config exposing (boxSize)
 
 boxView : Box -> Svg Msg
-boxView { id, position, clicked,note,color} =
+boxView { id, position, clicked,note,color,size} =
     let
         newColor = case color of 
                     Just c -> c
@@ -23,7 +22,7 @@ boxView { id, position, clicked,note,color} =
         isDone = if note.done then
                     "done"
                  else
-                    ""                             
+                    ""                                     
     in
         Svg.svg
             [Draggable.mouseTrigger id DragMsg
@@ -31,8 +30,8 @@ boxView { id, position, clicked,note,color} =
                 ] 
             [
                 Svg.rect
-                [ convertToNum Attr.width <| getX boxSize
-                , convertToNum Attr.height <| getY boxSize
+                [ convertToNum Attr.width <| size.width
+                , convertToNum Attr.height <| size.height
                 , convertToNum Attr.x (getX position)
                 , convertToNum Attr.y (getY position)
                 , Attr.fill newColor
