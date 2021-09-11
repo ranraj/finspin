@@ -11,10 +11,11 @@ import Math.Vector2 as Vector2 exposing (Vec2, getX, getY)
 import Draggable
 import Draggable.Events exposing (onDragBy, onDragStart)
 
-import Types exposing (Box,Msg,getColor,Color(..), Msg(..),Id,BoxGroup)
+import Model exposing (Box,Msg,Color(..), Msg(..),Id,BoxGroup)
+import Core exposing (getColor)
 
 boxView : Box -> Svg Msg
-boxView { id, position, clicked,note,color,size} =
+boxView { id, position, note,color,size} =
     let
         newColor = case color of 
                     Just c -> c

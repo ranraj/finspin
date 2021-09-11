@@ -2,7 +2,7 @@ module BoardEncoder exposing (boxListEncoder)
 
 import Json.Encode as Encode
 import Math.Vector2 exposing ( getX, getY)
-import Types exposing (Note,Box,BoxSize)
+import Model exposing (Note,Box,BoxSize)
 
 noteEncoder : Note -> Encode.Value
 noteEncoder note = Encode.object

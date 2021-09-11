@@ -4,7 +4,7 @@ import Draggable
 
 import BoardTiles exposing (..)
 import BoardEncoder exposing (boxListEncoder)
-import Types exposing (Model,Box,Color(..),Msg(..))
+import Model exposing (Model,Box,Color(..),Msg(..))
 import Ports
 import View exposing (..)
 

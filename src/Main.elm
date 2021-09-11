@@ -3,8 +3,8 @@ module Main exposing (..)
 import Browser
 
 import BoardTiles exposing (..)
-import Types exposing (Model,Color(..),Msg(..))
-import Types exposing (init)
+import Model exposing (Model,Color(..),Msg(..))
+import Core exposing (init)
 import View exposing (..)
 import Update exposing (..)
 import App exposing (..)

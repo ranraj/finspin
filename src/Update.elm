@@ -8,8 +8,8 @@ import Math.Vector2 as Vector2
 import File.Select as Select
 import Task
 
-import Types exposing (Model,Color(..),Msg(..))
-import Types exposing (buildNote,makeBox,emptyBox,updateNoteBox)
+import Model exposing (Model,Color(..),Msg(..))
+import Core exposing (buildNote,makeBox,emptyBox,updateNoteBox)
 import Ports
 import View exposing (..)
 import App exposing (..)

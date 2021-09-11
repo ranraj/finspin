@@ -1,7 +1,7 @@
 module BoardDecoder exposing (boxListDecoder)
 
 import Json.Decode as JD exposing (Error(..), string,field,decodeString,bool,Decoder)
-import Types exposing (Note,Box,BoxSize)
+import Model exposing (Note,Box,BoxSize)
 import Tuple exposing (first,second)
 import Math.Vector2 as Vector2
 import Array
