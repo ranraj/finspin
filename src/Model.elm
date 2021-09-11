@@ -3,7 +3,7 @@ module Model exposing (..)
 import Draggable
 import Json.Decode exposing (Error(..))
 import File exposing (File)
-import Html.Events.Extra.Mouse as Mouse
+import Dict exposing (Dict)
 
 type alias Id =
     String
@@ -48,6 +48,9 @@ type alias Model =
     , hover : Bool
     , files : List File
     , mouse : MouseModel
+    , dragAction : Maybe DragAction
+    , comparedShape : Maybe Shape
+    , shapes : Dict Int Shape
     }
 
 
@@ -148,3 +151,7 @@ type alias ImageModel =
     , height : Float
     , href : String
     }
+
+type DragAction
+    = DragMove
+    | DragResize

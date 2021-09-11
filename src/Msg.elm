@@ -37,6 +37,8 @@ type Msg
     | GotSvg String
     | NoOp
     | MouseMove Position
+    | MouseDown Position
+    | MouseUp Position
 
 -------------------------------Colour-----------------------------------
 type Color = BoardGreen | White
@@ -65,3 +67,4 @@ type RectAction
 
 type ModifyShapeMsg
     = IncreaseWidth Float
+

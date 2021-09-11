@@ -2,10 +2,11 @@ module App exposing (subscriptions,init,emptyBox)
 
 import Draggable
 
-import Model exposing (Model,MouseModel,Note,Box,BoxGroup)
+import Model exposing (Model,MouseModel,Note,Box,BoxGroup,Shape(..))
 import Msg exposing (Msg(..))
 import Ports
 import Config exposing (defaultNewTilePosition,defaultBoxSize)
+import Dict exposing (Dict)
 
 subscriptionsDraggable : Model -> Sub Msg
 subscriptionsDraggable { drag } = 
@@ -49,6 +50,32 @@ emptyGroup : BoxGroup
 emptyGroup =
     BoxGroup 0 Nothing []
 
+initialShapes : Dict Int Shape
+initialShapes =
+    Dict.empty
+        |> Dict.insert 1
+            (Rect
+                { x = 200
+                , y = 200
+                , width = 200
+                , height = 200
+                , stroke = "#000000"
+                , strokeWidth = 10
+                , fill = "#ffffff"
+                }
+            )
+        |> Dict.insert 2
+            (Circle
+                { cx = 500
+                , cy = 200
+                , r = 50
+                , stroke = "#ff0000"
+                , strokeWidth = 10
+                , fill = "#00ffff"
+                }
+            )
+
+
 init : flags -> ( Model, Cmd Msg )
 init _ =
     ( { boxGroup = emptyGroup
@@ -64,6 +91,9 @@ init _ =
       , hover = False
       , files = []
       , mouse = initialMouseModel
+      , dragAction = Nothing
+      , comparedShape = Nothing
+      , shapes = initialShapes
       }
     , Cmd.none
     )

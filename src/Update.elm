@@ -6,8 +6,9 @@ import Date
 import Tuple exposing (first,second)
 import File.Select as Select
 import Task
+import Dict exposing (Dict)
 
-import Model exposing (Model,Position)
+import Model exposing (Model,Position,Shape)
 import Msg exposing (Color(..), Msg(..))
 import Core exposing (buildNote,makeBox,updateNoteBox,saveNotes)
 import Ports
@@ -15,6 +16,7 @@ import View exposing (..)
 import App exposing (emptyBox)
 import BoardTiles exposing (..)
 import BoardDecoder exposing (boxListDecoder)
+import BoardEncoder exposing (shapesEncoder)
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg ({ boxGroup } as model) =
@@ -187,3 +189,37 @@ update msg ({ boxGroup } as model) =
                     { mouse | position = pos }
             in
                 ({ model | mouse = nextMouse }, Cmd.none)
+        MouseDown pos ->
+            let
+                mouse = model.mouse
+                nextMouse =
+                    { mouse | down = True, downSvgPosition = mouse.svgPosition }
+            in
+                ({ model | mouse = nextMouse }, Cmd.none)
+
+        MouseUp pos ->
+            let
+                mouse = model.mouse
+                nextMouse =
+                    { mouse | down = False }
+
+                nextModel =
+                    { model
+                        | mouse = nextMouse
+                        , dragAction = Nothing
+                        , comparedShape = Nothing
+                    }
+            in
+                case model.dragAction of
+                    Just _ ->
+                        ( nextModel, sendShapes nextModel.shapes )
+
+                    Nothing ->
+                        (nextModel,Cmd.none)
+                            
+
+sendShapes : Dict Int Shape -> Cmd Msg
+sendShapes shapes =
+    shapes
+        |> shapesEncoder
+        |> Ports.persistShapes
