@@ -3,11 +3,12 @@ module Main exposing (..)
 import Browser
 
 import BoardTiles exposing (..)
-import Model exposing (Model,Color(..),Msg(..))
+import Model exposing (Model)
+import Msg exposing (Color(..),Msg(..))
 import Core exposing (init)
-import View exposing (..)
+import View exposing (view)
 import Update exposing (..)
-import App exposing (..)
+import App
 
 -- Elm Architecture --
 main : Program () Model Msg
@@ -15,7 +16,7 @@ main =
     Browser.element
         { init = init
         , update = update
-        , subscriptions = \model -> Sub.batch [subscriptionsLocalStorage model,subscriptions model,subscriptionsSvgDownload model]
+        , subscriptions = App.subscriptions
         , view = view
         }
 

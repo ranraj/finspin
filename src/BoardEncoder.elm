@@ -1,7 +1,6 @@
 module BoardEncoder exposing (boxListEncoder)
 
 import Json.Encode as Encode
-import Math.Vector2 exposing ( getX, getY)
 import Model exposing (Note,Box,BoxSize)
 
 noteEncoder : Note -> Encode.Value
@@ -22,7 +21,8 @@ boxSizeEncoder box = Encode.object
 noteBoxEncoder : Box -> Encode.Value
 noteBoxEncoder noteBox =
   let 
-    positionStr = String.fromFloat (getX noteBox.position) ++ "," ++ String.fromFloat (getY noteBox.position)
+    position = noteBox.position
+    positionStr = String.fromFloat (position.x) ++ "," ++ String.fromFloat (position.y)
   in
     Encode.object
         [ ("id", Encode.string noteBox.id)

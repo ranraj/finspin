@@ -1,25 +1,26 @@
-module App exposing (..)
+module App exposing (subscriptions)
 
 import Draggable
 
-import BoardTiles exposing (..)
-import BoardEncoder exposing (boxListEncoder)
-import Model exposing (Model,Box,Color(..),Msg(..))
+import Model exposing (Model)
+import Msg exposing (Msg(..))
 import Ports
-import View exposing (..)
 
-subscriptions : Model -> Sub Msg
-subscriptions { drag } = 
+subscriptionsDraggable : Model -> Sub Msg
+subscriptionsDraggable { drag } = 
     Draggable.subscriptions DragMsg drag
 
-------- Local Stroage --------------------------------
-saveNotes : List Box -> Cmd msg
-saveNotes noteBoxes = boxListEncoder noteBoxes |> Ports.storeNotes            
+subscriptions : Model -> Sub Msg
+subscriptions model = Sub.batch [
+                subscriptionsLocalStorage model,
+                subscriptionsDraggable model,
+                subscriptionsSvgDownload model]
 
+------- Local Stroage --------------------------------
 subscriptionsLocalStorage : Model -> Sub Msg
 subscriptionsLocalStorage _ = 
         Ports.receiveData ReceivedDataFromJS    
 
 subscriptionsSvgDownload : Model -> Sub Msg
 subscriptionsSvgDownload _ = 
-          Ports.gotSvg GotSvg
+          Ports.gotSvg GotSvg   

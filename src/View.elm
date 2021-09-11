@@ -4,7 +4,7 @@ import Svg exposing (Svg)
 import Svg.Attributes as Attr
 import Svg.Events as Events
 
-import BoardTiles exposing (..)
+
 import Html exposing (Html, button, text, div, li, ul, input, textarea, span)
 import Html.Attributes exposing ( class, style, type_, placeholder, value,id,autofocus)
 import Html.Events exposing (onInput, onClick,preventDefaultOn)
@@ -15,17 +15,18 @@ import FontAwesome.Layering as Icon
 import FontAwesome.Solid as Icon
 import FontAwesome.Styles as Icon
 import Json.Decode as Decode exposing (Error(..))
+import Json.Encode as Encode
 
 import File.Download as Download
 import Task
 import File exposing (File)
 
-import BoardEncoder exposing (boxListEncoder)
-import Model exposing (Model,Box,BoxGroup,Color(..),Msg(..))
+import Model exposing (Model,Box,BoxGroup)
+import Msg exposing (Color(..), Msg(..))
 import Core exposing (getColor,boxSizePallet)
 import Config exposing (colorPallet,svgWrapper)
-import Json.Encode as Encode
-import Json.Decode as Decode
+import BoardEncoder exposing (boxListEncoder)
+import BoardTiles exposing (allBoxes,boxView)
 
 boxesView : BoxGroup -> Svg Msg
 boxesView boxGroup =
@@ -143,7 +144,7 @@ svgBox model =
             , Attr.class "svg-panel"        
             , Attr.class "content-display"   
             , Events.on "svgclick" 
-                <| Decode.map2 Position
+                <| Decode.map2 PointSelection
                 (Decode.at ["detail", "x"] Decode.int)
                 (Decode.at ["detail", "y"] Decode.int)
             ]

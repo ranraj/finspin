@@ -1,8 +1,8 @@
 module Config exposing (defaultNewTilePosition,colorPallet,svgWrapper)
-import Math.Vector2 as Vector2 exposing (Vec2)
+import Model exposing (Position)
 
-defaultNewTilePosition : Vec2
-defaultNewTilePosition = Vector2.vec2 10 10
+defaultNewTilePosition : Position
+defaultNewTilePosition = Position 10 10
 
 
 colorPallet : List String

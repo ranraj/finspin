@@ -4,12 +4,12 @@ import Draggable
 import Date
 
 import Tuple exposing (first,second)
-import Math.Vector2 as Vector2
 import File.Select as Select
 import Task
 
-import Model exposing (Model,Color(..),Msg(..))
-import Core exposing (buildNote,makeBox,emptyBox,updateNoteBox)
+import Model exposing (Model,Position)
+import Msg exposing (Color(..), Msg(..))
+import Core exposing (buildNote,makeBox,emptyBox,updateNoteBox,saveNotes)
 import Ports
 import View exposing (..)
 import App exposing (..)
@@ -46,7 +46,7 @@ update msg ({ boxGroup } as model) =
                 note  = buildNote (List.length model.boxGroup.idleBoxes) t d                             
                 isEmpty = String.isEmpty t && String.isEmpty d
                 savePostsCmd = if isEmpty || not model.saveDefault then Cmd.none else saveNotes idleBoxes
-                tilePosition = Vector2.vec2 (toFloat (first model.position)) (toFloat (second model.position))
+                tilePosition = Position (toFloat (first model.position)) (toFloat (second model.position))
                 idleBoxes = 
                     if isEmpty then 
                         boxGroup.idleBoxes
@@ -132,7 +132,7 @@ update msg ({ boxGroup } as model) =
                         in    
                             ( {model | isPopUpActive = True,currentBox = viewBox, editNote = True} , Cmd.none)
         SaveBoard -> (model,saveNotes model.boxGroup.idleBoxes)
-        Position x y -> ({ model | position = (x, y) },Cmd.none)
+        PointSelection x y -> ({ model | position = (x, y) },Cmd.none)
         UpdateTitleColor tileColor -> 
                         let
                             box = model.currentBox                                                                    

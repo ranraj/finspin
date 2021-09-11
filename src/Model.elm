@@ -1,10 +1,9 @@
 module Model exposing (..)
 
-import Math.Vector2 exposing (Vec2)
 import Draggable
 import Json.Decode exposing (Error(..))
 import File exposing (File)
-import Date exposing (Date)
+
 
 type alias Id =
     String
@@ -20,7 +19,7 @@ type alias Note =
 -------------------------------Box-----------------------------------
 type alias Box =
     { id : Id
-    , position : Vec2
+    , position : Position
     , clicked : Bool
     , note : Note
     , color : Maybe String
@@ -50,51 +49,25 @@ type alias Model =
     , files : List File
     }
 
--------------------------------Message-----------------------------------
-type Msg
-    = DragMsg (Draggable.Msg Id)
-    | OnDragBy Vec2
-    | StartDragging String    
-    | ViewNote String
-    | StopDragging
-    | AddNote String String
-    | CheckNote String
-    | ClearNote String
-    | ChangeTitle String
-    | ChangeDesc String
-    | StartNoteForm
-    | CancelNoteForm
-    | ReceivedDataFromJS String
-    | UpdateNote String String
-    | SaveBoard 
-    | Position Int Int
-    | UpdateTitleColor String
-    | InitDownloadSVG String
-    | DownloadSVG String Date
-    | Pick
-    | DragEnter
-    | DragLeave
-    | GotFiles File (List File)  
-    | MarkdownLoaded String
-    | ToggleAutoSave
-    | UpdateBoxSize BoxSize
-    | GetSvg
-    | GotSvg String
 
-
--------------------------------Colour-----------------------------------
-type Color = BoardGreen | White
 
 type alias LocalStore = 
     {
-      welcomeTour : Bool
-     ,boxGroups : List BoxGroup
+      welcomeTour : Bool,
+      boxGroups : List BoxGroup
     }
 
 -------------------------------TileSize-----------------------------------
 type alias BoxSize = 
-        {
-            title : String,            
-            width : Float,
-            height : Float
-         }
+    {
+        title : String,            
+        width : Float,
+        height : Float
+    }
+
+-------------------------------Position-----------------------------------
+type alias Position = 
+    {
+        x : Float,
+        y : Float        
+    }
