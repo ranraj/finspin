@@ -4,6 +4,8 @@ import Draggable
 import Model exposing (..)
 import Date exposing (Date)
 import File exposing (File)
+import Json.Encode as Encode
+import ContextMenu
 
 -------------------------------Message-----------------------------------
 type Msg
@@ -42,6 +44,20 @@ type Msg
     | DeselectShape
     | SelectShape Int
     | AddShape Shape
+    | SelectTool Tool
+    | MouseSvgMove SvgPosition
+    | BeginDrag DragAction
+    | EndDrag
+    | SelectedShapeAction ShapeAction
+    | ReceiveShapes Encode.Value
+    | RequestAuthentication
+    --| ReceiveUser Encode.Value
+    --| LogOut
+    | BeginImageUpload SvgPosition
+    | CancelImageUpload
+    | StoreFile String
+    | ReceiveFileStorageUpdate Encode.Value
+    | ContextMenuMsg (ContextMenu.Msg Int)
 
 -------------------------------Colour-----------------------------------
 type Color = BoardGreen | White

@@ -7,7 +7,7 @@ import Msg exposing (Msg(..))
 import Ports
 import Config exposing (defaultNewTilePosition,defaultBoxSize)
 import Dict exposing (Dict)
-
+import ContextMenu exposing (ContextMenu)
 subscriptionsDraggable : Model -> Sub Msg
 subscriptionsDraggable { drag } = 
     Draggable.subscriptions DragMsg drag
@@ -78,6 +78,10 @@ initialShapes =
 
 init : flags -> ( Model, Cmd Msg )
 init _ =
+    let
+        ( contextMenu, contextMsg ) =
+            ContextMenu.init
+    in
     ( { boxGroup = emptyGroup
       , drag = Draggable.init
       , isPopUpActive = False
@@ -96,6 +100,10 @@ init _ =
       , shapes = initialShapes
       , selectedShapeId = Nothing
       , selectedTool = PointerTool
+      , shapeOrdering = Dict.empty
+      , imageUpload = Nothing
+      , user = Nothing
+      , contextMenu = contextMenu
       }
     , Cmd.none
     )

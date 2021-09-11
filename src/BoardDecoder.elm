@@ -1,10 +1,15 @@
-module BoardDecoder exposing (boxListDecoder)
+module BoardDecoder exposing (boxListDecoder,shapesDecoder,uploadDecoder)
 
-import Json.Decode as JD exposing (Error(..), string,field,decodeString,bool,Decoder)
-import Model exposing (Note,Box,BoxSize)
+import Json.Decode as JD exposing (Error(..), string,field,decodeString,bool,Decoder,andThen,float,int)
+import Json.Decode.Pipeline
+    exposing
+        ( required
+        , custom
+        )
+import Model exposing (..)
 import Array
 import Model exposing (Position)
-
+import Dict exposing (Dict)
 notePositionDecoder : Maybe Float -> Maybe Float -> Position
 notePositionDecoder x y = 
         let         
@@ -71,3 +76,121 @@ boxListDecoder value =
                emptyArray = []
             in
                 emptyArray
+
+shapesDecoder : Decoder (Dict Int Shape)
+shapesDecoder =
+    JD.dict shapeDecoder
+        |> JD.map parseIntKeys
+
+
+parseIntKeys : Dict String Shape -> Dict Int Shape
+parseIntKeys stringShapes =
+    stringShapes
+        |> Dict.toList
+        |> List.map
+            (\( k, v ) ->
+                ( k |> String.toInt |> (\a -> 
+                    case a of 
+                      Just d -> d 
+                      Nothing -> 0
+                    )
+                , v
+                )
+            )
+        |> Dict.fromList
+
+
+shapeDecoder : Decoder Shape
+shapeDecoder =
+    field "type" string
+        |> andThen specificShapeDecoder
+
+
+specificShapeDecoder : String -> Decoder Shape
+specificShapeDecoder typeStr =
+    case typeStr of
+        "rect" ->
+            JD.succeed Rect
+                |> custom rectModelDecoder
+
+        "circle" ->
+            JD.succeed Circle
+                |> custom circleModelDecoder
+
+        "text" ->
+            JD.succeed Text
+                |> custom textModelDecoder
+
+        "image" ->
+            JD.succeed Image
+                |> custom imageModelDecoder
+
+        _ ->
+            JD.fail "unknown shape type"
+
+
+imageModelDecoder : Decoder ImageModel
+imageModelDecoder =
+    JD.succeed ImageModel
+        |> required "x" float
+        |> required "y" float
+        |> required "width" float
+        |> required "height" float
+        |> required "href" string
+
+
+rectModelDecoder : Decoder RectModel
+rectModelDecoder =
+    JD.succeed RectModel
+        |> required "x" float
+        |> required "y" float
+        |> required "width" float
+        |> required "height" float
+        |> required "stroke" string
+        |> required "strokeWidth" float
+        |> required "fill" string
+
+
+circleModelDecoder : Decoder CircleModel
+circleModelDecoder =
+    JD.succeed CircleModel
+        |> required "cx" float
+        |> required "cy" float
+        |> required "r" float
+        |> required "stroke" string
+        |> required "strokeWidth" float
+        |> required "fill" string
+
+
+textModelDecoder : Decoder TextModel
+textModelDecoder =
+    JD.succeed TextModel
+        |> required "x" float
+        |> required "y" float
+        |> required "content" string
+        |> required "fontFamily" string
+        |> required "fontSize" int
+        |> required "stroke" string
+        |> required "strokeWidth" float
+        |> required "fill" string
+
+
+userDecoder : Decoder User
+userDecoder =
+    JD.succeed User
+        |> required "displayName" string
+        |> required "email" string
+        |> required "photoURL" string
+
+
+uploadDecoder : Decoder Upload
+uploadDecoder =
+    -- We'll use `oneOf`, which will try different decoders until it finds a
+    -- successful decoder.
+    JD.oneOf <|
+        -- Then we'll look at each possible shape and decode them appropriately
+        [ field "running" <| JD.map Running float
+        , field "error" <| JD.map Errored string
+        , field "paused" <| JD.map Paused float
+        , field "complete" <| JD.map Completed string
+        ]

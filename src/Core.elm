@@ -37,20 +37,21 @@ makeBoxDefaultSize id note position color =
     Box id position False note color defaultBoxSize
 
 updateNoteBox : Model -> Box -> String -> String -> Box
-updateNoteBox model box t d = if (box.id == model.currentBox.id) then
-                                let
-                                    currentBox = model.currentBox
-                                    newTitle = if String.isEmpty t then box.note.title else t
-                                    newDescription = if String.isEmpty d then box.note.description else d
-                                    color = case currentBox.color of
-                                                Just _ -> currentBox.color
-                                                Nothing -> box.color
-                                    note = box.note             
-                                    newNote = {note | title = newTitle,description = newDescription}
-                                in    
-                                    {box | color = color, size = currentBox.size, note = newNote}
-                            else 
-                                box
+updateNoteBox model box t d = if (box.id == model.currentBox.id) 
+                                then
+                                    let
+                                        currentBox = model.currentBox
+                                        newTitle = if String.isEmpty t then box.note.title else t
+                                        newDescription = if String.isEmpty d then box.note.description else d
+                                        color = case currentBox.color of
+                                                    Just _ -> currentBox.color
+                                                    Nothing -> box.color
+                                        note = box.note             
+                                        newNote = {note | title = newTitle,description = newDescription}
+                                    in    
+                                        {box | color = color, size = currentBox.size, note = newNote}
+                                else 
+                                    box
 
 
 buildNote : Int -> String -> String ->  Note

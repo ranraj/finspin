@@ -4,6 +4,7 @@ import Draggable
 import Json.Decode exposing (Error(..))
 import File exposing (File)
 import Dict exposing (Dict)
+import ContextMenu exposing (ContextMenu)
 
 type alias Id =
     String
@@ -53,6 +54,10 @@ type alias Model =
     , shapes : Dict Int Shape    
     , selectedShapeId : Maybe Int
     , selectedTool : Tool
+    , user : Maybe User
+    , imageUpload : Maybe ImageUpload
+    , shapeOrdering : Dict Int Int
+    , contextMenu : ContextMenu Int
     }
 
 
@@ -157,3 +162,13 @@ type alias ImageModel =
 type DragAction
     = DragMove
     | DragResize
+
+type ImageUpload
+    = AwaitingFileSelection SvgPosition
+    | AwaitingCompletion SvgPosition Upload
+
+type Upload
+    = Running Float
+    | Paused Float
+    | Errored String
+    | Completed String
