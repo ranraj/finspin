@@ -9,10 +9,10 @@ import Task
 
 import Model exposing (Model,Position)
 import Msg exposing (Color(..), Msg(..))
-import Core exposing (buildNote,makeBox,emptyBox,updateNoteBox,saveNotes)
+import Core exposing (buildNote,makeBox,updateNoteBox,saveNotes)
 import Ports
 import View exposing (..)
-import App exposing (..)
+import App exposing (emptyBox)
 import BoardTiles exposing (..)
 import BoardDecoder exposing (boxListDecoder)
 
@@ -178,3 +178,12 @@ update msg ({ boxGroup } as model) =
             ( model,Cmd.batch [Ports.getSvg "boxesView",Task.perform  (DownloadSVG "") Date.today]  )
         GotSvg output ->             
             ( model, downloadSVG output "type")     
+        NoOp ->
+            ( model, Cmd.none )
+        MouseMove pos ->
+            let
+                mouse = model.mouse
+                nextMouse =
+                    { mouse | position = pos }
+            in
+                ({ model | mouse = nextMouse }, Cmd.none)

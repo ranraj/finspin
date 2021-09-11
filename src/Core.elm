@@ -5,10 +5,11 @@ import Tuple exposing (first,second)
 
 import Model exposing (Id,Model,Box,Note,BoxSize,BoxGroup)
 import Msg exposing (Color(..), Msg(..))
-import Config exposing (defaultNewTilePosition)
 import BoardEncoder exposing (boxListEncoder)
 import Ports
 import Model exposing (Position)
+import Config exposing (defaultBoxSize)
+import App exposing (..)
 
 welcomeNotes : List Note
 welcomeNotes =  
@@ -25,17 +26,6 @@ welcomeNotes =
         }
     ]
 
-emptyNote : Note
-emptyNote =
-    { id = "" 
-    , done = False
-    , title = ""
-    , description = ""    
-    }
-
-
-emptyBox : Box
-emptyBox = Box "" defaultNewTilePosition False emptyNote Nothing defaultBoxSize
 
 makeBox : Id -> Note -> Position -> Maybe String -> BoxSize -> Box 
 makeBox id note position color size =
@@ -63,10 +53,6 @@ updateNoteBox model box t d = if (box.id == model.currentBox.id) then
                                 box
 
 
-emptyGroup : BoxGroup
-emptyGroup =
-    BoxGroup 0 Nothing []
-
 buildNote : Int -> String -> String ->  Note
 buildNote length t d  = { 
             id = ((String.fromInt length ++ String.slice 0 5 t))
@@ -82,19 +68,19 @@ addBoxInBoxGroup note position ({ uid, idleBoxes } as group) =
         , uid = uid + 1
     }    
 
-makeBoxGroup : List (Position,Note) -> BoxGroup
-makeBoxGroup positions =
-    positions
-        |>  List.foldl (\position -> addBoxInBoxGroup (second position) (first position)) emptyGroup
+-- makeBoxGroup : List (Position,Note) -> BoxGroup
+-- makeBoxGroup positions =
+--     positions
+--         |>  List.foldl (\position -> addBoxInBoxGroup position.x position.y) emptyGroup
 
-defaultBoxGroup : BoxGroup
-defaultBoxGroup =
-    let
-        indexToPosition =
-            toFloat >> (*) 60 >> (+) 10 >> Position 10
-        notes = welcomeNotes
-    in
-    notes |> List.indexedMap (\i x -> ((indexToPosition i),x)) |> makeBoxGroup
+-- defaultBoxGroup : BoxGroup
+-- defaultBoxGroup =
+--     let
+--         indexToPosition =
+--             toFloat >> (*) 60 >> (+) 10 >> Position 10
+--         notes = welcomeNotes
+--     in
+--     notes |> List.indexedMap (\i x -> ((indexToPosition i),x)) |> makeBoxGroup
 
 getColor : Color -> String
 getColor color = 
@@ -105,10 +91,7 @@ getColor color =
 
 boxSize : Position
 boxSize =
-    Position defaultBoxSize.width defaultBoxSize.height
-
-defaultBoxSize : BoxSize         
-defaultBoxSize = BoxSize "1x" 210.0 50.0   
+    Position defaultBoxSize.width defaultBoxSize.height   
 
 boxSizePallet : List BoxSize
 boxSizePallet = 
@@ -118,24 +101,6 @@ boxSizePallet =
             {defaultBoxSize | title = "3x", height=defaultBoxSize.height + 40},
             {defaultBoxSize | title = "4x", height=defaultBoxSize.height + 60}
         ]
-
-init : flags -> ( Model, Cmd Msg )
-init _ =
-    ( { boxGroup = emptyGroup
-      , drag = Draggable.init
-      , isPopUpActive = False
-      , editNote = False
-      , currentBox = emptyBox
-      , saveDefault = True
-      , localData = []
-      , jsonError = Nothing
-      , welcomeTour = True
-      , position =  (160, 120)
-      , hover = False
-      , files = []
-      }
-    , Cmd.none
-    )
 
 saveNotes : List Box -> Cmd msg
 saveNotes noteBoxes = boxListEncoder noteBoxes |> Ports.storeNotes            

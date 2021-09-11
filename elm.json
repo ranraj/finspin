@@ -17,14 +17,14 @@
             "jinjor/elm-contextmenu": "2.0.0",
             "justinmimbs/date": "3.2.1",
             "lattyware/elm-fontawesome": "5.0.0",
+            "mpizenberg/elm-pointer-events": "4.0.2",
             "zaboco/elm-draggable": "5.0.0"
         },
         "indirect": {
             "elm/bytes": "1.0.8",
             "elm/parser": "1.1.0",
             "elm/url": "1.0.0",
-            "elm/virtual-dom": "1.0.2",
-            "mpizenberg/elm-pointer-events": "4.0.2"
+            "elm/virtual-dom": "1.0.2"
         }
     },
     "test-dependencies": {

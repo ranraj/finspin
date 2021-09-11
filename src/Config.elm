@@ -1,9 +1,11 @@
-module Config exposing (defaultNewTilePosition,colorPallet,svgWrapper)
-import Model exposing (Position)
+module Config exposing (defaultNewTilePosition,colorPallet,svgWrapper,defaultBoxSize)
+import Model exposing (Position,BoxSize)
 
 defaultNewTilePosition : Position
 defaultNewTilePosition = Position 10 10
 
+defaultBoxSize : BoxSize         
+defaultBoxSize = BoxSize "1x" 210.0 50.0
 
 colorPallet : List String
 colorPallet = ["#c2d421","#91b1fd","#fdb9fd","#fec685","#5F9A80"]

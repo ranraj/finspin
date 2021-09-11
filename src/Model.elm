@@ -3,7 +3,7 @@ module Model exposing (..)
 import Draggable
 import Json.Decode exposing (Error(..))
 import File exposing (File)
-
+import Html.Events.Extra.Mouse as Mouse
 
 type alias Id =
     String
@@ -47,6 +47,7 @@ type alias Model =
     , position :  (Int, Int)
     , hover : Bool
     , files : List File
+    , mouse : MouseModel
     }
 
 
@@ -70,4 +71,80 @@ type alias Position =
     {
         x : Float,
         y : Float        
+    }
+
+------------------------------ Svg tool ----------------------------------
+type alias User =
+    { displayName : String
+    , email : String
+    , photoUrl : String
+    }
+
+
+type Tool
+    = PointerTool
+    | RectTool
+    | CircleTool
+    | TextTool
+    | ImageTool
+
+
+type alias MouseModel =
+    { position : Position
+    , down : Bool
+    , svgPosition : SvgPosition
+    , downSvgPosition : SvgPosition
+    }
+
+type alias SvgPosition =
+    { x : Float
+    , y : Float
+    }
+
+type Shape
+    = Rect RectModel
+    | Circle CircleModel
+    | Text TextModel
+    | Image ImageModel
+
+
+type alias RectModel =
+    { x : Float
+    , y : Float
+    , width : Float
+    , height : Float
+    , stroke : String
+    , strokeWidth : Float
+    , fill : String
+    }
+
+
+type alias CircleModel =
+    { cx : Float
+    , cy : Float
+    , r : Float
+    , stroke : String
+    , strokeWidth : Float
+    , fill : String
+    }
+
+
+type alias TextModel =
+    { x : Float
+    , y : Float
+    , content : String
+    , fontFamily : String
+    , fontSize : Int
+    , stroke : String
+    , strokeWidth : Float
+    , fill : String
+    }
+
+
+type alias ImageModel =
+    { x : Float
+    , y : Float
+    , width : Float
+    , height : Float
+    , href : String
     }

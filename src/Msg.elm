@@ -35,7 +35,33 @@ type Msg
     | UpdateBoxSize BoxSize
     | GetSvg
     | GotSvg String
-
+    | NoOp
+    | MouseMove Position
 
 -------------------------------Colour-----------------------------------
 type Color = BoardGreen | White
+
+-------------------------------Svg Shapes Action-----------------------------------
+type ShapeAction
+    = SendToBack
+    | SendBackward
+    | BringForward
+    | BringToFront
+    | UpdateText TextAction
+    | UpdateRect RectAction
+
+
+type TextAction
+    = SetContent String
+
+type RectAction
+    = SetRectX Float
+    | SetRectY Float
+    | SetRectWidth Float
+    | SetRectHeight Float
+    | SetRectFill String
+    | SetRectStroke String
+
+
+type ModifyShapeMsg
+    = IncreaseWidth Float
