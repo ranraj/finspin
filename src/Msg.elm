@@ -39,6 +39,9 @@ type Msg
     | MouseMove Position
     | MouseDown Position
     | MouseUp Position
+    | DeselectShape
+    | SelectShape Int
+    | AddShape Shape
 
 -------------------------------Colour-----------------------------------
 type Color = BoardGreen | White

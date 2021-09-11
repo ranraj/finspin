@@ -2,7 +2,7 @@ module App exposing (subscriptions,init,emptyBox)
 
 import Draggable
 
-import Model exposing (Model,MouseModel,Note,Box,BoxGroup,Shape(..))
+import Model exposing (Model,MouseModel,Note,Box,BoxGroup,Shape(..),Tool(..))
 import Msg exposing (Msg(..))
 import Ports
 import Config exposing (defaultNewTilePosition,defaultBoxSize)
@@ -94,6 +94,8 @@ init _ =
       , dragAction = Nothing
       , comparedShape = Nothing
       , shapes = initialShapes
+      , selectedShapeId = Nothing
+      , selectedTool = PointerTool
       }
     , Cmd.none
     )

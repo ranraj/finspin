@@ -48,9 +48,11 @@ type alias Model =
     , hover : Bool
     , files : List File
     , mouse : MouseModel
-    , dragAction : Maybe DragAction
+    , dragAction : Maybe DragAction    
     , comparedShape : Maybe Shape
-    , shapes : Dict Int Shape
+    , shapes : Dict Int Shape    
+    , selectedShapeId : Maybe Int
+    , selectedTool : Tool
     }
 
 

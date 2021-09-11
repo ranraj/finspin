@@ -8,7 +8,7 @@ import File.Select as Select
 import Task
 import Dict exposing (Dict)
 
-import Model exposing (Model,Position,Shape)
+import Model exposing (Model,Position,Shape(..),Tool(..))
 import Msg exposing (Color(..), Msg(..))
 import Core exposing (buildNote,makeBox,updateNoteBox,saveNotes)
 import Ports
@@ -17,6 +17,7 @@ import App exposing (emptyBox)
 import BoardTiles exposing (..)
 import BoardDecoder exposing (boxListDecoder)
 import BoardEncoder exposing (shapesEncoder)
+import Model exposing (Tool(..))
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg ({ boxGroup } as model) =
@@ -67,8 +68,15 @@ update msg ({ boxGroup } as model) =
                 savePostsCmd = if isEmpty || not model.saveDefault then Cmd.none else saveNotes newIdleBoxes
                 
             in
-                 ({ model | isPopUpActive = False,editNote = False,boxGroup = { boxGroup | idleBoxes = newIdleBoxes}}
-                , savePostsCmd)
+                 ({ model |                     
+                    isPopUpActive = False,
+                    editNote = False,
+                    boxGroup = { 
+                        boxGroup |
+                             idleBoxes = newIdleBoxes
+                             }     
+                  }
+                 , savePostsCmd)
 
         CheckNote i ->
             let
@@ -216,10 +224,59 @@ update msg ({ boxGroup } as model) =
 
                     Nothing ->
                         (nextModel,Cmd.none)
-                            
+        DeselectShape ->
+            ({ model | selectedShapeId = Nothing }                
+            ,Cmd.none)                        
+        SelectShape shapeId ->
+            ({ model
+                | selectedShapeId = Just shapeId
+            },Cmd.none)
+        AddShape shape ->
+            ( model |> addShape shape
+            , Cmd.none
+            )
+                |> andSendShapes
+       
+                
+
+        -- AddShape shape ->
+        --     ( model |> addShape shape
+        --     , Cmd.none
+        --     )
+        --         |> andSendShapes                    
 
 sendShapes : Dict Int Shape -> Cmd Msg
 sendShapes shapes =
     shapes
         |> shapesEncoder
         |> Ports.persistShapes
+
+addShape : Shape -> Model -> Model
+addShape shape model =
+    let
+        shapes : Dict Int Shape
+        shapes =
+            model.shapes
+
+        maxId : Int
+        maxId =
+            shapes
+                |> Dict.keys
+                |> List.maximum
+                |> Maybe.withDefault 0
+
+        nextShapes : Dict Int Shape
+        nextShapes =
+            model.shapes
+                |> Dict.insert (maxId + 1) shape
+    in
+        { model | shapes = nextShapes }
+
+andSendShapes : ( Model, Cmd Msg ) -> ( Model, Cmd Msg )
+andSendShapes ( model, cmd ) =
+    ( model
+    , Cmd.batch
+        [ cmd
+        , sendShapes model.shapes
+        ]
+    )
