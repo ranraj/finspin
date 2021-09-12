@@ -180,7 +180,9 @@ update msg ({ boxGroup } as model) =
         InitDownloadSVG content ->(model,Task.perform  (DownloadSVG content) Date.today)                    
         DownloadSVG content today -> (model,downloadJson content (Date.toIsoString today))                    
         GetSvg ->
-            ( model,Cmd.batch [Ports.getSvg "boxesView",Task.perform  (DownloadSVG "") Date.today]  )
+            ( model,Cmd.batch [Ports.getSvg "boxesView"
+            --,Task.perform  (DownloadSVG "") Date.today
+            ]  )
         GotSvg output ->             
             ( model, downloadSVG output "type")     
         SelectShape context action ->
