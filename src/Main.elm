@@ -15,7 +15,7 @@ main =
     Browser.element
         { init = init
         , update = update
-        , subscriptions = \model -> Sub.batch [subscriptionsLocalStorage model,subscriptions model,subscriptionsSvgDownload model]
+        , subscriptions = App.subscriptions
         , view = view
         }
 

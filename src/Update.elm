@@ -15,10 +15,15 @@ import View exposing (..)
 import App exposing (..)
 import BoardTiles exposing (..)
 import BoardDecoder exposing (boxListDecoder)
+import ContextMenu exposing (ContextMenu)
+import Model exposing (BoxAction(..))
+import Model exposing (BoxGroup)
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg ({ boxGroup } as model) =
     case msg of
+        NoOp ->
+            ( model, Cmd.none )
         OnDragBy delta ->
             ( { model | boxGroup = boxGroup |> dragActiveBy delta }, Cmd.none )
 
@@ -178,3 +183,29 @@ update msg ({ boxGroup } as model) =
             ( model,Cmd.batch [Ports.getSvg "boxesView",Task.perform  (DownloadSVG "") Date.today]  )
         GotSvg output ->             
             ( model, downloadSVG output "type")     
+        SelectShape context action ->
+                        let                                                        
+                           updateMsg = if context == "mainContextMenu" then
+                               case action of 
+                                        New -> StartNoteForm
+                                        DeleteAll -> NoOp
+                                        Share ->  NoOp
+                                        _ -> NoOp
+                            else
+                                case action of 
+                                        Open -> ViewNote context
+                                        Completed -> CheckNote context
+                                        Delete ->  ClearNote context 
+                                        _ -> NoOp
+                        in            
+                            (model,run updateMsg)
+        ContextMenuMsg cMsg ->
+                        let                            
+                            ( contextMenu_, cmd ) =
+                                ContextMenu.update cMsg model.contextMenu
+                        in
+                            ({ model | contextMenu = contextMenu_ } , Cmd.map ContextMenuMsg cmd )           
+
+run : msg -> Cmd msg
+run m =
+    Task.perform (always m) (Task.succeed ())

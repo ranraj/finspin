@@ -6,7 +6,7 @@ import Tuple exposing (first,second)
 
 import Model exposing (..)
 import Config exposing (defaultNewTilePosition)
-
+import ContextMenu exposing (ContextMenu)
 
 welcomeNotes : List Note
 welcomeNotes =  
@@ -118,6 +118,11 @@ boxSizePallet = [
 
 init : flags -> ( Model, Cmd Msg )
 init _ =
+    let
+        ( contextMenu, contextMsg ) =
+            ContextMenu.init
+    in
+    
     ( { boxGroup = emptyGroup
       , drag = Draggable.init
       , isPopUpActive = False
@@ -130,6 +135,8 @@ init _ =
       , position =  (160, 120)
       , hover = False
       , files = []
+      , contextMenu = contextMenu
+      , selectedShapeId = Nothing
       }
-    , Cmd.none
+    , Cmd.map ContextMenuMsg contextMsg
     )

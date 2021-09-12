@@ -5,6 +5,7 @@ import Draggable
 import Json.Decode exposing (Error(..))
 import File exposing (File)
 import Date exposing (Date)
+import ContextMenu exposing (ContextMenu)
 
 type alias Id =
     String
@@ -48,11 +49,14 @@ type alias Model =
     , position :  (Int, Int)
     , hover : Bool
     , files : List File
+    , contextMenu : ContextMenu String
+    , selectedShapeId : Maybe String
     }
 
 -------------------------------Message-----------------------------------
 type Msg
-    = DragMsg (Draggable.Msg Id)
+    = NoOp
+    | DragMsg (Draggable.Msg Id)
     | OnDragBy Vec2
     | StartDragging String    
     | ViewNote String
@@ -80,8 +84,9 @@ type Msg
     | UpdateBoxSize BoxSize
     | GetSvg
     | GotSvg String
-
-
+    | ContextMenuMsg (ContextMenu.Msg String)
+    | SelectShape String BoxAction
+    
 -------------------------------Colour-----------------------------------
 type Color = BoardGreen | White
 
@@ -98,3 +103,37 @@ type alias BoxSize =
             width : Float,
             height : Float
          }
+
+
+type ShapeAction
+    = SendToBack
+    | SendBackward
+    | BringForward
+    | BringToFront
+    | UpdateText TextAction
+    | UpdateRect RectAction
+
+
+type TextAction
+    = SetContent String
+
+type RectAction
+    = SetRectX Float
+    | SetRectY Float
+    | SetRectWidth Float
+    | SetRectHeight Float
+    | SetRectFill String
+    | SetRectStroke String
+
+type ModifyShapeMsg
+    = IncreaseWidth Float
+
+type BoxAction
+    = Open
+    | Completed
+    | Delete
+    | New
+    | DeleteAll
+    | Share
+
+type ContenxtMenuArea = MainSVG | BoxSVG

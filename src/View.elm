@@ -21,18 +21,19 @@ import Task
 import File exposing (File)
 
 import BoardEncoder exposing (boxListEncoder)
-import Model exposing (Model,Box,BoxGroup,Color(..),Msg(..))
+import Model exposing (Model,Box,BoxGroup,Color(..),Msg(..),BoxAction(..),ContenxtMenuArea(..))
 import Core exposing (getColor,boxSizePallet)
 import Config exposing (colorPallet,svgWrapper)
 import Json.Encode as Encode
 import Json.Decode as Decode
+import ContextMenu exposing (ContextMenu,Item)
 
-boxesView : BoxGroup -> Svg Msg
-boxesView boxGroup =
-    boxGroup
+boxesView : Model -> Svg Msg
+boxesView model =
+    model.boxGroup
         |> allBoxes
         |> List.reverse
-        |> List.map boxView
+        |> List.map (boxView model)
         |> Svg.node "g" [Attr.id "boxesView"]
 
 downloadJson : String -> String -> Cmd msg
@@ -63,8 +64,8 @@ addNotePanel box isEdit =
                 button [ onClick ((if isEdit then UpdateNote else AddNote) note.title note.description), class "form-btn"] [text "Save"]
                 ,button [ onClick CancelNoteForm, class "form-btn" ] [text "Clear"]            
                 ] 
-            ,colorPickerView    
-            ,titleSizePickerView      
+            , colorPickerView    
+            , titleSizePickerView      
             ]
 
 colorPickerView : Html Msg
@@ -146,6 +147,7 @@ svgBox model =
                 <| Decode.map2 Position
                 (Decode.at ["detail", "x"] Decode.int)
                 (Decode.at ["detail", "y"] Decode.int)
+            , ContextMenu.open ContextMenuMsg "mainContextMenu"    
             ]
             
             [ Svg.rect [
@@ -164,11 +166,11 @@ svgBox model =
                 , Attr.r <| String.fromInt radius
                 , Attr.fill "white"
                 , Attr.stroke "black"
-                , Attr.strokeWidth "2"
+                , Attr.strokeWidth "2"                
                 ]
                 []
                 --, svgBoard 
-                , boxesView (model.boxGroup)                     
+                , boxesView model
             ]
 
 
@@ -209,9 +211,32 @@ view model =
              ,class "content-controller-item"
              ] [ Icon.viewStyled [ Icon.fa2x ] Icon.download]                    
         --, getNotes model.boxGroup        //TODO : Move this in next page Bookmark
+        , div
+        [ ContextMenu.open ContextMenuMsg "mainContextMenu"]
+        [ ContextMenu.view
+            ContextMenu.defaultConfig
+                ContextMenuMsg 
+                boxContextMenuItems
+                model.contextMenu
+        ]        
         ]        
     ]
 
+boxContextMenuItems : String -> List (List (Item,Msg))
+boxContextMenuItems context =  
+    if context == "mainContextMenu" then
+        [[
+         (ContextMenu.item "New Note", SelectShape context Open)
+        , (ContextMenu.item "Delete All", SelectShape context Completed)
+        , (ContextMenu.item "Share", SelectShape context Delete)
+        ]]
+    else[ [ (ContextMenu.item "Open", SelectShape context Open)
+        , (ContextMenu.item "Mark toggle", SelectShape context Completed)
+        , (ContextMenu.item "Delete", SelectShape context Delete)        
+        ]
+        ] 
+        
+ 
 viewFileUpload : Model -> Html Msg    
 viewFileUpload model = div
     [ class "file-upload-holder"

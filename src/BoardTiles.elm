@@ -10,12 +10,14 @@ import Html.Attributes exposing (value)
 import Math.Vector2 as Vector2 exposing (Vec2, getX, getY)
 import Draggable
 import Draggable.Events exposing (onDragBy, onDragStart)
+import ContextMenu exposing (ContextMenu)
 
-import Model exposing (Box,Msg,Color(..), Msg(..),Id,BoxGroup)
+import Model exposing (Model,Box,Msg,Color(..), Msg(..),Id,BoxGroup,ShapeAction(..),ContenxtMenuArea(..))
 import Core exposing (getColor)
+import ContextMenu exposing (ContextMenu)
 
-boxView : Box -> Svg Msg
-boxView { id, position, note,color,size} =
+boxView : Model -> Box -> Svg Msg
+boxView model { id, position, note,color,size}  =
     let
         newColor = case color of 
                     Just c -> c
@@ -37,7 +39,8 @@ boxView { id, position, note,color,size} =
                 , convertToNum Attr.y (getY position)
                 , Attr.fill newColor
                 , Attr.stroke (getColor White)
-                , Attr.cursor "move"                
+                , Attr.cursor "move"   
+                , ContextMenu.open ContextMenuMsg id
                 ]
                 []
                 ,text_
@@ -47,7 +50,7 @@ boxView { id, position, note,color,size} =
                 , Attr.fill (getColor White)
                 , Attr.cursor "move"
                 , Attr.class isDone             
-                
+                , ContextMenu.open ContextMenuMsg id
                 ]
                 [text (String.slice 0 20 note.title) ]
                 ,text_
@@ -57,10 +60,12 @@ boxView { id, position, note,color,size} =
                 , Attr.fill (getColor White)
                 , Attr.cursor "move" 
                 , Attr.class isDone                   
-                        
+                , ContextMenu.open ContextMenuMsg id
                 ]
-                [text (String.append (String.slice 0 20 note.description)  "...")    ]        
+                [text (String.append (String.slice 0 20 note.description)  "...")               
+                 ]        
             ]
+
 
 
 convertToNum : (String -> Svg.Attribute msg) -> Float -> Svg.Attribute msg

@@ -19,9 +19,7 @@
     "homepage": "https://github.com/ranraj/finspin#readme",
     "devDependencies": {
         "webpack-cli": "^3.3.6",
-        "webpack-pwa-manifest": "^4.0.0"
-    },
-    "dependencies": {
+        "webpack-pwa-manifest": "^4.0.0",
         "css-loader": "^5.1.1",
         "elm": "^0.19.0-no-deps",
         "elm-webpack-loader": "^6.0.0",
@@ -30,6 +28,8 @@
         "style-loader": "^2.0.0",
         "sw-precache-webpack-plugin": "^1.0.0",
         "webpack": "^4.39.1",
-        "webpack-dev-server": "^3.7.2"
-    }
+        "webpack-dev-server": "^3.7.2",
+        "jinjor/elm-contextmenu": "1.0.3 <= v < 2.0.0"
+    },
+    "dependencies": {}
 }
