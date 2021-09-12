@@ -295,7 +295,7 @@ update msg ({ boxGroup } as model) =
         --         |> Result.map (\user -> ({ model | user = Just user } , Cmd.none)
         --         |> Result.withDefault (model,Cmd.none)
 
-        --LogOut -> ({ model | user = Nothing }, Ports.logOut () )
+        LogOut -> ({ model | user = Nothing }, Ports.logOut () )
 
         -- We need to handle a message that signals we'll start the image upload
         -- UI process

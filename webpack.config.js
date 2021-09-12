@@ -1,6 +1,7 @@
 var path = require("path");
 var SWPrecacheWebpackPlugin = require('sw-precache-webpack-plugin');
 var WebpackPwaManifest = require('webpack-pwa-manifest');
+const webpack = require('webpack');
 
 module.exports = {
     entry: {
@@ -16,24 +17,64 @@ module.exports = {
 
     module: {
         rules: [{
-                test: /\.html$/,
-                exclude: /node_modules/,
-                loader: 'file-loader?name=[name].[ext]',
-            },
-            {
-                test: /\.elm$/,
-                exclude: [/elm-stuff/, /node_modules/],
-                loader: 'elm-webpack-loader?verbose=true',
-            },
-            {
-                test: /\.css$/,
-                use: ['style-loader', 'css-loader']
-            }
-        ],
+            test: /\.html$/,
+            exclude: /node_modules/,
+            loader: 'file-loader?name=[name].[ext]',
+        },
+        {
+            test: /\.elm$/,
+            exclude: [/elm-stuff/, /node_modules/],
+            loader: 'elm-webpack-loader?verbose=true',
+        },
+        {
+            test: /\.css$/,
+            use: [
+                {
+                    loader: 'style-loader',
+                },
+                {
+                    loader: 'css-loader',
+                    options: {
+                        importLoaders: 1,
+                    }
+                    // },
+                    // {
+                    //     loader: 'postcss-loader'
+                }
+            ]
+        },
+        {
+            test: /\.woff(\?v=\d+\.\d+\.\d+)?$/,
+            use: [{
+                loader: 'file-loader',
+                options: {}
+            }]
+        }, {
+            test: /\.woff2(\?v=\d+\.\d+\.\d+)?$/,
+            use: [{
+                loader: 'file-loader',
+                options: {}
+            }]
+        }, {
+            test: /\.ttf(\?v=\d+\.\d+\.\d+)?$/,
+            use: [{
+                loader: 'file-loader',
+                options: {}
+            }]
+        }, {
+            test: /\.eot(\?v=\d+\.\d+\.\d+)?$/,
+            loader: "file"
+        }, {
+            test: /\.svg(\?v=\d+\.\d+\.\d+)?$/,
+            use: [{
+                loader: 'file-loader',
+                options: {}
+            }]
+        }],
 
-        noParse: /\.elm$/,
+        noParse: /\.elm$/
+
     },
-
     plugins: [
         new SWPrecacheWebpackPlugin({
             cacheId: 'ranraj/finspin',

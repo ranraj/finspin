@@ -5,7 +5,7 @@ import Browser
 import BoardTiles exposing (..)
 import Model exposing (Model)
 import Msg exposing (Color(..),Msg(..))
-import View 
+import View1
 import Update
 import App
 
@@ -16,6 +16,6 @@ main =
         { init = App.init
         , update = Update.update
         , subscriptions = App.subscriptions
-        , view = View.view
+        , view = View1.view
         }
 

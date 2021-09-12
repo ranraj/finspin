@@ -51,8 +51,8 @@ type Msg
     | SelectedShapeAction ShapeAction
     | ReceiveShapes Encode.Value
     | RequestAuthentication
-    --| ReceiveUser Encode.Value
-    --| LogOut
+   -- | ReceiveUser Encode.Value
+    | LogOut
     | BeginImageUpload SvgPosition
     | CancelImageUpload
     | StoreFile String
