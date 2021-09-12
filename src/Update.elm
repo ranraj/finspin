@@ -100,7 +100,7 @@ update msg ({ boxGroup } as model) =
             in
             ({ model | isPopUpActive = False, boxGroup = { boxGroup | idleBoxes = idleBoxesFiltered }}, savePostsCmd)
 
-        StartNoteForm ->
+        StartNoteForm -> 
             ({ model | isPopUpActive = True }, Cmd.none)
         
         CancelNoteForm ->
@@ -185,20 +185,21 @@ update msg ({ boxGroup } as model) =
             ( model, downloadSVG output "type")     
         SelectShape context action ->
                         let                                                        
-                           updateMsg = if context == "mainContextMenu" then
+                           updateCmdMsg = if context == "mainContextMenu" then
                                case action of 
-                                        New -> StartNoteForm
-                                        DeleteAll -> NoOp
-                                        Share ->  NoOp
-                                        _ -> NoOp
+                                        New -> (model,run StartNoteForm)
+                                        DeleteAll -> (model,run NoOp)
+                                        Share ->  (model,run NoOp)
+                                        _ -> (model, run NoOp)
                             else
                                 case action of 
-                                        Open -> ViewNote context
-                                        Completed -> CheckNote context
-                                        Delete ->  ClearNote context 
-                                        _ -> NoOp
+                                        Open -> (model,run (ViewNote context))
+                                        Completed -> (model, run (CheckNote context))
+                                        Delete ->  (model,run (ClearNote context))
+                                        _ -> (model,run NoOp)
+                             
                         in            
-                            (model,run updateMsg)
+                            updateCmdMsg
         ContextMenuMsg cMsg ->
                         let                            
                             ( contextMenu_, cmd ) =

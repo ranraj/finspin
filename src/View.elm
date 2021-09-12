@@ -226,9 +226,9 @@ boxContextMenuItems : String -> List (List (Item,Msg))
 boxContextMenuItems context =  
     if context == "mainContextMenu" then
         [[
-         (ContextMenu.item "New Note", SelectShape context Open)
-        , (ContextMenu.item "Delete All", SelectShape context Completed)
-        , (ContextMenu.item "Share", SelectShape context Delete)
+         (ContextMenu.item "New Note", SelectShape context New)
+        , (ContextMenu.item "Delete All", SelectShape context DeleteAll)
+        , (ContextMenu.item "Share", SelectShape context Share)
         ]]
     else[ [ (ContextMenu.item "Open", SelectShape context Open)
         , (ContextMenu.item "Mark toggle", SelectShape context Completed)
