@@ -28,8 +28,7 @@
         "style-loader": "^2.0.0",
         "sw-precache-webpack-plugin": "^1.0.0",
         "webpack": "^4.39.1",
-        "webpack-dev-server": "^3.7.2",
-        "jinjor/elm-contextmenu": "1.0.3 <= v < 2.0.0"
+        "webpack-dev-server": "^3.7.2"
     },
     "dependencies": {}
 }
