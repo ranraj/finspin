@@ -15,6 +15,7 @@ import ContextMenu exposing (ContextMenu)
 import Model exposing (Model,Box,Msg,Color(..), Msg(..),Id,BoxGroup,ShapeAction(..),ContenxtMenuArea(..))
 import Core exposing (getColor)
 import ContextMenu exposing (ContextMenu)
+import Config exposing (headerNoteHeight)
 
 boxView : Model -> Box -> Svg Msg
 boxView model { id, position, note,color,size}  =
@@ -26,24 +27,21 @@ boxView model { id, position, note,color,size}  =
                     "done"
                  else
                     ""                                     
-    in
-        Svg.svg
-            [Draggable.mouseTrigger id DragMsg
-                , onMouseUp StopDragging
-                ] 
-            [
-                Svg.rect
+        labelNote = if String.isEmpty note.description && (not (String.isEmpty note.title)) then True else False                     
+                
+        height_ = if labelNote then headerNoteHeight else size.height               
+        svgNoteBox = Svg.rect
                 [ convertToNum Attr.width <| size.width
-                , convertToNum Attr.height <| size.height
+                , convertToNum Attr.height <| height_
                 , convertToNum Attr.x (getX position)
                 , convertToNum Attr.y (getY position)
                 , Attr.fill newColor
                 , Attr.stroke (getColor White)
                 , Attr.cursor "move"   
-                , ContextMenu.open ContextMenuMsg id
+                , ContextMenu.open ContextMenuMsg id                
                 ]
-                []
-                ,text_
+                []          
+        svgTitle = text_
                 [ convertToNum Attr.x ((getX (position)) + 20)
                 , convertToNum Attr.y  ((getY (position)) + 20) 
                 , Attr.stroke (getColor White)
@@ -53,7 +51,7 @@ boxView model { id, position, note,color,size}  =
                 , ContextMenu.open ContextMenuMsg id
                 ]
                 [text (String.slice 0 20 note.title) ]
-                ,text_
+        svgDescription = text_
                 [ convertToNum Attr.x ((getX (position)) + 20)
                 , convertToNum Attr.y  ((getY (position)) + 35) 
                 , Attr.stroke (getColor White)
@@ -62,9 +60,14 @@ boxView model { id, position, note,color,size}  =
                 , Attr.class isDone                   
                 , ContextMenu.open ContextMenuMsg id
                 ]
-                [text (String.append (String.slice 0 20 note.description)  "...")               
-                 ]        
-            ]
+                [text (String.append (String.slice 0 20 note.description)  "...")]
+        svgsBoxItems = if labelNote then [ svgNoteBox , svgTitle]  else [ svgNoteBox , svgTitle , svgDescription]        
+    in
+        Svg.svg
+            [Draggable.mouseTrigger id DragMsg
+                , onMouseUp StopDragging
+                ] 
+            svgsBoxItems
 
 
 

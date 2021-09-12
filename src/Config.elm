@@ -1,5 +1,6 @@
-module Config exposing (defaultNewTilePosition,colorPallet,svgWrapper)
+module Config exposing (defaultNewTilePosition,colorPallet,svgWrapper,headerNoteHeight)
 import Math.Vector2 as Vector2 exposing (Vec2)
+import Model exposing (Msg(..))
 
 defaultNewTilePosition : Vec2
 defaultNewTilePosition = Vector2.vec2 10 10
@@ -19,3 +20,5 @@ svgWrapper board =
     board
     ++
     "</svg>"
+
+headerNoteHeight = 30
