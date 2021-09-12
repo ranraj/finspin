@@ -1,25 +1,22 @@
 // PureCSS styles
-require('purecss/build/pure-min.css')
-require('purecss/build/grids-responsive-min.css')
-require('purecss/build/buttons-min.css')
 'use strict';
-import "./main.css";
-import '@fortawesome/fontawesome-free/js/fontawesome'
-import '@fortawesome/fontawesome-free/js/solid'
-import '@fortawesome/fontawesome-free/js/regular'
-import '@fortawesome/fontawesome-free/js/brands'
-import { getFirestore, collection, getDocs } from 'firebase/firestore/lite';
+import "./main1.css";
+// import '@fortawesome/fontawesome-free/js/fontawesome'
+// import '@fortawesome/fontawesome-free/js/solid'
+// import '@fortawesome/fontawesome-free/js/regular'
+// import '@fortawesome/fontawesome-free/js/brands'
+// import { getFirestore, collection, getDocs } from 'firebase/firestore/lite';
+// import 'purecss/build/pure-min.css'
+// import 'purecss/build/grids-responsive-min.css'
+// import 'purecss/build/buttons-min.css'
 
 // Require index.html so it gets copied to dist
-require('./index.html');
+import './index.html'
 
 const { Elm } = require('./Main.elm');
 const app = Elm.Main.init({
     node: document.getElementById('note')
 })
-
-//Custom styles
-require('./main.css')
 
 //Firebase
 import { initializeApp } from 'firebase/app';

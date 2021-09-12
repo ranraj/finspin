@@ -1,12 +1,11 @@
 var path = require("path");
 var SWPrecacheWebpackPlugin = require('sw-precache-webpack-plugin');
 var WebpackPwaManifest = require('webpack-pwa-manifest');
-const webpack = require('webpack');
 
 module.exports = {
     entry: {
         app: [
-            './src/index.js'
+            './src/index1.js'
         ]
     },
 
@@ -28,53 +27,13 @@ module.exports = {
         },
         {
             test: /\.css$/,
-            use: [
-                {
-                    loader: 'style-loader',
-                },
-                {
-                    loader: 'css-loader',
-                    options: {
-                        importLoaders: 1,
-                    }
-                    // },
-                    // {
-                    //     loader: 'postcss-loader'
-                }
-            ]
-        },
-        {
-            test: /\.woff(\?v=\d+\.\d+\.\d+)?$/,
-            use: [{
-                loader: 'file-loader',
-                options: {}
-            }]
-        }, {
-            test: /\.woff2(\?v=\d+\.\d+\.\d+)?$/,
-            use: [{
-                loader: 'file-loader',
-                options: {}
-            }]
-        }, {
-            test: /\.ttf(\?v=\d+\.\d+\.\d+)?$/,
-            use: [{
-                loader: 'file-loader',
-                options: {}
-            }]
-        }, {
-            test: /\.eot(\?v=\d+\.\d+\.\d+)?$/,
-            loader: "file"
-        }, {
-            test: /\.svg(\?v=\d+\.\d+\.\d+)?$/,
-            use: [{
-                loader: 'file-loader',
-                options: {}
-            }]
-        }],
+            use: ['style-loader', 'css-loader']
+        }
+        ],
 
-        noParse: /\.elm$/
-
+        noParse: /\.elm$/,
     },
+
     plugins: [
         new SWPrecacheWebpackPlugin({
             cacheId: 'ranraj/finspin',

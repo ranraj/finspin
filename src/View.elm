@@ -27,6 +27,8 @@ import Core exposing (getColor,boxSizePallet)
 import Config exposing (colorPallet,svgWrapper)
 import BoardEncoder exposing (boxListEncoder)
 import BoardTiles exposing (allBoxes,boxView)
+import ContextMenu
+import View1
 
 boxesView : BoxGroup -> Svg Msg
 boxesView boxGroup =
@@ -210,6 +212,11 @@ view model =
              ,class "content-controller-item"
              ] [ Icon.viewStyled [ Icon.fa2x ] Icon.download]                    
         --, getNotes model.boxGroup        //TODO : Move this in next page Bookmark
+        , ContextMenu.view
+                ContextMenu.defaultConfig
+                ContextMenuMsg
+                View1.toItemGroups
+                model.contextMenu
         ]        
     ]
 
