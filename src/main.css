@@ -121,7 +121,7 @@ body.h1 {
     box-shadow: 0 .1em .1em .1em #bfe2ff;
 }
 
-.add-to-panel input {
+.add-note-text-input {
     border: none;
     font-size: 16;
     font-weight: bold;
@@ -218,6 +218,13 @@ select:focus {
     background-color: powderblue;
     box-shadow: none;
     border-radius: 0px;
+}
+
+.default-color-picker{
+    flex: 1 1 auto;
+    height: 20px;
+    width: 20px; 
+    border : none;               
 }
 
 .tile-size-picker-holder {

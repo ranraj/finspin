@@ -27,6 +27,7 @@ import Config exposing (colorPallet,svgWrapper)
 import Json.Encode as Encode
 import Json.Decode as Decode
 import ContextMenu exposing (ContextMenu,Item)
+import Config exposing (tileDefaultColor)
 
 boxesView : Model -> Svg Msg
 boxesView model =
@@ -64,16 +65,37 @@ addNotePanel box isEdit =
                 button [ onClick ((if isEdit then UpdateNote else AddNote) note.title note.description), class "form-btn"] [text "Save"]
                 ,button [ onClick CancelNoteForm, class "form-btn" ] [text "Clear"]            
                 ] 
-            , colorPickerView    
+            , colorPickerView box  
             , titleSizePickerView      
             ]
 
-colorPickerView : Html Msg
-colorPickerView = 
+colorPickerView : Box -> Html Msg
+colorPickerView box = 
             let                
-                colorPicker = List.map (\color -> div [] [button [onClick (UpdateTitleColor color), class "color-picker", style "background-color" color] [text ""]]) colorPallet
+                colorPicker_ = 
+                    List.map 
+                    (\color -> 
+                        div [] 
+                            [
+                            button [onClick (UpdateTitleColor color), class "color-picker", style "background-color" color]
+                            []
+                            ]
+                         ) colorPallet    
+                
+                colorPicker = ( div [class "color-picker"] 
+                            [
+                            input
+                                    [ 
+                                    class "default-color-picker"                                       
+                                    , type_ "color"
+                                    , value (Maybe.withDefault tileDefaultColor box.color)                                            
+                                    , onInput <| UpdateTitleColor
+                                    ]
+                                []
+                            ])  :: colorPicker_                                                              
             in
-                div [class "color-picker-holder"] colorPicker                                                      
+                div [class "color-picker-holder"] colorPicker
+                                              
 
 titleSizePickerView : Html Msg
 titleSizePickerView = 
@@ -101,7 +123,7 @@ viewNoteComponent box =
 
 viewInput : String -> String -> String -> String -> (String -> Msg) -> Html Msg
 viewInput t ph c v msg = 
-    input [ type_ t, placeholder ph, class c, value v, onInput msg ] []
+    input [ class "add-note-text-input", type_ t, placeholder ph, class c, value v, onInput msg ] []
 
 viewTextArea : String -> String -> String -> (String -> Msg) -> Html Msg
 viewTextArea ph c v msg = 

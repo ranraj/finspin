@@ -1,13 +1,13 @@
-module Config exposing (defaultNewTilePosition,colorPallet,svgWrapper,headerNoteHeight)
+module Config exposing (..)
 import Math.Vector2 as Vector2 exposing (Vec2)
 import Model exposing (Msg(..))
 
 defaultNewTilePosition : Vec2
 defaultNewTilePosition = Vector2.vec2 10 10
 
-
+tileDefaultColor = "#5F9A80"
 colorPallet : List String
-colorPallet = ["#c2d421","#91b1fd","#fdb9fd","#fec685","#5F9A80"]
+colorPallet = ["#c2d421","#91b1fd","#fdb9fd","#fec685",tileDefaultColor]
 
 svgWrapper: String ->  String
 svgWrapper board = 

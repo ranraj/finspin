@@ -12,7 +12,7 @@ import Draggable
 import Draggable.Events exposing (onDragBy, onDragStart)
 import ContextMenu exposing (ContextMenu)
 
-import Model exposing (Model,Box,Msg,Color(..), Msg(..),Id,BoxGroup,ShapeAction(..),ContenxtMenuArea(..))
+import Model exposing (Model,Box,Msg,Color(..), Msg(..),Id,BoxGroup,ContenxtMenuArea(..))
 import Core exposing (getColor)
 import ContextMenu exposing (ContextMenu)
 import Config exposing (headerNoteHeight)

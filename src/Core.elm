@@ -7,7 +7,7 @@ import Tuple exposing (first,second)
 import Model exposing (..)
 import Config exposing (defaultNewTilePosition)
 import ContextMenu exposing (ContextMenu)
-
+import Dict exposing (Dict)
 welcomeNotes : List Note
 welcomeNotes =  
     [
@@ -140,3 +140,4 @@ init _ =
       }
     , Cmd.map ContextMenuMsg contextMsg
     )
+

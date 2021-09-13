@@ -7,7 +7,7 @@ import Tuple exposing (first,second)
 import Math.Vector2 as Vector2
 import File.Select as Select
 import Task
-
+import Dict exposing (Dict)
 import Model exposing (Model,Color(..),Msg(..))
 import Core exposing (buildNote,makeBox,emptyBox,updateNoteBox)
 import Ports
@@ -184,7 +184,13 @@ update msg ({ boxGroup } as model) =
             --,Task.perform  (DownloadSVG "") Date.today
             ]  )
         GotSvg output ->             
-            ( model, downloadSVG output "type")     
+            ( model, downloadSVG output "type")             
+        ContextMenuMsg cMsg ->
+                        let                            
+                            ( contextMenu_, cmd ) =
+                                ContextMenu.update cMsg model.contextMenu
+                        in
+                            ({ model | contextMenu = contextMenu_ } , Cmd.map ContextMenuMsg cmd )   
         SelectShape context action ->
                         let                                                        
                            updateCmdMsg = if context == "mainContextMenu" then
@@ -201,14 +207,8 @@ update msg ({ boxGroup } as model) =
                                         _ -> (model,run NoOp)
                              
                         in            
-                            updateCmdMsg
-        ContextMenuMsg cMsg ->
-                        let                            
-                            ( contextMenu_, cmd ) =
-                                ContextMenu.update cMsg model.contextMenu
-                        in
-                            ({ model | contextMenu = contextMenu_ } , Cmd.map ContextMenuMsg cmd )           
-
+                            updateCmdMsg                                    
+        
 run : msg -> Cmd msg
 run m =
     Task.perform (always m) (Task.succeed ())

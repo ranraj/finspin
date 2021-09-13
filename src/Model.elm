@@ -6,7 +6,7 @@ import Json.Decode exposing (Error(..))
 import File exposing (File)
 import Date exposing (Date)
 import ContextMenu exposing (ContextMenu)
-
+import Dict exposing (Dict)
 type alias Id =
     String
 
@@ -103,30 +103,6 @@ type alias BoxSize =
             width : Float,
             height : Float
          }
-
-
-type ShapeAction
-    = SendToBack
-    | SendBackward
-    | BringForward
-    | BringToFront
-    | UpdateText TextAction
-    | UpdateRect RectAction
-
-
-type TextAction
-    = SetContent String
-
-type RectAction
-    = SetRectX Float
-    | SetRectY Float
-    | SetRectWidth Float
-    | SetRectHeight Float
-    | SetRectFill String
-    | SetRectStroke String
-
-type ModifyShapeMsg
-    = IncreaseWidth Float
 
 type BoxAction
     = Open
