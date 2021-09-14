@@ -5,6 +5,7 @@ import Draggable
 import Json.Decode exposing (Error(..))
 import File exposing (File)
 import ContextMenu exposing (ContextMenu)
+import Dict exposing (Dict)
 
 type alias Id =
     String
@@ -37,6 +38,7 @@ type alias BoxGroup =
 -------------------------------Model-----------------------------------
 type alias Model =
     { boxGroup : BoxGroup
+    --, boards : Dict String BoxGroup    
     , isPopUpActive : Bool
     , welcomeTour : Bool
     , editNote : Bool

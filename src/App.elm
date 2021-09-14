@@ -10,6 +10,7 @@ import Ports
 import View exposing (..)
 import ContextMenu exposing (ContextMenu)
 import Core
+import Dict
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
@@ -46,9 +47,11 @@ init _ =
     let
         ( contextMenu, contextMsg ) =
             ContextMenu.init
+        initBoxGroup = Core.emptyGroup    
     in
     
-    ( { boxGroup = Core.emptyGroup
+    ( { boxGroup = initBoxGroup
+    --   , boxGroups = Dict.insert initBoxGroup.uid initBoxGroup Dict.empty  
       , drag = Draggable.init
       , isPopUpActive = False
       , editNote = False

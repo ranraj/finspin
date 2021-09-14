@@ -44,6 +44,7 @@ type Msg
     | GotSvg String
     | ContextMenuMsg (ContextMenu.Msg String)
     | SelectShape String BoxAction
+    | NewBoard
     
 
 type BoxAction

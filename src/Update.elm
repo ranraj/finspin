@@ -17,6 +17,8 @@ import BoardTiles exposing (..)
 import BoardDecoder exposing (boxListDecoder)
 import ContextMenu exposing (ContextMenu)
 import Msg exposing (BoxAction(..),Color(..),Msg(..))
+import Core exposing (emptyGroup)
+import Dict exposing (empty)
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg ({ boxGroup } as model) =
@@ -133,8 +135,9 @@ update msg ({ boxGroup } as model) =
                             viewBox = case boxOpt of
                                         Just b -> b
                                         Nothing -> emptyBox
+                            model_ = {model | isPopUpActive = True,currentBox = viewBox, editNote = True}                                        
                         in    
-                            ( {model | isPopUpActive = True,currentBox = viewBox, editNote = True} , Cmd.none)
+                            (model_  , Cmd.none)
         SaveBoard -> (model,saveNotes model.boxGroup.idleBoxes)
         Position x y -> ({ model | position = (x, y) },Cmd.none)
         UpdateTitleColor tileColor -> 
@@ -207,7 +210,13 @@ update msg ({ boxGroup } as model) =
                              
                         in            
                             updateCmdMsg                                    
-        
+        NewBoard -> 
+                let
+                    boxGroup_ = emptyGroup
+                    --boxGroups_ = Dict.insert  boxGroup_.uid boxGroup_ model.boxGroups 
+                    model_ = {model | boxGroup = boxGroup_}                   
+                in
+                    (model_,Cmd.none)
 run : msg -> Cmd msg
 run m =
     Task.perform (always m) (Task.succeed ())
