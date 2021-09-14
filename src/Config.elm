@@ -1,6 +1,6 @@
 module Config exposing (..)
 import Math.Vector2 as Vector2 exposing (Vec2)
-import Model exposing (Msg(..))
+import Msg exposing (Msg(..))
 
 defaultNewTilePosition : Vec2
 defaultNewTilePosition = Vector2.vec2 10 10
