@@ -1,22 +1,18 @@
 module BoardTiles exposing (boxView,startDragging,stopDragging,dragActiveBy,allBoxes,toggleBoxClicked,dragConfig)
 
 import Svg exposing (Svg,text_)
-import Svg.Attributes exposing (dy,dx)
 import Svg exposing (Svg,text_)
 import Svg.Attributes as Attr
 import Svg.Events exposing (onMouseUp)
-import Html exposing (text)
-import Html.Attributes exposing (value)
-import Math.Vector2 as Vector2 exposing (Vec2, getX, getY)
 import Draggable
 import Draggable.Events exposing (onDragBy, onDragStart)
-import ContextMenu exposing (ContextMenu)
-
-import Model exposing (Model,Box,Id,BoxGroup,ContenxtMenuArea(..))
-import Msg exposing (Msg,Color(..), Msg(..))
+import ContextMenu
+import Math.Vector2 as Vector2 exposing (Vec2,getX,getY)
+import Html exposing (text)
+import Model exposing (Model,Box,Id,BoxGroup)
+import Msg exposing (Msg,Color(..), Msg(..),ContenxtMenuArea(..))
 import Core exposing (getColor)
-import ContextMenu exposing (ContextMenu)
-import Config exposing (headerNoteHeight)
+import Config exposing (headerNoteHeight)   
 
 boxView : Model -> Box -> Svg Msg
 boxView model { id, position, note,color,size}  =

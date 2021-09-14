@@ -5,7 +5,7 @@ import Draggable
 import Json.Decode exposing (Error(..))
 import File exposing (File)
 import ContextMenu exposing (ContextMenu)
-import Date exposing (Date)
+
 type alias Id =
     String
 
@@ -66,7 +66,3 @@ type alias BoxSize =
             width : Float,
             height : Float
          }
-
-
-
-type ContenxtMenuArea = MainSVG | BoxSVG

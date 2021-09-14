@@ -6,9 +6,7 @@ import Json.Decode exposing (Error(..))
 import File exposing (File)
 import Date exposing (Date)
 import Model exposing (Id,BoxSize)
-import ContextMenu exposing (ContextMenu)
-
-
+import ContextMenu
 
 -------------------------------Colour-----------------------------------
 type Color = BoardGreen | White
@@ -55,3 +53,7 @@ type BoxAction
     | New
     | DeleteAll
     | Share
+
+
+type ContenxtMenuArea = MainSVG | BoxSVG
+
