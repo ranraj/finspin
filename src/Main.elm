@@ -3,19 +3,19 @@ module Main exposing (..)
 import Browser
 
 import BoardTiles exposing (..)
-import Model exposing (Model,Color(..),Msg(..))
-import Core exposing (init)
-import View exposing (..)
-import Update exposing (..)
-import App exposing (..)
+import Model exposing (Model)
+import Msg exposing (Color(..),Msg(..))
+import View
+import Update
+import App
 
 -- Elm Architecture --
 main : Program () Model Msg
 main =
     Browser.element
-        { init = init
-        , update = update
+        { init = App.init
+        , update = Update.update
         , subscriptions = App.subscriptions
-        , view = view
+        , view = View.view
         }
 

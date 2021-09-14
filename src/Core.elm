@@ -8,6 +8,8 @@ import Model exposing (..)
 import Config exposing (defaultNewTilePosition)
 import ContextMenu exposing (ContextMenu)
 import Dict exposing (Dict)
+import Msg exposing (Color(..))
+
 welcomeNotes : List Note
 welcomeNotes =  
     [
@@ -115,29 +117,4 @@ boxSizePallet = [
                 {defaultBoxSize | title = "3x", height=defaultBoxSize.height + 40},
                 {defaultBoxSize | title = "4x", height=defaultBoxSize.height + 60}
                 ]
-
-init : flags -> ( Model, Cmd Msg )
-init _ =
-    let
-        ( contextMenu, contextMsg ) =
-            ContextMenu.init
-    in
-    
-    ( { boxGroup = emptyGroup
-      , drag = Draggable.init
-      , isPopUpActive = False
-      , editNote = False
-      , currentBox = emptyBox
-      , saveDefault = True
-      , localData = []
-      , jsonError = Nothing
-      , welcomeTour = True
-      , position =  (160, 120)
-      , hover = False
-      , files = []
-      , contextMenu = contextMenu
-      , selectedShapeId = Nothing
-      }
-    , Cmd.map ContextMenuMsg contextMsg
-    )
 

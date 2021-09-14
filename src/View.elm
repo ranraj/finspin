@@ -21,7 +21,8 @@ import Task
 import File exposing (File)
 
 import BoardEncoder exposing (boxListEncoder)
-import Model exposing (Model,Box,BoxGroup,Color(..),Msg(..),BoxAction(..),ContenxtMenuArea(..))
+import Model exposing (Model,Box,BoxGroup,ContenxtMenuArea(..))
+import Msg exposing (Color(..),Msg,Msg(..),BoxAction(..))
 import Core exposing (getColor,boxSizePallet)
 import Config exposing (colorPallet,svgWrapper)
 import Json.Encode as Encode

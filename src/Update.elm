@@ -8,7 +8,7 @@ import Math.Vector2 as Vector2
 import File.Select as Select
 import Task
 import Dict exposing (Dict)
-import Model exposing (Model,Color(..),Msg(..))
+import Model exposing (Model,BoxGroup)
 import Core exposing (buildNote,makeBox,emptyBox,updateNoteBox)
 import Ports
 import View exposing (..)
@@ -16,8 +16,7 @@ import App exposing (..)
 import BoardTiles exposing (..)
 import BoardDecoder exposing (boxListDecoder)
 import ContextMenu exposing (ContextMenu)
-import Model exposing (BoxAction(..))
-import Model exposing (BoxGroup)
+import Msg exposing (BoxAction(..),Color(..),Msg(..))
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg ({ boxGroup } as model) =
