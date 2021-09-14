@@ -22,3 +22,5 @@ svgWrapper board =
     "</svg>"
 
 headerNoteHeight = 30
+
+rndSeed = 23121

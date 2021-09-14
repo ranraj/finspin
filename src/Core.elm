@@ -9,6 +9,9 @@ import Config exposing (defaultNewTilePosition)
 import ContextMenu exposing (ContextMenu)
 import Dict exposing (Dict)
 import Msg exposing (Color(..))
+import UUID exposing (UUID,Representation(..))
+import Random
+import Config exposing (rndSeed)
 
 welcomeNotes : List Note
 welcomeNotes =  
@@ -63,9 +66,14 @@ updateNoteBox model box t d = if (box.id == model.currentBox.id) then
                                         box
 
 
+rndUUID : String
+rndUUID = Random.step UUID.generator (Random.initialSeed Config.rndSeed)
+            |> Tuple.first
+            |> UUID.toRepresentation Guid
+
 emptyGroup : BoxGroup
 emptyGroup =
-    BoxGroup 0 Nothing []
+    BoxGroup rndUUID Nothing []
 
 buildNote : Int -> String -> String ->  Note
 buildNote length t d  = { 
@@ -78,8 +86,8 @@ buildNote length t d  = {
 addBoxInBoxGroup : Note -> Vec2 -> BoxGroup -> BoxGroup
 addBoxInBoxGroup note position ({ uid, idleBoxes } as group) =
     { group
-        | idleBoxes = (makeBox (String.fromInt uid) note position) Nothing defaultBoxSize :: idleBoxes
-        , uid = uid + 1
+        | idleBoxes = (makeBox uid note position) Nothing defaultBoxSize :: idleBoxes
+        , uid = rndUUID
     }    
 
 makeBoxGroup : List (Vec2,Note) -> BoxGroup
