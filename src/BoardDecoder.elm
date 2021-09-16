@@ -1,7 +1,7 @@
 module BoardDecoder exposing (boxListDecoder)
 
 import Json.Decode as JD exposing (Error(..), string,field,decodeString,bool,Decoder)
-import Model exposing (Note,Box,BoxSize)
+import Model exposing (Note,Box,BoxSize,BoxGroup)
 import Tuple exposing (first,second)
 import Math.Vector2 as Vector2
 import Array
@@ -72,3 +72,10 @@ boxListDecoder value =
                emptyArray = []
             in
                 emptyArray
+
+boxGroupDecoder : String -> BoxGroup
+boxGroupDecoder value = JD.decodeString BoxGroup
+        (field "uid" string) |>
+        (field "movingBox" string)
+        (field "idleBoxes" string boxListDecoder)
+        

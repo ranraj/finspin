@@ -51,7 +51,7 @@ init _ =
     in
     
     ( { boxGroup = initBoxGroup
-    --   , boxGroups = Dict.insert initBoxGroup.uid initBoxGroup Dict.empty  
+    --   , boxGroups = 
       , drag = Draggable.init
       , isPopUpActive = False
       , editNote = False
@@ -65,6 +65,7 @@ init _ =
       , files = []
       , contextMenu = contextMenu
       , selectedShapeId = Nothing
+      , boards = Dict.insert initBoxGroup.uid initBoxGroup Dict.empty  
       }
     , Cmd.map ContextMenuMsg contextMsg
     )

@@ -2,7 +2,7 @@ module BoardEncoder exposing (boxListEncoder)
 
 import Json.Encode as Encode
 import Math.Vector2 exposing ( getX, getY)
-import Model exposing (Note,Box,BoxSize)
+import Model exposing (Note,Box,BoxSize,BoxGroup)
 
 noteEncoder : Note -> Encode.Value
 noteEncoder note = Encode.object
@@ -34,4 +34,10 @@ noteBoxEncoder noteBox =
         ]
 
 boxListEncoder : List Box -> Encode.Value
-boxListEncoder noteBoxes = Encode.list noteBoxEncoder noteBoxes
+boxListEncoder boxes = Encode.list noteBoxEncoder boxes
+
+boxGroupEncoder : BoxGroup -> Encode.Value
+boxGroupEncoder boxGroup = Encode.object
+        [ ("uid", Encode.string boxGroup.uid)
+        , ("idleBoxes", boxListEncoder boxGroup.idleBoxes)
+        ]

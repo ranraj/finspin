@@ -37,8 +37,7 @@ type alias BoxGroup =
 
 -------------------------------Model-----------------------------------
 type alias Model =
-    { boxGroup : BoxGroup
-    --, boards : Dict String BoxGroup    
+    { boxGroup : BoxGroup       
     , isPopUpActive : Bool
     , welcomeTour : Bool
     , editNote : Bool
@@ -52,6 +51,7 @@ type alias Model =
     , files : List File
     , contextMenu : ContextMenu String
     , selectedShapeId : Maybe String
+    , boards : Dict String BoxGroup
     }
 
 
