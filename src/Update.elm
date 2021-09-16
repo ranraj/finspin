@@ -219,8 +219,8 @@ update msg ({ boxGroup } as model) =
         NewBoard -> 
                 let
                     boxGroup_ = emptyGroup
-                    boards_ = Dict.insert  boxGroup_.uid boxGroup_ model.boards 
-                    model_ = {model | boxGroup = boxGroup_, boards = boards_}                   
+                    
+                    model_ = {model | boxGroup = boxGroup_}                   
                 in
                     (model_,Cmd.none)
 run : msg -> Cmd msg
