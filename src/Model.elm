@@ -45,6 +45,7 @@ type alias Model =
     , currentBox : Box
     , drag : Draggable.State Id
     , localData : List Box
+    , localBoxGroup : Maybe BoxGroup
     , jsonError : Maybe Error
     , position :  (Int, Int)
     , hover : Bool

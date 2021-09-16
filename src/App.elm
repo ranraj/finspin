@@ -3,8 +3,8 @@ module App exposing (..)
 import Draggable
 
 import BoardTiles exposing (..)
-import BoardEncoder exposing (boxListEncoder)
-import Model exposing (Model,Box)
+import BoardEncoder exposing (boxGroupEncoder)
+import Model exposing (Model,Box,BoxGroup)
 import Msg exposing (Color(..),Msg(..))
 import Ports
 import View exposing (..)
@@ -26,8 +26,8 @@ subscriptionsDrag { drag } =
     Draggable.subscriptions DragMsg drag
 
 ------- Local Stroage --------------------------------
-saveNotes : List Box -> Cmd msg
-saveNotes noteBoxes = boxListEncoder noteBoxes |> Ports.storeNotes            
+saveNotes : BoxGroup -> Cmd msg
+saveNotes boxGroup = boxGroupEncoder boxGroup |> Ports.storeNotes            
 
 subscriptionsLocalStorage : Model -> Sub Msg
 subscriptionsLocalStorage _ = 
@@ -58,6 +58,7 @@ init _ =
       , currentBox = Core.emptyBox
       , saveDefault = True
       , localData = []
+      , localBoxGroup = Nothing
       , jsonError = Nothing
       , welcomeTour = True
       , position =  (160, 120)

@@ -1,4 +1,4 @@
-module BoardEncoder exposing (boxListEncoder)
+module BoardEncoder exposing (boxListEncoder,boxGroupEncoder)
 
 import Json.Encode as Encode
 import Math.Vector2 exposing ( getX, getY)

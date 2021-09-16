@@ -1,10 +1,12 @@
-module BoardDecoder exposing (boxListDecoder)
+module BoardDecoder exposing (boxGroupDecoder,boxListDecoderString)
 
 import Json.Decode as JD exposing (Error(..), string,field,decodeString,bool,Decoder)
 import Model exposing (Note,Box,BoxSize,BoxGroup)
 import Tuple exposing (first,second)
 import Math.Vector2 as Vector2
 import Array
+import Core exposing (emptyBox)
+import Maybe exposing (withDefault)
 
 notePositionDecoder : Maybe Float -> Maybe Float -> (Float, Float)
 notePositionDecoder x y = 
@@ -58,8 +60,11 @@ boxDecoder =
     (JD.maybe (field "color" string))
     (field "size" boxSizeDecoder)
 
-boxListDecoder : String -> List Box
-boxListDecoder value = 
+boxListDecoder : Decoder (List Box)
+boxListDecoder = JD.list boxDecoder 
+
+boxListDecoderString : String -> List Box
+boxListDecoderString value = 
   let
     res =  decodeString (JD.list boxDecoder) value    
     
@@ -73,9 +78,19 @@ boxListDecoder value =
             in
                 emptyArray
 
-boxGroupDecoder : String -> BoxGroup
-boxGroupDecoder value = JD.decodeString BoxGroup
-        (field "uid" string) |>
-        (field "movingBox" string)
-        (field "idleBoxes" string boxListDecoder)
+boxGroupDecoder : String -> Maybe BoxGroup
+boxGroupDecoder value = 
+            let
+              res = decodeString (field "idleBoxes" boxListDecoder) value
+              _ = Debug.log "Test" res
+              uidDecoder = (field "uid" string)
+              
+              uid = Result.withDefault "default_id" (decodeString uidDecoder value)
+              boxGroup = case res of
+                            Result.Ok data -> Just (BoxGroup uid Nothing data)
+                            Result.Err _ -> Nothing              
+            in
+              boxGroup
+         
+
         

@@ -6,16 +6,16 @@ require('./index.html');
 
 const { Elm } = require('./Main.elm');
 
-var observer = new MutationObserver(function(mutations) {
-    mutations.forEach(function(mutation) {
+var observer = new MutationObserver(function (mutations) {
+    mutations.forEach(function (mutation) {
         if (mutation.type === 'childList') {
             Array
                 .from(mutation.addedNodes)
-                .filter(function(node) {
+                .filter(function (node) {
                     return node.tagName === 'svg';
                 })
-                .forEach(function(node) {
-                    node.addEventListener('click', function(event) {
+                .forEach(function (node) {
+                    node.addEventListener('click', function (event) {
                         var rect = event.currentTarget.getBoundingClientRect();
                         var svgClickEvent = new CustomEvent('svgclick', {
                             detail: {
@@ -44,7 +44,7 @@ const sendLocalData = () => {
         app.ports.receiveData.send(fileStore);
     }
 }
-app.ports.storeNotes.subscribe(function(notes) {
+app.ports.storeNotes.subscribe(function (notes) {
     var notesJson = JSON.stringify(notes);
     localStorage.setItem('note-app-save', notesJson);
     sendLocalData();
@@ -52,7 +52,7 @@ app.ports.storeNotes.subscribe(function(notes) {
 //Init load
 sendLocalData();
 
-app.ports.getSvg.subscribe(function(id) {
+app.ports.getSvg.subscribe(function (id) {
     var node = document.getElementById(id);
     app.ports.gotSvg.send(node.innerHTML);
 });

@@ -14,7 +14,7 @@ import Ports
 import View exposing (..)
 import App exposing (..)
 import BoardTiles exposing (..)
-import BoardDecoder exposing (boxListDecoder)
+import BoardDecoder exposing (boxListDecoderString,boxGroupDecoder)
 import ContextMenu exposing (ContextMenu)
 import Msg exposing (BoxAction(..),Color(..),Msg(..))
 import Core exposing (emptyGroup)
@@ -31,14 +31,16 @@ update msg ({ boxGroup } as model) =
         StartDragging id ->
                 let
                    newBoxGroup = model.boxGroup |> startDragging  id
-                   savePostsCmd = if model.saveDefault then saveNotes newBoxGroup.idleBoxes else Cmd.none  
+                   savePostsCmd = if model.saveDefault then saveNotes newBoxGroup else Cmd.none  
                 in 
-                    ( { model | boxGroup = newBoxGroup }, savePostsCmd )
+                    ( { model | boxGroup = newBoxGroup }, Cmd.none )
 
         StopDragging ->            
                 let
                    newBoxGroup = model.boxGroup |> stopDragging 
-                   savePostsCmd = if model.saveDefault then saveNotes newBoxGroup.idleBoxes else Cmd.none  
+                    
+                   savePostsCmd = if model.saveDefault then saveNotes newBoxGroup else Cmd.none  
+                   _ = Debug.log "stop drag" newBoxGroup                   
                 in    
                     ({ model | boxGroup = newBoxGroup }, savePostsCmd )
 
@@ -51,7 +53,8 @@ update msg ({ boxGroup } as model) =
                 
                 note  = buildNote (List.length model.boxGroup.idleBoxes) t d                             
                 isEmpty = String.isEmpty t && String.isEmpty d
-                savePostsCmd = if isEmpty || not model.saveDefault then Cmd.none else saveNotes idleBoxes
+                newBoxGroup = {boxGroup | idleBoxes = idleBoxes}
+                savePostsCmd = if isEmpty || not model.saveDefault then Cmd.none else saveNotes newBoxGroup
                 tilePosition = Vector2.vec2 (toFloat (first model.position)) (toFloat (second model.position))
                 idleBoxes = 
                     if isEmpty then 
@@ -59,7 +62,7 @@ update msg ({ boxGroup } as model) =
                     else 
                         makeBox note.id note tilePosition currentBox.color currentBox.size :: boxGroup.idleBoxes
             in
-                 ({ model | isPopUpActive = False,welcomeTour = False,currentBox = emptyBox,boxGroup = {boxGroup | idleBoxes = idleBoxes}}
+                 ({ model | isPopUpActive = False,welcomeTour = False,currentBox = emptyBox,boxGroup = newBoxGroup}
                 , savePostsCmd)  
 
         UpdateNote t d ->                     
@@ -68,10 +71,11 @@ update msg ({ boxGroup } as model) =
                 isEmpty = String.isEmpty t && String.isEmpty d                
 
                 newIdleBoxes = if edit && isEmpty then boxGroup.idleBoxes else List.map (\box -> updateNoteBox model box t d) boxGroup.idleBoxes                                                                                    
-                savePostsCmd = if isEmpty || not model.saveDefault then Cmd.none else saveNotes newIdleBoxes
+                newBoxGroup = { boxGroup | idleBoxes = newIdleBoxes}
+                savePostsCmd = if isEmpty || not model.saveDefault then Cmd.none else saveNotes newBoxGroup
                 
             in
-                 ({ model | isPopUpActive = False,editNote = False,boxGroup = { boxGroup | idleBoxes = newIdleBoxes}}
+                 ({ model | isPopUpActive = False,editNote = False,boxGroup = newBoxGroup }
                 , savePostsCmd)
 
         CheckNote i ->
@@ -90,16 +94,17 @@ update msg ({ boxGroup } as model) =
                                             }
                                         else box) boxGroup.idleBoxes 
                     }
-                savePostsCmd = if model.saveDefault then saveNotes newBoxGroup.idleBoxes else Cmd.none
+                savePostsCmd = if model.saveDefault then saveNotes newBoxGroup else Cmd.none
             in
             ({ model | boxGroup = newBoxGroup}, savePostsCmd)
 
         ClearNote i ->
             let
                 idleBoxesFiltered = List.filter (\box -> box.note.id /= i) model.boxGroup.idleBoxes 
-                savePostsCmd = if model.saveDefault then saveNotes idleBoxesFiltered else Cmd.none
+                newBoxGroup = { boxGroup | idleBoxes = idleBoxesFiltered }
+                savePostsCmd = if model.saveDefault then saveNotes newBoxGroup else Cmd.none
             in
-            ({ model | isPopUpActive = False, boxGroup = { boxGroup | idleBoxes = idleBoxesFiltered }}, savePostsCmd)
+            ({ model | isPopUpActive = False, boxGroup =newBoxGroup}, savePostsCmd)
 
         StartNoteForm -> 
             ({ model | isPopUpActive = True }, Cmd.none)
@@ -123,12 +128,13 @@ update msg ({ boxGroup } as model) =
                 ({ model | currentBox = newBox}, Cmd.none)
         ReceivedDataFromJS value ->              
             let                 
-                localData = boxListDecoder value
-                newBoxGroup = if List.isEmpty localData 
-                                then boxGroup 
-                                else {boxGroup | idleBoxes = localData}                                
+                boxGroupMaybe = boxGroupDecoder value
+                _ = Debug.log "receive" boxGroupMaybe
+                newBoxGroup = case boxGroupMaybe of                                
+                                Just data -> data
+                                Nothing -> boxGroup
             in    
-             ( { model | localData = localData, boxGroup = newBoxGroup }, Cmd.none )
+             ( { model | localBoxGroup = boxGroupMaybe, boxGroup = newBoxGroup }, Cmd.none )
 
         ViewNote id -> let       
                             boxOpt = boxGroup.idleBoxes |> List.filter (\b -> b.id == id) |> List.head
@@ -138,7 +144,7 @@ update msg ({ boxGroup } as model) =
                             model_ = {model | isPopUpActive = True,currentBox = viewBox, editNote = True}                                        
                         in    
                             (model_  , Cmd.none)
-        SaveBoard -> (model,saveNotes model.boxGroup.idleBoxes)
+        SaveBoard -> (model,saveNotes model.boxGroup)
         Position x y -> ({ model | position = (x, y) },Cmd.none)
         UpdateTitleColor tileColor -> 
                         let
@@ -168,7 +174,7 @@ update msg ({ boxGroup } as model) =
             )
         MarkdownLoaded fileContent -> 
             let
-                newIdelBoxes = boxListDecoder <| fileContent
+                newIdelBoxes = boxListDecoderString <| fileContent
                 newBoxGroup = {boxGroup | idleBoxes = newIdelBoxes}
             in  
                 ({model | boxGroup = newBoxGroup },Cmd.none)
