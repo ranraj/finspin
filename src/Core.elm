@@ -10,8 +10,11 @@ import ContextMenu exposing (ContextMenu)
 import Dict exposing (Dict)
 import Msg exposing (Color(..))
 import UUID exposing (UUID,Representation(..))
+import Uuid
 import Random
 import Config exposing (rndSeed)
+import Random exposing (Seed, generate)
+import Time
 
 welcomeNotes : List Note
 welcomeNotes =  
@@ -56,26 +59,32 @@ updateNoteBox model box t d =
             let
                 currentBox = model.currentBox
                 newTitle = if String.isEmpty t then box.note.title else t
-                newDescription = if String.isEmpty d then box.note.description else d
+                --newDescription = if String.isEmpty d then box.note.description else d
                 color = case currentBox.color of
                             Just _ -> currentBox.color
                             Nothing -> box.color
                 note = box.note             
-                newNote = {note | title = newTitle,description = newDescription}
+                newNote = {note | title = newTitle,description = d}
             in    
                 {box | color = color, size = currentBox.size, note = newNote}
         else 
             box
 
 
-rndUUID : String
-rndUUID = Random.step UUID.generator (Random.initialSeed Config.rndSeed)
-            |> Tuple.first
-            |> UUID.toRepresentation Guid
+rndUUID : Int -> String
+rndUUID seedTime = Random.step UUID.generator (Random.initialSeed seedTime)
+    |> Tuple.first
+    |> UUID.toRepresentation Guid
 
+-- TODO : Remove hardcode string
 emptyGroup : BoxGroup
 emptyGroup =
-    BoxGroup rndUUID Nothing []
+    BoxGroup "" Nothing []
+
+
+emptyGroupWithId : Int -> BoxGroup
+emptyGroupWithId timeNow =
+    BoxGroup (rndUUID timeNow) Nothing []
 
 buildNote : Int -> String -> String ->  Note
 buildNote length t d  = { 
@@ -85,26 +94,26 @@ buildNote length t d  = {
             , description = d             
             }
 
-addBoxInBoxGroup : Note -> Vec2 -> BoxGroup -> BoxGroup
-addBoxInBoxGroup note position ({ uid, idleBoxes } as group) =
-    { group
-        | idleBoxes = (makeBox uid note position) Nothing defaultBoxSize :: idleBoxes
-        , uid = rndUUID
-    }    
+-- addBoxInBoxGroup : Note -> Vec2 -> BoxGroup -> BoxGroup
+-- addBoxInBoxGroup note position ({ uid, idleBoxes } as group) =
+--     { group
+--         | idleBoxes = (makeBox uid note position) Nothing defaultBoxSize :: idleBoxes
+--         , uid = rndUUID
+--     }    
 
-makeBoxGroup : List (Vec2,Note) -> BoxGroup
-makeBoxGroup positions =
-    positions
-        |>  List.foldl (\position -> addBoxInBoxGroup (second position) (first position)) emptyGroup
+-- makeBoxGroup : List (Vec2,Note) -> BoxGroup
+-- makeBoxGroup positions =
+--     positions
+--         |>  List.foldl (\position -> addBoxInBoxGroup (second position) (first position)) emptyGroup
 
-defaultBoxGroup : BoxGroup
-defaultBoxGroup =
-    let
-        indexToPosition =
-            toFloat >> (*) 60 >> (+) 10 >> Vector2.vec2 10
-        notes = welcomeNotes
-    in
-    notes |> List.indexedMap (\i x -> ((indexToPosition i),x)) |> makeBoxGroup
+-- defaultBoxGroup : BoxGroup
+-- defaultBoxGroup =
+--     let
+--         indexToPosition =
+--             toFloat >> (*) 60 >> (+) 10 >> Vector2.vec2 10
+--         notes = welcomeNotes
+--     in
+--     notes |> List.indexedMap (\i x -> ((indexToPosition i),x)) |> makeBoxGroup
 
 getColor : Color -> String
 getColor color = 

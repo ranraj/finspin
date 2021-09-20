@@ -51,8 +51,8 @@ type alias Model =
     , hover : Bool
     , files : List File
     , contextMenu : ContextMenu String
-    , selectedShapeId : Maybe String
-    , boards : Dict String BoxGroup
+    , selectedShapeId : Maybe String   
+    , timeNow : Int 
     }
 
 

@@ -3,7 +3,7 @@ module App exposing (..)
 import Draggable
 
 import BoardTiles exposing (..)
-import BoardEncoder exposing (boxGroupEncoder)
+import BoardEncoder exposing (boxGroupEncoder,boxGroupsEncoder)
 import Model exposing (Model,Box,BoxGroup)
 import Msg exposing (Color(..),Msg(..))
 import Ports
@@ -11,14 +11,15 @@ import View exposing (..)
 import ContextMenu exposing (ContextMenu)
 import Core
 import Dict
-
+import Task
 subscriptions : Model -> Sub Msg
 subscriptions model =
      Sub.batch [
                 subscriptionsLocalStorage model,
                 subscriptionsDrag model,
                 subscriptionsSvgDownload model,
-                subscriptionsContextMenu model
+                subscriptionsContextMenu model,
+                subscriptionsSaveBoards model
                 ]
 
 subscriptionsDrag : Model -> Sub Msg
@@ -29,6 +30,9 @@ subscriptionsDrag { drag } =
 saveNotes : BoxGroup -> Cmd msg
 saveNotes boxGroup = boxGroupEncoder boxGroup |> Ports.storeNotes            
 
+saveBoards : List BoxGroup -> Cmd msg
+saveBoards boxGroups = boxGroupsEncoder boxGroups |> Ports.storeBoards            
+
 subscriptionsLocalStorage : Model -> Sub Msg
 subscriptionsLocalStorage _ = 
         Ports.receiveData ReceivedDataFromJS    
@@ -36,6 +40,10 @@ subscriptionsLocalStorage _ =
 subscriptionsSvgDownload : Model -> Sub Msg
 subscriptionsSvgDownload _ = 
           Ports.gotSvg GotSvg
+
+subscriptionsSaveBoards : Model -> Sub Msg
+subscriptionsSaveBoards _ = 
+          Ports.receiveBoards GotSvg          
 
 subscriptionsContextMenu : Model -> Sub Msg
 subscriptionsContextMenu model =
@@ -51,13 +59,12 @@ init _ =
     in
     
     ( { boxGroup = initBoxGroup
-    --   , boxGroups = 
       , drag = Draggable.init
       , isPopUpActive = False
       , editNote = False
       , currentBox = Core.emptyBox
       , saveDefault = True
-      , boxGroups = []
+      , boxGroups = [initBoxGroup]
       , localBoxGroup = Nothing
       , jsonError = Nothing
       , welcomeTour = True
@@ -65,8 +72,8 @@ init _ =
       , hover = False
       , files = []
       , contextMenu = contextMenu
-      , selectedShapeId = Nothing
-      , boards = Dict.insert initBoxGroup.uid initBoxGroup Dict.empty  
+      , selectedShapeId = Nothing 
+      , timeNow = 0     
       }
-    , Cmd.map ContextMenuMsg contextMsg
+    , Cmd.batch [(Cmd.map ContextMenuMsg contextMsg),Task.perform (always CurrentDateTime) (Task.succeed ())]
     )

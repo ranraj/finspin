@@ -205,12 +205,12 @@ view model =
         [ Icon.css  
         --, div [class "content-controller-item", onClick (CheckNote model.currentBox.id)] 
         --[Icon.viewStyled [ Icon.sm, style "color" "gray" ] (if model.saveDefault then Icon.toggleOn else Icon.toggleOff)]        
-        , span [class "content-controller-label"] [text "Add note"]                             
+        , span [class "content-controller-label"] [text "Add Board"]                             
         , button 
             [ onClick (NewBoard)             
              ,class "content-controller-item"
              ] [ Icon.viewStyled [ Icon.fa2x ] Icon.folderPlus]
-        , span [class "content-controller-label"] [text "Add Board"]                             
+        , span [class "content-controller-label"] [text "Add Note"]                             
         , button 
             [ onClick (if model.isPopUpActive then CancelNoteForm else StartNoteForm)             
              ,class "content-controller-item"

@@ -37,17 +37,25 @@ observer.observe(document.body, {
 const app = Elm.Main.init({
     node: document.getElementById('note')
 })
+const board_key = "board"
+const boards_key = "boards"
 
 const sendLocalData = () => {
-    let fileStore = localStorage.getItem('note-app-save');
+    let fileStore = localStorage.getItem(board_key);
     if (fileStore != null || fileStore != undefined) {
         app.ports.receiveData.send(fileStore);
     }
 }
 app.ports.storeNotes.subscribe(function (notes) {
     var notesJson = JSON.stringify(notes);
-    localStorage.setItem('note-app-save', notesJson);
-    sendLocalData();
+    localStorage.setItem(board_key, notesJson);
+    //sendLocalData();
+});
+
+app.ports.storeBoards.subscribe(function (boards) {
+    var notesJson = JSON.stringify(boards);
+    localStorage.setItem(boards_key, notesJson);
+    //sendLocalData();
 });
 //Init load
 sendLocalData();

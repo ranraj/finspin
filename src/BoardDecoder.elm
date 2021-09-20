@@ -1,4 +1,4 @@
-module BoardDecoder exposing (boxGroupDecoder,boxListDecoderString)
+module BoardDecoder exposing (boxGroupDecoderString,boxListDecoderString,boxGroupsDecoderString)
 
 import Json.Decode as JD exposing (Error(..), string,field,decodeString,bool,Decoder)
 import Model exposing (Note,Box,BoxSize,BoxGroup)
@@ -78,11 +78,10 @@ boxListDecoderString value =
             in
                 emptyArray
 
-boxGroupDecoder : String -> Maybe BoxGroup
-boxGroupDecoder value = 
+boxGroupDecoderString : String -> Maybe BoxGroup
+boxGroupDecoderString value = 
             let
-              res = decodeString (field "idleBoxes" boxListDecoder) value
-              _ = Debug.log "Test" res
+              res = decodeString (field "idleBoxes" boxListDecoder) value              
               uidDecoder = (field "uid" string)
               
               uid = Result.withDefault "default_id" (decodeString uidDecoder value)
@@ -91,6 +90,19 @@ boxGroupDecoder value =
                             Result.Err _ -> Nothing              
             in
               boxGroup
-         
 
+boxGroupDecoder : Decoder BoxGroup
+boxGroupDecoder  = JD.map3 BoxGroup 
+                  (field "uid" string) 
+                  (JD.maybe (field "movingBox" boxDecoder)) 
+                  (field "idleBoxes" boxListDecoder) 
+                                         
+         
+boxGroupsDecoder : Decoder (List BoxGroup)
+boxGroupsDecoder = JD.list boxGroupDecoder
+
+boxGroupsDecoderString : String -> List BoxGroup
+boxGroupsDecoderString value = case (decodeString boxGroupsDecoder value) of
+                                  Result.Ok data -> data
+                                  Result.Err _ -> []            
         

@@ -1,4 +1,4 @@
-module BoardEncoder exposing (boxListEncoder,boxGroupEncoder)
+module BoardEncoder exposing (boxListEncoder,boxGroupEncoder,boxGroupsEncoder)
 
 import Json.Encode as Encode
 import Math.Vector2 exposing ( getX, getY)
@@ -41,3 +41,7 @@ boxGroupEncoder boxGroup = Encode.object
         [ ("uid", Encode.string boxGroup.uid)
         , ("idleBoxes", boxListEncoder boxGroup.idleBoxes)
         ]
+
+boxGroupsEncoder : List BoxGroup -> Encode.Value
+boxGroupsEncoder boxGroups = Encode.list boxGroupEncoder boxGroups
+        

@@ -7,7 +7,7 @@ import File exposing (File)
 import Date exposing (Date)
 import Model exposing (Id,BoxSize)
 import ContextMenu
-
+import Time
 -------------------------------Colour-----------------------------------
 type Color = BoardGreen | White
 
@@ -44,7 +44,11 @@ type Msg
     | GotSvg String
     | ContextMenuMsg (ContextMenu.Msg String)
     | SelectShape String BoxAction
-    | NewBoard
+    | NewBoardGen Time.Posix
+    | NewBoard 
+    | ReceivedBoards String
+    | CurrentDateTime 
+    | CaptureDateTime Time.Posix
     
 
 type BoxAction

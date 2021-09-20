@@ -12,14 +12,15 @@ import Model exposing (Model,BoxGroup)
 import Core exposing (buildNote,makeBox,emptyBox,updateNoteBox)
 import Ports
 import View exposing (..)
-import App exposing (..)
+import App exposing (saveNotes,saveBoards)
 import BoardTiles exposing (..)
-import BoardDecoder exposing (boxListDecoderString,boxGroupDecoder)
+import BoardDecoder exposing (boxListDecoderString,boxGroupDecoderString,boxGroupsDecoderString)
 import ContextMenu exposing (ContextMenu)
 import Msg exposing (BoxAction(..),Color(..),Msg(..))
 import Core exposing (emptyGroup)
 import Dict exposing (empty)
-
+import Time
+import Core exposing (emptyGroupWithId)
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg ({ boxGroup } as model) =
     case msg of
@@ -31,7 +32,7 @@ update msg ({ boxGroup } as model) =
         StartDragging id ->
                 let
                    newBoxGroup = model.boxGroup |> startDragging  id
-                   savePostsCmd = if model.saveDefault then saveNotes newBoxGroup else Cmd.none  
+                  
                 in 
                     ( { model | boxGroup = newBoxGroup }, Cmd.none )
 
@@ -69,7 +70,7 @@ update msg ({ boxGroup } as model) =
             let                  
                 edit = model.editNote                                
                 isEmpty = String.isEmpty t && String.isEmpty d                
-
+                
                 newIdleBoxes = if edit && isEmpty then boxGroup.idleBoxes else List.map (\box -> updateNoteBox model box t d) boxGroup.idleBoxes                                                                                    
                 newBoxGroup = { boxGroup | idleBoxes = newIdleBoxes}
                 savePostsCmd = if isEmpty || not model.saveDefault then Cmd.none else saveNotes newBoxGroup
@@ -128,7 +129,7 @@ update msg ({ boxGroup } as model) =
                 ({ model | currentBox = newBox}, Cmd.none)
         ReceivedDataFromJS value ->              
             let                 
-                boxGroupMaybe = boxGroupDecoder value
+                boxGroupMaybe = boxGroupDecoderString value
                 _ = Debug.log "receive" boxGroupMaybe
                 newBoxGroup = case boxGroupMaybe of                                
                                 Just data -> data
@@ -215,14 +216,35 @@ update msg ({ boxGroup } as model) =
                                         _ -> (model,run NoOp)
                              
                         in            
-                            updateCmdMsg                                    
-        NewBoard -> 
+                            updateCmdMsg  
+        NewBoard -> (model, Task.perform (NewBoardGen) Time.now)                                                      
+        NewBoardGen timeNow -> 
                 let
-                    boxGroup_ = emptyGroup
-                    
-                    model_ = {model | boxGroup = boxGroup_}                   
+                    boxGroup_ = emptyGroupWithId (Time.posixToMillis timeNow)
+                    containsBoxGroup = List.filter (\board -> board.uid == model.boxGroup.uid) model.boxGroups
+                    boxGroups_ = if List.isEmpty containsBoxGroup then
+                                       boxGroup :: model.boxGroups 
+                                    else
+                                        List.map 
+                                                    (\board -> if board.uid == model.boxGroup.uid then model.boxGroup else board) 
+                                                    model.boxGroups                     
+                    model_ = {model | boxGroup = boxGroup_, boxGroups = boxGroups_}                   
+                    savePostsCmd = saveBoards boxGroups_
+                    _ = Debug.log "boxGroups" Core.rndUUID model.timeNow
                 in
-                    (model_,Cmd.none)
+                    (model_,savePostsCmd)
+        ReceivedBoards boxGroupsString -> 
+                            let
+                               boxGroups = boxGroupsDecoderString boxGroupsString
+                               
+                            in
+                                (model,Cmd.none)
+        CurrentDateTime -> (model, Task.perform (CaptureDateTime) Time.now)            
+        CaptureDateTime timeNow -> 
+                        let
+                            timeNow_ = Time.posixToMillis timeNow
+                        in                
+                            ({model | boxGroup = Core.emptyGroupWithId timeNow_},Cmd.none)
 run : msg -> Cmd msg
 run m =
     Task.perform (always m) (Task.succeed ())
