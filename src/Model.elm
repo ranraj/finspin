@@ -6,6 +6,7 @@ import Json.Decode exposing (Error(..))
 import File exposing (File)
 import ContextMenu exposing (ContextMenu)
 import Dict exposing (Dict)
+import Bootstrap.Navbar as Navbar
 
 type alias Id =
     String
@@ -31,6 +32,7 @@ type alias Box =
 -------------------------------BoxGroup-----------------------------------
 type alias BoxGroup =
     { uid : String
+    , name : String
     , movingBox : Maybe Box
     , idleBoxes : List Box
     }
@@ -53,6 +55,7 @@ type alias Model =
     , contextMenu : ContextMenu String
     , selectedShapeId : Maybe String   
     , timeNow : Int 
+    , navbarState : Navbar.State
     }
 
 

@@ -6,7 +6,7 @@ import Svg.Events as Events
 
 import BoardTiles exposing (..)
 import Html exposing (Html, button, text, div, li, ul, input, textarea, span)
-import Html.Attributes exposing ( class, style, type_, placeholder, value,id,autofocus)
+import Html.Attributes exposing ( class, style, type_, placeholder, value,id,autofocus,href)
 import Html.Events exposing (onInput, onClick,preventDefaultOn)
 import FontAwesome.Attributes as Icon
 import FontAwesome.Brands as Icon
@@ -27,8 +27,12 @@ import Core exposing (getColor,boxSizePallet)
 import Config exposing (colorPallet,svgWrapper)
 import Json.Encode as Encode
 import Json.Decode as Decode
-import ContextMenu exposing (ContextMenu,Item)
 import Config exposing (tileDefaultColor)
+import Bootstrap.Navbar as Navbar
+import ContextMenu exposing (ContextMenu,Item)
+import Bootstrap.CDN as CDN
+import Bootstrap.Grid as Grid
+
 
 boxesView : Model -> Svg Msg
 boxesView model =
@@ -198,58 +202,67 @@ svgBox model =
 
 
 view : Model -> Html Msg
-view model =    
-   div [class "content-container", id "contentContainer"] [
-        svgBox model        
-        ,div [class "content-controller"]
-        [ Icon.css  
-        --, div [class "content-controller-item", onClick (CheckNote model.currentBox.id)] 
-        --[Icon.viewStyled [ Icon.sm, style "color" "gray" ] (if model.saveDefault then Icon.toggleOn else Icon.toggleOff)]        
-        , span [class "content-controller-label"] [text "Add Board"]                             
-        , button 
-            [ onClick (NewBoard)             
-             ,class "content-controller-item"
-             ] [ Icon.viewStyled [ Icon.fa2x ] Icon.folderPlus]
-        , span [class "content-controller-label"] [text "Add Note"]                             
-        , button 
-            [ onClick (if model.isPopUpActive then CancelNoteForm else StartNoteForm)             
-             ,class "content-controller-item"
-             ] [ Icon.viewStyled [ Icon.fa2x ] Icon.plusCircle]
-        , span [class "content-controller-label"] [text "Save"]             
-        , button 
-            [ onClick (SaveBoard)
-             ,class "content-controller-item"
-             ] [ Icon.viewStyled [ Icon.fa2x ] Icon.save]
-        , span [class "content-controller-label"] [text "Auto Save"]        
-        , button 
-            [ onClick ToggleAutoSave             
-             ,class "content-controller-item"
-             ] [ Icon.viewStyled [ Icon.fa2x ] (if model.saveDefault then Icon.toggleOn else Icon.toggleOff)]     
-        , span [class "content-controller-label"] [text "Export"]             
-        , button 
-            [ onClick <| InitDownloadSVG <| Encode.encode 5 <| boxListEncoder model.boxGroup.idleBoxes
-             ,class "content-controller-item"
-             ] [ Icon.viewStyled [ Icon.fa2x ] Icon.fileExport]            
-        , span [class "content-controller-label"] [text "Import"]                    
-        , viewFileUpload model     
-        , (if model.isPopUpActive then viewNotePopupModal model else div [ style "hidden" "true" ] [])        
-        , span [class "content-controller-label"] [text "Download Svg"]
-        , button 
-            [ onClick GetSvg
-             ,class "content-controller-item"
-             ] [ Icon.viewStyled [ Icon.fa2x ] Icon.download]                    
-        --, getNotes model.boxGroup        //TODO : Move this in next page Bookmark
-        , div
-        [ ContextMenu.open ContextMenuMsg "mainContextMenu"]
-        [ ContextMenu.view
-            ContextMenu.defaultConfig
-                ContextMenuMsg 
-                boxContextMenuItems
-                model.contextMenu
-        ]        
-        ]        
+view model =            
+   div [class "content-container", id "contentContainer"] [        
+        div [class "content-main"] [
+            viewGrid model
+            ,div [class "svg-board-container"] [
+                svgBox model                
+                ]             
+            ]        
+            ,viewController model
+            
     ]
 
+viewController : Model -> Html Msg
+viewController model = 
+        div [class "content-controller"]
+            [ Icon.css  
+            --, div [class "content-controller-item", onClick (CheckNote model.currentBox.id)] 
+            --[Icon.viewStyled [ Icon.sm, style "color" "gray" ] (if model.saveDefault then Icon.toggleOn else Icon.toggleOff)]        
+            , span [class "content-controller-label"] [text "Add Board"]                             
+            , button 
+                [ onClick (NewBoard)             
+                ,class "content-controller-item"
+                ] [ Icon.viewStyled [ Icon.fa2x ] Icon.folderPlus]
+            , span [class "content-controller-label"] [text "Add Note"]                             
+            , button 
+                [ onClick (if model.isPopUpActive then CancelNoteForm else StartNoteForm)             
+                ,class "content-controller-item"
+                ] [ Icon.viewStyled [ Icon.fa2x ] Icon.plusCircle]
+            , span [class "content-controller-label"] [text "Save"]             
+            , button 
+                [ onClick (SaveBoard)
+                ,class "content-controller-item"
+                ] [ Icon.viewStyled [ Icon.fa2x ] Icon.save]
+            , span [class "content-controller-label"] [text "Auto Save"]        
+            , button 
+                [ onClick ToggleAutoSave             
+                ,class "content-controller-item"
+                ] [ Icon.viewStyled [ Icon.fa2x ] (if model.saveDefault then Icon.toggleOn else Icon.toggleOff)]     
+            , span [class "content-controller-label"] [text "Export"]             
+            , button 
+                [ onClick <| InitDownloadSVG <| Encode.encode 5 <| boxListEncoder model.boxGroup.idleBoxes
+                ,class "content-controller-item"
+                ] [ Icon.viewStyled [ Icon.fa2x ] Icon.fileExport]            
+            , span [class "content-controller-label"] [text "Import"]                    
+            , viewFileUpload model     
+            , (if model.isPopUpActive then viewNotePopupModal model else div [ style "hidden" "true" ] [])        
+            , span [class "content-controller-label"] [text "Download Svg"]
+            , button 
+                [ onClick GetSvg
+                ,class "content-controller-item"
+                ] [ Icon.viewStyled [ Icon.fa2x ] Icon.download]                    
+            --, getNotes model.boxGroup        //TODO : Move this in next page Bookmark
+            , div
+            [ ContextMenu.open ContextMenuMsg "mainContextMenu"]
+            [ ContextMenu.view
+                ContextMenu.defaultConfig
+                    ContextMenuMsg 
+                    boxContextMenuItems
+                    model.contextMenu
+            ]        
+            ] 
 boxContextMenuItems : String -> List (List (Item,Msg))
 boxContextMenuItems context =  
     if context == "mainContextMenu" then
@@ -291,3 +304,23 @@ hijackOn event decoder =
 hijack : msg -> (msg, Bool)
 hijack msg =
   (msg, True)
+
+viewNavBar : Model -> Html Msg
+viewNavBar model =
+            let
+                navBarItems = List.map (\board -> Navbar.itemLink [ onClick (LoadSelectedBoard board.uid), href "#" ] [ text (String.slice 0 10 board.uid) ]) model.boxGroups
+                navBarItems_ = Navbar.itemLink [ href "#" ] [ text ("New") ] :: navBarItems
+            in
+                Navbar.config NavbarMsg
+                    |> Navbar.withAnimation        
+                    |> Navbar.items navBarItems_                        
+                    |> Navbar.view model.navbarState  
+
+viewGrid : Model -> Html Msg
+viewGrid model = Grid.container []
+            [ CDN.stylesheet -- creates an inline style node with the Bootstrap CSS
+            , Grid.row []
+                [ Grid.col []
+                    [ viewNavBar model]
+                ]            
+            ]

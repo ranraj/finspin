@@ -15,6 +15,7 @@ import Random
 import Config exposing (rndSeed)
 import Random exposing (Seed, generate)
 import Time
+import Task
 
 welcomeNotes : List Note
 welcomeNotes =  
@@ -137,3 +138,6 @@ boxSizePallet = [
                 {defaultBoxSize | title = "4x", height=defaultBoxSize.height + 60}
                 ]
 
+run : msg -> Cmd msg
+run m =
+    Task.perform (always m) (Task.succeed ())

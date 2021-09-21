@@ -8,6 +8,8 @@ import Date exposing (Date)
 import Model exposing (Id,BoxSize)
 import ContextMenu
 import Time
+import Bootstrap.Navbar as Navbar
+
 -------------------------------Colour-----------------------------------
 type Color = BoardGreen | White
 
@@ -46,9 +48,11 @@ type Msg
     | SelectShape String BoxAction
     | NewBoardGen Time.Posix
     | NewBoard 
+    | LoadSelectedBoard String
     | ReceivedBoards String
     | CurrentDateTime 
     | CaptureDateTime Time.Posix
+    | NavbarMsg Navbar.State
     
 
 type BoxAction

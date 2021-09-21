@@ -1,7 +1,7 @@
 body {
     font-family: 'Source Sans Pro', 'Trebuchet MS', 'Lucida Grande', 'Bitstream Vera Sans', 'Helvetica Neue', sans-serif;
     color: #293c4b;
-    background-color: #f3faff;
+    background-color:#5F9A80;
 }
 
 body.h1 {
@@ -180,13 +180,14 @@ select:focus {
     flex-flow: column;
     align-items: center;
     width: 10%;
+    margin-top: 60px;
 }
 
 .content-controller-item {
     margin: 10px;
     border: none;
     background-color: transparent;
-    color: skyblue;
+    /* color: skyblue; */
 }
 
 .content-controller-label {
@@ -246,6 +247,7 @@ select:focus {
 }
 
 .modal_header {
+
     display: flex;
     flex-flow: flex-end;
     justify-content: flex-end;
@@ -289,7 +291,6 @@ select:focus {
     width: 60px;
     height: 34px;
 }
-
 .switch input {
     opacity: 0;
     width: 0;
@@ -427,4 +428,8 @@ input:checked+.slider:before {
     border-style:dotted;
     border-color:#fff;
     border-color:rgba(255,255,255,.7);
+}
+
+.content-main {
+    width : 90%;
 }

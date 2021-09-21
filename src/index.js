@@ -45,17 +45,20 @@ const sendLocalData = () => {
     if (fileStore != null || fileStore != undefined) {
         app.ports.receiveData.send(fileStore);
     }
+    let fileBoards = localStorage.getItem(boards_key);
+    if (fileBoards != null || fileBoards != undefined) {
+        app.ports.receiveBoards.send(fileBoards);
+    }
 }
 app.ports.storeNotes.subscribe(function (notes) {
     var notesJson = JSON.stringify(notes);
     localStorage.setItem(board_key, notesJson);
-    //sendLocalData();
+
 });
 
 app.ports.storeBoards.subscribe(function (boards) {
-    var notesJson = JSON.stringify(boards);
-    localStorage.setItem(boards_key, notesJson);
-    //sendLocalData();
+    var boardsJson = JSON.stringify(boards);
+    localStorage.setItem(boards_key, boardsJson);
 });
 //Init load
 sendLocalData();

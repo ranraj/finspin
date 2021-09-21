@@ -4,14 +4,16 @@ import Draggable
 
 import BoardTiles exposing (..)
 import BoardEncoder exposing (boxGroupEncoder,boxGroupsEncoder)
-import Model exposing (Model,Box,BoxGroup)
+import Model exposing (Model,BoxGroup)
 import Msg exposing (Color(..),Msg(..))
 import Ports
 import View exposing (..)
-import ContextMenu exposing (ContextMenu)
+import ContextMenu
 import Core
-import Dict
 import Task
+import Bootstrap.Navbar as Navbar
+
+
 subscriptions : Model -> Sub Msg
 subscriptions model =
      Sub.batch [
@@ -19,7 +21,8 @@ subscriptions model =
                 subscriptionsDrag model,
                 subscriptionsSvgDownload model,
                 subscriptionsContextMenu model,
-                subscriptionsSaveBoards model
+                subscriptionsSaveBoards model,
+                subscriptionsNavBar model
                 ]
 
 subscriptionsDrag : Model -> Sub Msg
@@ -43,12 +46,15 @@ subscriptionsSvgDownload _ =
 
 subscriptionsSaveBoards : Model -> Sub Msg
 subscriptionsSaveBoards _ = 
-          Ports.receiveBoards GotSvg          
+          Ports.receiveBoards ReceivedBoards          
 
 subscriptionsContextMenu : Model -> Sub Msg
 subscriptionsContextMenu model =
         Sub.map ContextMenuMsg (ContextMenu.subscriptions model.contextMenu)
 
+subscriptionsNavBar : Model -> Sub Msg
+subscriptionsNavBar model =
+    Navbar.subscriptions model.navbarState NavbarMsg
 
 init : flags -> ( Model, Cmd Msg )
 init _ =
@@ -56,6 +62,8 @@ init _ =
         ( contextMenu, contextMsg ) =
             ContextMenu.init
         initBoxGroup = Core.emptyGroup    
+        ( navbarState, navbarCmd ) =
+            Navbar.initialState NavbarMsg 
     in
     
     ( { boxGroup = initBoxGroup
@@ -73,7 +81,9 @@ init _ =
       , files = []
       , contextMenu = contextMenu
       , selectedShapeId = Nothing 
-      , timeNow = 0     
+      , timeNow = 0    
+      , navbarState = navbarState 
       }
-    , Cmd.batch [(Cmd.map ContextMenuMsg contextMsg),Task.perform (always CurrentDateTime) (Task.succeed ())]
+    , Cmd.batch [(Cmd.map ContextMenuMsg contextMsg),Core.run CurrentDateTime, navbarCmd]
+
     )
