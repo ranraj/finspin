@@ -39,6 +39,7 @@ boxListEncoder boxes = Encode.list noteBoxEncoder boxes
 boxGroupEncoder : BoxGroup -> Encode.Value
 boxGroupEncoder boxGroup = Encode.object
         [ ("uid", Encode.string boxGroup.uid)
+        , ("name", Encode.string boxGroup.name)
         , ("idleBoxes", boxListEncoder boxGroup.idleBoxes)
         ]
 

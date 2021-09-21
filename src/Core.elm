@@ -80,13 +80,14 @@ rndUUID seedTime = Random.step UUID.generator (Random.initialSeed seedTime)
 -- TODO : Remove hardcode string
 emptyGroup : BoxGroup
 emptyGroup =
-    BoxGroup "" Nothing Nothing []
+    BoxGroup "" "" Nothing []
 
 buildBoxGroup : String -> List Box -> BoxGroup 
-buildBoxGroup uid boxes = BoxGroup uid Nothing Nothing boxes
-emptyGroupWithId : Int -> BoxGroup
-emptyGroupWithId timeNow =
-    BoxGroup (rndUUID timeNow) Nothing  Nothing []
+buildBoxGroup uid boxes = BoxGroup uid "" Nothing boxes
+
+emptyGroupWithId : Int -> String -> BoxGroup
+emptyGroupWithId timeNow name =
+    BoxGroup (rndUUID timeNow) name  Nothing []
 
 buildNote : Int -> String -> String ->  Note
 buildNote length t d  = { 

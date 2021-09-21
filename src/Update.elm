@@ -20,7 +20,12 @@ import Msg exposing (BoxAction(..),Color(..),Msg(..))
 import Core exposing (emptyGroup)
 import Dict exposing (empty)
 import Time
+import DateTime
 import Core exposing (emptyGroupWithId)
+import Strftime exposing (format)
+import String.Format
+
+
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg ({ boxGroup } as model) =
     case msg of
@@ -219,14 +224,17 @@ update msg ({ boxGroup } as model) =
         NewBoard -> (model, Task.perform (NewBoardGen) Time.now)                                                      
         NewBoardGen timeNow -> 
                 let
-                    boxGroup_ = emptyGroupWithId (Time.posixToMillis timeNow)
+                    date = DateTime.fromPosix timeNow
+                 
+                    boxGroup_ = emptyGroupWithId (Time.posixToMillis timeNow) (dateToString timeNow)
+                    _ = Debug.log "NewBoard" boxGroup_
                     containsBoxGroup = List.filter (\board -> board.uid == model.boxGroup.uid) model.boxGroups
                     boxGroups_ = if List.isEmpty containsBoxGroup then
-                                       boxGroup :: model.boxGroups 
+                                       boxGroup_ :: model.boxGroups 
                                     else
                                         List.map 
-                                                    (\board -> if board.uid == model.boxGroup.uid then model.boxGroup else board) 
-                                                    model.boxGroups                     
+                                            (\board -> if board.uid == model.boxGroup.uid then model.boxGroup else board) 
+                                            model.boxGroups                     
                     model_ = {model | boxGroup = boxGroup_, boxGroups = boxGroups_}                   
                     savePostsCmd = saveBoards boxGroups_
                     
@@ -238,29 +246,34 @@ update msg ({ boxGroup } as model) =
                        
                         (boxGroup_,boxGroups_) = 
                                     if List.isEmpty containsBoxGroup then                                        
-                                        (model.boxGroup, model.boxGroups)
+                                        (model.boxGroup, model.boxGroup :: model.boxGroups)
                                     else
                                         (Maybe.withDefault model.boxGroup (List.head containsBoxGroup)
                                         , List.map  
                                             (\board -> if board.uid == model.boxGroup.uid then model.boxGroup else board) 
                                             model.boxGroups)                     
                         model_ = {model | boxGroup = boxGroup_, boxGroups = boxGroups_}                                           
-                        savePostsCmd = saveBoards boxGroups_
-                        
+                        savePostsCmd = saveBoards boxGroups_                        
                     in
                         (model_,savePostsCmd)
         ReceivedBoards boxGroupsString -> 
                             let
-                               boxGroups = boxGroupsDecoderString boxGroupsString                               
+                               boxGroups = boxGroupsDecoderString boxGroupsString  
+                               _ = Debug.log "boxGroups" (List.length boxGroups)                             
                             in
                                 ({model | boxGroups = boxGroups},Cmd.none)
         CurrentDateTime -> (model, Task.perform (CaptureDateTime) Time.now)            
         CaptureDateTime timeNow -> 
                             let
                                 timeNow_ = Time.posixToMillis timeNow
+                                boxGroup_ = Core.emptyGroupWithId timeNow_  (dateToString timeNow)
+                                boxGroups_ = [boxGroup_]
                             in                
-                                ({model | boxGroup = Core.emptyGroupWithId timeNow_},Cmd.none)
+                                ({model | boxGroup = boxGroup_,boxGroups = boxGroups_ },Cmd.none)
         NavbarMsg state -> 
                         ( { model | navbarState = state }, Cmd.none )
 
-        
+dateToString : Time.Posix -> String
+dateToString date = format "%d-%b-%Y-%-I:%M" Time.utc date
+     
+

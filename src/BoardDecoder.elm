@@ -94,7 +94,7 @@ boxGroupDecoderString value =
 boxGroupDecoder : Decoder BoxGroup
 boxGroupDecoder  = JD.map4 BoxGroup 
                   (field "uid" string) 
-                  (JD.maybe (field "name" string)) 
+                  (field "name" string)
                   (JD.maybe (field "movingBox" boxDecoder)) 
                   (field "idleBoxes" boxListDecoder) 
                                          

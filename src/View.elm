@@ -308,8 +308,9 @@ hijack msg =
 viewNavBar : Model -> Html Msg
 viewNavBar model =
             let
-                navBarItems = List.map (\board -> Navbar.itemLink [ onClick (LoadSelectedBoard board.uid), href "#" ] [ text (String.slice 0 10 board.uid) ]) model.boxGroups
-                navBarItems_ = Navbar.itemLink [ href "#" ] [ text ("New") ] :: navBarItems
+                _ = Debug.log "Nav" (List.length model.boxGroups)
+                navBarItems = List.map (\board -> Navbar.itemLink [ onClick (LoadSelectedBoard board.uid), href "#" ] [ text (String.slice 0 10 board.name) ]) model.boxGroups
+                navBarItems_ = Navbar.itemLink [ onClick NewBoard] [ Icon.viewStyled [ Icon.lg ] Icon.plus] :: navBarItems
             in
                 Navbar.config NavbarMsg
                     |> Navbar.withAnimation        
@@ -318,7 +319,7 @@ viewNavBar model =
 
 viewGrid : Model -> Html Msg
 viewGrid model = Grid.container []
-            [ CDN.stylesheet -- creates an inline style node with the Bootstrap CSS
+            [ CDN.stylesheet
             , Grid.row []
                 [ Grid.col []
                     [ viewNavBar model]
