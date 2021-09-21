@@ -236,13 +236,14 @@ update msg ({ boxGroup } as model) =
                     let                    
                         containsBoxGroup = List.filter (\board -> board.uid == boardId) model.boxGroups
                        
-                        (boxGroup_,boxGroups_) = if List.isEmpty containsBoxGroup then                                        
+                        (boxGroup_,boxGroups_) = 
+                                    if List.isEmpty containsBoxGroup then                                        
                                         (model.boxGroup, model.boxGroups)
-                                        else
-                                            (Maybe.withDefault model.boxGroup (List.head containsBoxGroup)
-                                            , List.map 
-                                                        (\board -> if board.uid == model.boxGroup.uid then model.boxGroup else board) 
-                                                        model.boxGroups)                     
+                                    else
+                                        (Maybe.withDefault model.boxGroup (List.head containsBoxGroup)
+                                        , List.map  
+                                            (\board -> if board.uid == model.boxGroup.uid then model.boxGroup else board) 
+                                            model.boxGroups)                     
                         model_ = {model | boxGroup = boxGroup_, boxGroups = boxGroups_}                                           
                         savePostsCmd = saveBoards boxGroups_
                         
