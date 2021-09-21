@@ -32,7 +32,7 @@ type alias Box =
 -------------------------------BoxGroup-----------------------------------
 type alias BoxGroup =
     { uid : String
-    , name : String
+    , name : Maybe String
     , movingBox : Maybe Box
     , idleBoxes : List Box
     }

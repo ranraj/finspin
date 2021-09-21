@@ -86,14 +86,15 @@ boxGroupDecoderString value =
               
               uid = Result.withDefault "default_id" (decodeString uidDecoder value)
               boxGroup = case res of
-                            Result.Ok data -> Just (BoxGroup uid Nothing data)
+                            Result.Ok data -> Just (Core.buildBoxGroup uid data)
                             Result.Err _ -> Nothing              
             in
               boxGroup
 
 boxGroupDecoder : Decoder BoxGroup
-boxGroupDecoder  = JD.map3 BoxGroup 
+boxGroupDecoder  = JD.map4 BoxGroup 
                   (field "uid" string) 
+                  (JD.maybe (field "name" string)) 
                   (JD.maybe (field "movingBox" boxDecoder)) 
                   (field "idleBoxes" boxListDecoder) 
                                          
