@@ -1,5 +1,5 @@
 # Finspin
-Finspin is interactive board for notes - [Progressive WebApp](https://web.dev/what-are-pwas/)
+Finspin is interactive board for notes - [Progressive WebApp](https://web.dev/what-are-pwas/) [![Build Status](https://app.travis-ci.com/ranraj/finspin.svg?branch=main)](https://app.travis-ci.com/ranraj/finspin)
 
 ## Idea
 
