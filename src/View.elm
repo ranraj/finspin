@@ -309,7 +309,7 @@ viewNavBar : Model -> Html Msg
 viewNavBar model =
             let
                 _ = Debug.log "Nav" (List.length model.boxGroups)
-                navBarItems = List.map (\board -> Navbar.itemLink [ onClick (LoadSelectedBoard board.uid), href "#" ] [ text (String.slice 0 10 board.name) ]) model.boxGroups
+                navBarItems = List.map (\board -> Navbar.itemLink [ onClick (LoadSelectedBoard board.uid), class "nav-menu-item" ] [ text (String.slice 0 10 board.name) ]) model.boxGroups
                 navBarItems_ = Navbar.itemLink [ onClick NewBoard] [ Icon.viewStyled [ Icon.lg ] Icon.plus] :: navBarItems
             in
                 Navbar.config NavbarMsg

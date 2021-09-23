@@ -82,8 +82,8 @@ emptyGroup : BoxGroup
 emptyGroup =
     BoxGroup "" "" Nothing []
 
-buildBoxGroup : String -> List Box -> BoxGroup 
-buildBoxGroup uid boxes = BoxGroup uid "" Nothing boxes
+buildBoxGroup : String -> String -> List Box -> BoxGroup 
+buildBoxGroup uid name boxes = BoxGroup uid name Nothing boxes
 
 emptyGroupWithId : Int -> String -> BoxGroup
 emptyGroupWithId timeNow name =

@@ -81,12 +81,9 @@ boxListDecoderString value =
 boxGroupDecoderString : String -> Maybe BoxGroup
 boxGroupDecoderString value = 
             let
-              res = decodeString (field "idleBoxes" boxListDecoder) value              
-              uidDecoder = (field "uid" string)
-              
-              uid = Result.withDefault "default_id" (decodeString uidDecoder value)
+              res = decodeString boxGroupDecoder value
               boxGroup = case res of
-                            Result.Ok data -> Just (Core.buildBoxGroup uid data)
+                            Result.Ok data -> Just data
                             Result.Err _ -> Nothing              
             in
               boxGroup

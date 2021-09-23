@@ -36,6 +36,7 @@ update msg ({ boxGroup } as model) =
 
         StartDragging id ->
                 let
+                   _ = Debug.log "start drag" newBoxGroup.name  
                    newBoxGroup = model.boxGroup |> startDragging  id
                   
                 in 
@@ -44,7 +45,7 @@ update msg ({ boxGroup } as model) =
         StopDragging ->            
                 let
                    newBoxGroup = model.boxGroup |> stopDragging 
-                    
+                   _ = Debug.log "stop drag b4" newBoxGroup.name   
                    savePostsCmd = if model.saveDefault then saveNotes newBoxGroup else Cmd.none  
                    _ = Debug.log "stop drag" newBoxGroup                   
                 in    
@@ -228,12 +229,14 @@ update msg ({ boxGroup } as model) =
                  
                     boxGroup_ = emptyGroupWithId (Time.posixToMillis timeNow) (dateToString timeNow)
                     _ = Debug.log "NewBoard" boxGroup_
+                    boxGp = model.boxGroup
+                    _ = Debug.log "NewBoard gp" boxGp.name
                     containsBoxGroup = List.filter (\board -> board.uid == model.boxGroup.uid) model.boxGroups
                     boxGroups_ = if List.isEmpty containsBoxGroup then
                                        boxGroup_ :: model.boxGroups 
                                     else
                                         List.map 
-                                            (\board -> if board.uid == model.boxGroup.uid then model.boxGroup else board) 
+                                            (\board -> if board.uid == model.boxGroup.uid then boxGp else board) 
                                             model.boxGroups                     
                     model_ = {model | boxGroup = boxGroup_, boxGroups = boxGroups_}                   
                     savePostsCmd = saveBoards boxGroups_
@@ -242,6 +245,7 @@ update msg ({ boxGroup } as model) =
                     (model_,savePostsCmd)
         LoadSelectedBoard boardId -> 
                     let                    
+                        _ = Debug.log "b4 update" model.boxGroups
                         containsBoxGroup = List.filter (\board -> board.uid == boardId) model.boxGroups
                        
                         (boxGroup_,boxGroups_) = 
@@ -254,6 +258,7 @@ update msg ({ boxGroup } as model) =
                                             model.boxGroups)                     
                         model_ = {model | boxGroup = boxGroup_, boxGroups = boxGroups_}                                           
                         savePostsCmd = saveBoards boxGroups_                        
+                        _ = Debug.log "after update" model_.boxGroups
                     in
                         (model_,savePostsCmd)
         ReceivedBoards boxGroupsString -> 

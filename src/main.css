@@ -433,3 +433,7 @@ input:checked+.slider:before {
 .content-main {
     width : 90%;
 }
+
+.nav-menu-item{
+    cursor: pointer;
+}
