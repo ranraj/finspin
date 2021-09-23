@@ -24,6 +24,7 @@ import DateTime
 import Core exposing (emptyGroupWithId)
 import Strftime exposing (format)
 import String.Format
+import Html exposing (menu)
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -35,19 +36,16 @@ update msg ({ boxGroup } as model) =
             ( { model | boxGroup = boxGroup |> dragActiveBy delta }, Cmd.none )
 
         StartDragging id ->
-                let
-                   _ = Debug.log "start drag" newBoxGroup.name  
-                   newBoxGroup = model.boxGroup |> startDragging  id
-                  
+                let                   
+                   newBoxGroup = model.boxGroup |> startDragging  id                  
                 in 
                     ( { model | boxGroup = newBoxGroup }, Cmd.none )
 
         StopDragging ->            
                 let
-                   newBoxGroup = model.boxGroup |> stopDragging 
-                   _ = Debug.log "stop drag b4" newBoxGroup.name   
+                   newBoxGroup = model.boxGroup |> stopDragging                      
                    savePostsCmd = if model.saveDefault then saveNotes newBoxGroup else Cmd.none  
-                   _ = Debug.log "stop drag" newBoxGroup                   
+                   
                 in    
                     ({ model | boxGroup = newBoxGroup }, savePostsCmd )
 
@@ -133,7 +131,7 @@ update msg ({ boxGroup } as model) =
                     newBox = {box | note = {note | description = d} }
                 in
                 ({ model | currentBox = newBox}, Cmd.none)
-        ReceivedDataFromJS value ->              
+        ReceivedBoard value ->              
             let                 
                 boxGroupMaybe = boxGroupDecoderString value                
                 newBoxGroup = case boxGroupMaybe of                                
@@ -277,7 +275,37 @@ update msg ({ boxGroup } as model) =
                                 ({model | boxGroup = boxGroup_,boxGroups = boxGroups_ },Cmd.none)
         NavbarMsg state -> 
                         ( { model | navbarState = state }, Cmd.none )
+        MenuHoverIn menuId -> ({model | menuHover = Just menuId},Cmd.none)
+        MenuHoverOut -> ({model | menuHover = Nothing},Cmd.none)
+        EditBoardTitle uid -> ({ model | boardTitleEdit = Just uid}, Cmd.none)
+        BoardTitleChange text -> 
+                            let
+                                _ = Debug.log "title Change" model.boardTitleEdit
+                                boxGroups_ = 
+                                    case model.boardTitleEdit of 
+                                            Just boardId -> List.map 
+                                                                (\board -> 
+                                                                    if boardId == board.uid  then 
+                                                                        {board | name = text} 
+                                                                        else 
+                                                                            board
+                                                                ) 
+                                                                model.boxGroups
+                                            Nothing -> model.boxGroups                                                      
+                            in  
+                                ({ model | boxGroups = boxGroups_}, Cmd.none)
 
+        SaveBoardTitleChange -> 
+            let                
+                saveCommand = saveBoards model.boxGroups
+            in
+                ({ model | boardTitleEdit = Nothing,boxGroups = model.boxGroups}, Cmd.none)
+        RemoveBoard uid -> 
+            let
+                boxGroups_ = List.filter (\board -> board.uid == uid |> not) model.boxGroups
+                saveCommand = saveBoards boxGroups_
+            in 
+                ({model | boxGroups = boxGroups_},saveCommand)
 dateToString : Time.Posix -> String
 dateToString date = format "%d-%b-%Y-%-I:%M" Time.utc date
      

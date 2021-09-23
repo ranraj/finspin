@@ -38,7 +38,7 @@ saveBoards boxGroups = boxGroupsEncoder boxGroups |> Ports.storeBoards
 
 subscriptionsLocalStorage : Model -> Sub Msg
 subscriptionsLocalStorage _ = 
-        Ports.receiveData ReceivedDataFromJS    
+        Ports.receiveData ReceivedBoard    
 
 subscriptionsSvgDownload : Model -> Sub Msg
 subscriptionsSvgDownload _ = 
@@ -83,6 +83,8 @@ init _ =
       , selectedShapeId = Nothing 
       , timeNow = 0    
       , navbarState = navbarState 
+      , menuHover = Nothing
+      , boardTitleEdit = Nothing
       }
     , Cmd.batch [(Cmd.map ContextMenuMsg contextMsg),Core.run CurrentDateTime, navbarCmd]
 

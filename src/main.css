@@ -436,4 +436,21 @@ input:checked+.slider:before {
 
 .nav-menu-item{
     cursor: pointer;
+    display: flex;
+    flex-flow: row;
+    align-content: flex-start;
+    align-items: flex-start;
+    width: 150px;
+}
+
+.nav-bar-item-text{
+  width: 100px;
+}
+.nav-bar-item-input {
+    width: 100px;
+}
+.nav-bar-item-pen{
+    width :  10 px;         
+    align-items: center;
+    padding : 5px;
 }

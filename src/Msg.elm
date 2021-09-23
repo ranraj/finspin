@@ -28,7 +28,7 @@ type Msg
     | ChangeDesc String
     | StartNoteForm
     | CancelNoteForm
-    | ReceivedDataFromJS String
+    | ReceivedBoard String
     | UpdateNote String String
     | SaveBoard 
     | Position Int Int
@@ -53,6 +53,12 @@ type Msg
     | CurrentDateTime 
     | CaptureDateTime Time.Posix
     | NavbarMsg Navbar.State
+    | MenuHoverIn String
+    | MenuHoverOut 
+    | EditBoardTitle String
+    | BoardTitleChange String
+    | SaveBoardTitleChange
+    | RemoveBoard String
     
 
 type BoxAction

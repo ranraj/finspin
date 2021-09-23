@@ -8,6 +8,7 @@ import BoardTiles exposing (..)
 import Html exposing (Html, button, text, div, li, ul, input, textarea, span)
 import Html.Attributes exposing ( class, style, type_, placeholder, value,id,autofocus,href)
 import Html.Events exposing (onInput, onClick,preventDefaultOn)
+
 import FontAwesome.Attributes as Icon
 import FontAwesome.Brands as Icon
 import FontAwesome.Icon as Icon
@@ -32,6 +33,8 @@ import Bootstrap.Navbar as Navbar
 import ContextMenu exposing (ContextMenu,Item)
 import Bootstrap.CDN as CDN
 import Bootstrap.Grid as Grid
+import Html.Events exposing (onMouseOver)
+import Html.Events exposing (onMouseLeave)
 
 
 boxesView : Model -> Svg Msg
@@ -305,11 +308,58 @@ hijack : msg -> (msg, Bool)
 hijack msg =
   (msg, True)
 
+viewNavBarControl : Maybe String -> Maybe String -> String -> String -> List (Html Msg)
+viewNavBarControl titleEdit hoverMenu uid name = 
+            let        
+                penHolder = div [class "nav-bar-item-pen"][]        
+                label = 
+                    [
+                        div [class "nav-bar-item-text"] 
+                        [
+                            text (String.slice 0 10 name)                        
+                        ]
+                        ,hoverPen
+                        ,hoverTimes
+                    ]    
+
+                hoverItem : Html Msg -> Html Msg
+                hoverItem  hoverControl = case hoverMenu of
+                                Just hoverId ->  
+                                    if hoverId == uid then                                        
+                                        hoverControl
+                                    else    
+                                        penHolder
+                                Nothing -> penHolder                   
+                hoverPen = hoverItem (div [class "nav-bar-item-pen", onClick (EditBoardTitle uid)] [Icon.viewStyled [ Icon.sm ] Icon.pen])                                                                                        
+                                 
+                hoverTimes =  hoverItem (div [class "nav-bar-item-pen", onClick (RemoveBoard uid)] [Icon.viewStyled [ Icon.sm ] Icon.times])                                                
+                                             
+            in
+                case titleEdit of
+                        Just boardId ->  
+                            if boardId == uid then
+                                [
+                                input [value name, class "nav-bar-item-input", onInput BoardTitleChange] []
+                                ,div [class "nav-bar-item-pen", onClick (SaveBoardTitleChange)] [Icon.viewStyled [ Icon.sm ] Icon.checkCircle]
+                                ]
+                            else    
+                                label
+                        Nothing -> label
+
 viewNavBar : Model -> Html Msg
 viewNavBar model =
             let
-                _ = Debug.log "Nav" (List.length model.boxGroups)
-                navBarItems = List.map (\board -> Navbar.itemLink [ onClick (LoadSelectedBoard board.uid), class "nav-menu-item" ] [ text (String.slice 0 10 board.name) ]) model.boxGroups
+                _ = Debug.log "Nav" (List.length model.boxGroups)                                
+                navBarItems = List.map 
+                                (\board -> 
+                                    Navbar.itemLink 
+                                    [ onClick (LoadSelectedBoard board.uid)  ] 
+                                    [ 
+                                        div [class "nav-menu-item", onMouseOver (MenuHoverIn board.uid),onMouseLeave MenuHoverOut ]
+                                        (viewNavBarControl model.boardTitleEdit model.menuHover board.uid board.name)                                        
+                                    ]                                    
+                                )
+                                model.boxGroups
                 navBarItems_ = Navbar.itemLink [ onClick NewBoard] [ Icon.viewStyled [ Icon.lg ] Icon.plus] :: navBarItems
             in
                 Navbar.config NavbarMsg

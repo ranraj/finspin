@@ -56,6 +56,8 @@ type alias Model =
     , selectedShapeId : Maybe String   
     , timeNow : Int 
     , navbarState : Navbar.State
+    , menuHover : Maybe String
+    , boardTitleEdit : Maybe String    
     }
 
 
