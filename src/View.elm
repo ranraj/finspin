@@ -29,7 +29,7 @@ import Config exposing (colorPallet,svgWrapper)
 import Json.Encode as Encode
 import Json.Decode as Decode
 import Config exposing (tileDefaultColor)
-import Bootstrap.Navbar as Navbar
+import Bootstrap.Navbar as Navbar exposing (DropdownToggle,DropdownItem)
 import ContextMenu exposing (ContextMenu,Item)
 import Bootstrap.CDN as CDN
 import Bootstrap.Grid as Grid
@@ -375,7 +375,7 @@ viewSearchFrom : Model -> Html msg
 viewSearchFrom model = 
                         div [class "form-inline",class "my-2", class"my-lg-0"][
                             input [class "form-control", class "mr-sm-2"][]
-                            ,button [class "btn btn-outline-success my-2 my-sm-0", type_ "button"][Icon.viewStyled [ Icon.lg ] Icon.search] 
+                            ,button [class "btn btn-outline-success my-2 my-sm-0 btn-board-search", type_ "button"][Icon.viewStyled [ Icon.lg ] Icon.search] 
                         ]
                        
 viewGrid : Model -> Html Msg
@@ -386,3 +386,24 @@ viewGrid model = Grid.container []
                     [ viewNavBar model]
                 ]            
             ]
+
+viewNavBarDropDown : Model -> Html Msg
+viewNavBarDropDown model = li [][]
+type alias BoardNavDropDown = 
+    { id : String
+    , toggle : DropdownToggle Msg
+    , items : List (DropdownItem Msg)
+    }
+
+-- dropdown :  BoardNavDropDown  -> Item msg
+
+-- <li class="nav-item dropdown">
+--         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+--           Dropdown link
+--         </a>
+--         <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+--           <a class="dropdown-item" href="#">Action</a>
+--           <a class="dropdown-item" href="#">Another action</a>
+--           <a class="dropdown-item" href="#">Something else here</a>
+--         </div>
+--       </li>

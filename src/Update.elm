@@ -283,7 +283,7 @@ update msg ({ boxGroup } as model) =
         EditBoardTitle uid -> ({ model | boardTitleEdit = Just uid}, Cmd.none)
         BoardTitleChange text -> 
                             let
-                                _ = Debug.log "title Change" model.boardTitleEdit
+                                
                                 boxGroups_ = 
                                     case model.boardTitleEdit of 
                                             Just boardId -> List.map 
@@ -295,8 +295,9 @@ update msg ({ boxGroup } as model) =
                                                                 ) 
                                                                 model.boxGroups
                                             Nothing -> model.boxGroups                                                      
+                                boxGroup_ = {boxGroup | name = text}            
                             in  
-                                ({ model | boxGroups = boxGroups_}, Cmd.none)
+                                ({ model | boxGroup = boxGroup_, boxGroups = boxGroups_}, Cmd.none)
 
         SaveBoardTitleChange -> 
             let                
