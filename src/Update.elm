@@ -242,23 +242,26 @@ update msg ({ boxGroup } as model) =
                 in
                     (model_,savePostsCmd)
         LoadSelectedBoard boardId -> 
-                    let                    
-                        _ = Debug.log "b4 update" model.boxGroups
-                        containsBoxGroup = List.filter (\board -> board.uid == boardId) model.boxGroups
-                       
-                        (boxGroup_,boxGroups_) = 
-                                    if List.isEmpty containsBoxGroup then                                        
-                                        (model.boxGroup, model.boxGroup :: model.boxGroups)
-                                    else
-                                        (Maybe.withDefault model.boxGroup (List.head containsBoxGroup)
-                                        , List.map  
-                                            (\board -> if board.uid == model.boxGroup.uid then model.boxGroup else board) 
-                                            model.boxGroups)                     
-                        model_ = {model | boxGroup = boxGroup_, boxGroups = boxGroups_}                                           
-                        savePostsCmd = saveBoards boxGroups_                        
-                        _ = Debug.log "after update" model_.boxGroups
+                    let          
+                        switchBoard =
+                                    let 
+                                        containsBoxGroup = List.filter (\board -> board.uid == boardId) model.boxGroups
+                                    
+                                        (boxGroup_,boxGroups_) = 
+                                                    if List.isEmpty containsBoxGroup then                                        
+                                                        (model.boxGroup, model.boxGroup :: model.boxGroups)
+                                                    else
+                                                        (Maybe.withDefault model.boxGroup (List.head containsBoxGroup)
+                                                        , List.map  
+                                                            (\board -> if board.uid == model.boxGroup.uid then model.boxGroup else board) 
+                                                            model.boxGroups)                     
+                                        model_ = {model | boxGroup = boxGroup_, boxGroups = boxGroups_}                                           
+                                        savePostsCmd = saveBoards boxGroups_                        
+                                    in
+                                        (model_,savePostsCmd)
+                        modelMsg =  if model.boxGroup.uid == boardId then (model,Cmd.none)  else  switchBoard
                     in
-                        (model_,savePostsCmd)
+                        modelMsg
         ReceivedBoards boxGroupsString -> 
                             let
                                boxGroups = boxGroupsDecoderString boxGroupsString  
@@ -305,7 +308,8 @@ update msg ({ boxGroup } as model) =
                 boxGroups_ = List.filter (\board -> board.uid == uid |> not) model.boxGroups
                 saveCommand = saveBoards boxGroups_
             in 
-                ({model | boxGroups = boxGroups_},saveCommand)
+                ({model | boxGroups = boxGroups_},Cmd.none)
+                
 dateToString : Time.Posix -> String
 dateToString date = format "%d-%b-%Y-%-I:%M" Time.utc date
      

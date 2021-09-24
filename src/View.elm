@@ -5,7 +5,7 @@ import Svg.Attributes as Attr
 import Svg.Events as Events
 
 import BoardTiles exposing (..)
-import Html exposing (Html, button, text, div, li, ul, input, textarea, span)
+import Html exposing (Html, button, text, div, li, ul, input, textarea, span,form)
 import Html.Attributes exposing ( class, style, type_, placeholder, value,id,autofocus,href)
 import Html.Events exposing (onInput, onClick,preventDefaultOn)
 
@@ -349,24 +349,35 @@ viewNavBarControl titleEdit hoverMenu uid name =
 viewNavBar : Model -> Html Msg
 viewNavBar model =
             let
-                _ = Debug.log "Nav" (List.length model.boxGroups)                                
+                _ = Debug.log "Nav" (List.length model.boxGroups)     
+                activeMenuClass uid = if model.boxGroup.uid == uid then (class "active") else (class "")                           
                 navBarItems = List.map 
                                 (\board -> 
                                     Navbar.itemLink 
-                                    [ onClick (LoadSelectedBoard board.uid)  ] 
+                                    [ onClick (LoadSelectedBoard board.uid), activeMenuClass board.uid  ] 
                                     [ 
-                                        div [class "nav-menu-item", onMouseOver (MenuHoverIn board.uid),onMouseLeave MenuHoverOut ]
+                                        div [class "nav-menu-item" , onMouseOver (MenuHoverIn board.uid),onMouseLeave MenuHoverOut ]
                                         (viewNavBarControl model.boardTitleEdit model.menuHover board.uid board.name)                                        
                                     ]                                    
                                 )
                                 model.boxGroups
-                navBarItems_ = Navbar.itemLink [ onClick NewBoard] [ Icon.viewStyled [ Icon.lg ] Icon.plus] :: navBarItems
+                navBarItems_ = Navbar.itemLink [ onClick NewBoard] [ Icon.viewStyled [ Icon.lg ] Icon.plus] :: navBarItems                
             in
                 Navbar.config NavbarMsg
+                    |> Navbar.dark                    
                     |> Navbar.withAnimation        
-                    |> Navbar.items navBarItems_                        
+                    |> Navbar.items navBarItems_                                            
+                    |> Navbar.customItems [Navbar.textItem [] [viewSearchFrom model]]
                     |> Navbar.view model.navbarState  
+                    
 
+viewSearchFrom : Model -> Html msg
+viewSearchFrom model = 
+                        div [class "form-inline",class "my-2", class"my-lg-0"][
+                            input [class "form-control", class "mr-sm-2"][]
+                            ,button [class "btn btn-outline-success my-2 my-sm-0", type_ "button"][Icon.viewStyled [ Icon.lg ] Icon.search] 
+                        ]
+                       
 viewGrid : Model -> Html Msg
 viewGrid model = Grid.container []
             [ CDN.stylesheet

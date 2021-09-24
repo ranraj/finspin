@@ -167,6 +167,7 @@ select:focus {
 .content-container {
     flex-direction: row;
     display: flex;
+    background-color: #343a40;
 }
 
 .content-display {
@@ -180,7 +181,7 @@ select:focus {
     flex-flow: column;
     align-items: center;
     width: 10%;
-    margin-top: 60px;
+    margin-top: 70px;
 }
 
 .content-controller-item {
