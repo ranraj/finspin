@@ -187,7 +187,7 @@ select:focus {
     margin: 10px;
     border: none;
     background-color: transparent;
-    /* color: skyblue; */
+    color: #343a40;
 }
 
 .content-controller-label {
@@ -440,7 +440,7 @@ input:checked+.slider:before {
     flex-flow: row;
     align-content: flex-start;
     align-items: flex-start;
-    width: 120px;
+    width: 130px;
 }
 
 .nav-bar-item-text{

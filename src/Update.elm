@@ -249,7 +249,7 @@ update msg ({ boxGroup } as model) =
                                     
                                         (boxGroup_,boxGroups_) = 
                                                     if List.isEmpty containsBoxGroup then                                        
-                                                        (model.boxGroup, model.boxGroup :: model.boxGroups)
+                                                        (model.boxGroup,  model.boxGroups)
                                                     else
                                                         (Maybe.withDefault model.boxGroup (List.head containsBoxGroup)
                                                         , List.map  
@@ -299,17 +299,14 @@ update msg ({ boxGroup } as model) =
                             in  
                                 ({ model | boxGroup = boxGroup_, boxGroups = boxGroups_}, Cmd.none)
 
-        SaveBoardTitleChange -> 
-            let                
-                saveCommand = saveBoards model.boxGroups
-            in
-                ({ model | boardTitleEdit = Nothing,boxGroups = model.boxGroups}, Cmd.none)
+        SaveBoardTitleChange -> ({ model | boardTitleEdit = Nothing,boxGroups = model.boxGroups}, Cmd.none)
         RemoveBoard uid -> 
             let
                 boxGroups_ = List.filter (\board -> board.uid == uid |> not) model.boxGroups
-                saveCommand = saveBoards boxGroups_
+                --saveCommand = saveBoards boxGroups_
+                boxGroup_ = Maybe.withDefault emptyGroup (List.head boxGroups_)                
             in 
-                ({model | boxGroups = boxGroups_},Cmd.none)
+                ({model | boxGroup = boxGroup_, boxGroups = boxGroups_},Core.run (LoadSelectedBoard boxGroup_.uid) )
         Search keyword ->
                     let 
                         boxGroup_ = Core.searchBox boxGroup keyword
