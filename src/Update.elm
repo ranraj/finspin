@@ -282,18 +282,18 @@ update msg ({ boxGroup } as model) =
         MenuHoverOut -> ({model | menuHover = Nothing},Cmd.none)
         EditBoardTitle uid -> ({ model | boardTitleEdit = Just uid}, Cmd.none)
         BoardTitleChange text -> 
-                            let
-                                
+                            let                                
                                 boxGroups_ = 
                                     case model.boardTitleEdit of 
-                                            Just boardId -> List.map 
-                                                                (\board -> 
-                                                                    if boardId == board.uid  then 
-                                                                        {board | name = text} 
-                                                                        else 
-                                                                            board
-                                                                ) 
-                                                                model.boxGroups
+                                            Just boardId -> 
+                                                    List.map 
+                                                        (\board -> 
+                                                            if boardId == board.uid  then 
+                                                                {board | name = text} 
+                                                                else 
+                                                                    board
+                                                        ) 
+                                                        model.boxGroups
                                             Nothing -> model.boxGroups                                                      
                                 boxGroup_ = {boxGroup | name = text}            
                             in  
@@ -310,7 +310,26 @@ update msg ({ boxGroup } as model) =
                 saveCommand = saveBoards boxGroups_
             in 
                 ({model | boxGroups = boxGroups_},Cmd.none)
-                
+        Search keyword ->
+                    let 
+                        boxGroup_ = Core.searchBox boxGroup keyword
+                    in
+                        ({model | boxGroup = boxGroup_},Cmd.none)        
+        SearchKeywordChange keyword -> 
+                    let                        
+                        boxGroup_ = Core.searchBox boxGroup keyword                                                                                        
+                    in    
+                        ({model | boxGroup = boxGroup_, searchKeyword = if String.isEmpty keyword then Nothing else Just keyword},Cmd.none)
+        SearchClear -> 
+                let
+                    result = 
+                        List.map 
+                                (\box ->  if box.foundInSearch == True then {box | foundInSearch = False} else box ) 
+                                    boxGroup.idleBoxes
+                    boxGroup_ = {boxGroup | idleBoxes = result}                
+                in 
+                    ({model | searchKeyword = Nothing, boxGroup = boxGroup_},Cmd.none)
+
 dateToString : Time.Posix -> String
 dateToString date = format "%d-%b-%Y-%-I:%M" Time.utc date
      

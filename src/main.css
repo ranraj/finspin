@@ -199,7 +199,7 @@ select:focus {
     align-content: stretch;
     align-items: stretch;
     width: 100vw;
-    height: 98vh;
+    height: 94vh;
     background-color: #5F9A80;
 }
 
@@ -440,7 +440,7 @@ input:checked+.slider:before {
     flex-flow: row;
     align-content: flex-start;
     align-items: flex-start;
-    width: 150px;
+    width: 120px;
 }
 
 .nav-bar-item-text{

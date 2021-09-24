@@ -59,6 +59,9 @@ type Msg
     | BoardTitleChange String
     | SaveBoardTitleChange
     | RemoveBoard String
+    | Search String
+    | SearchKeywordChange String
+    | SearchClear
     
 
 type BoxAction

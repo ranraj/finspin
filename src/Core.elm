@@ -42,16 +42,16 @@ emptyNote =
 
 
 emptyBox : Box
-emptyBox = Box "" defaultNewTilePosition False emptyNote Nothing defaultBoxSize
+emptyBox = Box "" defaultNewTilePosition False emptyNote Nothing defaultBoxSize False False
 
 makeBox : Id -> Note -> Vec2 -> Maybe String -> BoxSize -> Box 
 makeBox id note position color size =
-    Box id position False note color size
+    Box id position False note color size False False
 
 
 makeBoxDefaultSize : Id -> Note -> Vec2 -> Maybe String -> Box 
 makeBoxDefaultSize id note position color =
-    Box id position False note color defaultBoxSize
+    Box id position False note color defaultBoxSize False False
 
 updateNoteBox : Model -> Box -> String -> String -> Box
 updateNoteBox model box t d = 
@@ -143,3 +143,23 @@ boxSizePallet = [
 run : msg -> Cmd msg
 run m =
     Task.perform (always m) (Task.succeed ())
+
+
+searchBox : BoxGroup -> String -> BoxGroup
+searchBox boxGroup keyword = 
+        let
+            search keyword_ = 
+                    List.map 
+                            (\box -> 
+                                if String.contains keyword_ (String.toLower box.note.title)  || String.contains keyword_ (String.toLower box.note.description) then
+                                    {box | foundInSearch = True}
+                                else 
+                                    {box | foundInSearch = False}
+                            ) 
+                                boxGroup.idleBoxes
+            searchResult_ = if String.isEmpty keyword  then 
+                                boxGroup.idleBoxes 
+                        else 
+                                search (String.toLower keyword)
+        in  
+            {boxGroup | idleBoxes = searchResult_}

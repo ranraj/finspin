@@ -40,8 +40,8 @@ import Html.Events exposing (onMouseLeave)
 boxesView : Model -> Svg Msg
 boxesView model =
     model.boxGroup
-        |> allBoxes
-        |> List.reverse
+        |> allBoxes model.searchKeyword
+        |> List.reverse        
         |> List.map (boxView model)
         |> Svg.node "g" [Attr.id "boxesView"]
 
@@ -371,11 +371,18 @@ viewNavBar model =
                     |> Navbar.view model.navbarState  
                     
 
-viewSearchFrom : Model -> Html msg
+viewSearchFrom : Model -> Html Msg
 viewSearchFrom model = 
-                        div [class "form-inline",class "my-2", class"my-lg-0"][
-                            input [class "form-control", class "mr-sm-2"][]
-                            ,button [class "btn btn-outline-success my-2 my-sm-0 btn-board-search", type_ "button"][Icon.viewStyled [ Icon.lg ] Icon.search] 
+                        let
+                            searchKeyMsg = case model.searchKeyword of 
+                                            Just data -> Search data  
+                                            Nothing ->  NoOp                       
+                        in
+                        div [class "form-inline",class "my-2", class"my-lg-0"]
+                        [
+                            input [ onInput SearchKeywordChange, class "form-control", class "mr-sm-2", value (Maybe.withDefault "" model.searchKeyword)][]
+                            ,button [onClick searchKeyMsg, class "btn btn-outline-success my-2 my-sm-0 btn-board-search", type_ "button"][Icon.viewStyled [ Icon.lg ] Icon.search] 
+                            ,button [onClick SearchClear, class "btn btn-outline-success my-2 my-sm-0 btn-board-search", type_ "button"][Icon.viewStyled [ Icon.lg ] Icon.times] 
                         ]
                        
 viewGrid : Model -> Html Msg

@@ -52,13 +52,15 @@ boxSizeDecoder =
 
 boxDecoder:  Decoder Box
 boxDecoder =
-  JD.map6 Box
+  JD.map8 Box
     (field "id" string)
     (field "position" string |>  JD.map ( \pos -> positionDecoder pos |> (\vec -> Vector2.vec2 (first vec) (second vec))))
     (field "clicked" bool )
     (field "note" noteDecoder)
     (JD.maybe (field "color" string))
     (field "size" boxSizeDecoder)
+    (JD.succeed False)
+    (JD.succeed False)
 
 boxListDecoder : Decoder (List Box)
 boxListDecoder = JD.list boxDecoder 

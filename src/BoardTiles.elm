@@ -87,7 +87,7 @@ startDragging id ({ idleBoxes } as group) =
 stopDragging : BoxGroup -> BoxGroup
 stopDragging group =
     { group
-        | idleBoxes = allBoxes group
+        | idleBoxes = allBoxes Nothing group
         , movingBox = Nothing
     }
 dragActiveBy : Vec2 -> BoxGroup -> BoxGroup
@@ -117,11 +117,12 @@ dragConfig =
         , Draggable.Events.onClick ViewNote
         ]
 
-allBoxes : BoxGroup -> List Box
-allBoxes { movingBox, idleBoxes } =
-    movingBox
-        |> Maybe.map (\a -> a :: idleBoxes)
+allBoxes : Maybe String -> BoxGroup -> List Box
+allBoxes searchKey { movingBox, idleBoxes } =
+    movingBox        
+        |> Maybe.map (\a -> a :: idleBoxes)        
         |> Maybe.withDefault idleBoxes
+        |> (\boxes -> if not (searchKey == Nothing) then List.filter (\box -> box.foundInSearch == True) boxes else boxes)
 
 dragBoxBy : Vec2 -> Box -> Box
 dragBoxBy delta box =

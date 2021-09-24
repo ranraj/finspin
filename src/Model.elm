@@ -27,6 +27,8 @@ type alias Box =
     , note : Note
     , color : Maybe String
     , size : BoxSize
+    , hidden : Bool
+    , foundInSearch : Bool
     }
 
 -------------------------------BoxGroup-----------------------------------
@@ -58,6 +60,8 @@ type alias Model =
     , navbarState : Navbar.State
     , menuHover : Maybe String
     , boardTitleEdit : Maybe String    
+    , searchKeyword : Maybe String
+    , searchResult : Maybe BoxGroup
     }
 
 

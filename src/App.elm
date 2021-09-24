@@ -85,6 +85,8 @@ init _ =
       , navbarState = navbarState 
       , menuHover = Nothing
       , boardTitleEdit = Nothing
+      , searchKeyword = Nothing
+      , searchResult = Nothing
       }
     , Cmd.batch [(Cmd.map ContextMenuMsg contextMsg),Core.run CurrentDateTime, navbarCmd]
 
