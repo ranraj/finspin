@@ -1,3 +1,17 @@
+### Why this new space for notes
+Why do even notes need to be serial/sequential or fit into an order? 
+Rough notes would show our Real creative face. Your thoughts need more respect than just text. 
+
+Let's Finspin helps you to keep your notes, keywords, bookmarks in any order. Go and place it as you like on your offline board. 
+
+Colour it as your like. 
+Move it! Mark it !! Edit !!  Share in your creativity board.
+
+ It's the freedom to arrange your board. 
+Use it professionally with templates or pick your template to collaborate easily with friends. Ideas worth sharing more creatively.
+
+
+
 # Finspin
 Finspin is interactive board for notes - [Progressive WebApp](https://web.dev/what-are-pwas/) [![Build Status](https://app.travis-ci.com/ranraj/finspin.svg?branch=main)](https://app.travis-ci.com/ranraj/finspin)
 
