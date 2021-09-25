@@ -33,13 +33,12 @@ type Msg
     | SaveBoard 
     | Position Int Int
     | UpdateTitleColor String
-    | InitDownloadSVG String
-    | DownloadSVG String Date
+    | ExportBoard String String    
     | Pick
     | DragEnter
     | DragLeave
-    | GotFiles File (List File)  
-    | MarkdownLoaded String
+    | ImportBoard File (List File)  
+    | LoadImportedBoard String
     | ToggleAutoSave
     | UpdateBoxSize BoxSize
     | GetSvg

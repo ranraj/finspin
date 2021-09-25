@@ -10,7 +10,7 @@ import ContextMenu exposing (ContextMenu)
 import Dict exposing (Dict)
 import Msg exposing (Color(..))
 import UUID exposing (UUID,Representation(..))
-import Uuid
+import Strftime exposing (format)
 import Random
 import Config exposing (rndSeed)
 import Random exposing (Seed, generate)
@@ -163,3 +163,7 @@ searchBox boxGroup keyword =
                                 search (String.toLower keyword)
         in  
             {boxGroup | idleBoxes = searchResult_}
+
+
+dateToString : Time.Posix -> String
+dateToString date = format "%d-%b-%Y-%-I:%M" Time.utc date

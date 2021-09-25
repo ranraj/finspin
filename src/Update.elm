@@ -1,13 +1,11 @@
 module Update exposing (..)
 
 import Draggable
-import Date
 
 import Tuple exposing (first,second)
 import Math.Vector2 as Vector2
 import File.Select as Select
 import Task
-import Dict exposing (Dict)
 import Model exposing (Model,BoxGroup)
 import Core exposing (buildNote,makeBox,emptyBox,updateNoteBox)
 import Ports
@@ -15,17 +13,11 @@ import View exposing (..)
 import App exposing (saveNotes,saveBoards)
 import BoardTiles exposing (..)
 import BoardDecoder exposing (boxListDecoderString,boxGroupDecoderString,boxGroupsDecoderString)
-import ContextMenu exposing (ContextMenu)
 import Msg exposing (BoxAction(..),Color(..),Msg(..))
 import Core exposing (emptyGroup)
-import Dict exposing (empty)
 import Time
-import DateTime
 import Core exposing (emptyGroupWithId)
-import Strftime exposing (format)
-import String.Format
-import Html exposing (menu)
-
+import ContextMenu exposing (ContextMenu)
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg ({ boxGroup } as model) =
@@ -71,51 +63,51 @@ update msg ({ boxGroup } as model) =
                 , savePostsCmd)  
 
         UpdateNote t d ->                     
-            let                  
-                edit = model.editNote                                
-                isEmpty = String.isEmpty t && String.isEmpty d                
-                
-                newIdleBoxes = if edit && isEmpty then boxGroup.idleBoxes else List.map (\box -> updateNoteBox model box t d) boxGroup.idleBoxes                                                                                    
-                newBoxGroup = { boxGroup | idleBoxes = newIdleBoxes}
-                savePostsCmd = if isEmpty || not model.saveDefault then Cmd.none else saveNotes newBoxGroup
-                
-            in
-                 ({ model | isPopUpActive = False,editNote = False,boxGroup = newBoxGroup }
-                , savePostsCmd)
+                let                  
+                    edit = model.editNote                                
+                    isEmpty = String.isEmpty t && String.isEmpty d                
+                    
+                    newIdleBoxes = if edit && isEmpty then boxGroup.idleBoxes else List.map (\box -> updateNoteBox model box t d) boxGroup.idleBoxes                                                                                    
+                    newBoxGroup = { boxGroup | idleBoxes = newIdleBoxes}
+                    savePostsCmd = if isEmpty || not model.saveDefault then Cmd.none else saveNotes newBoxGroup
+                    
+                in
+                    ({ model | isPopUpActive = False,editNote = False,boxGroup = newBoxGroup }
+                    , savePostsCmd)
 
         CheckNote i ->
-            let
-                newBoxGroup = {boxGroup | idleBoxes = 
-                                List.map 
-                                    (\box -> 
-                                        if box.note.id == i
-                                        then 
-                                            { box | note = 
-                                                    { id = box.note.id
-                                                    , done = not box.note.done
-                                                    , title = box.note.title
-                                                    , description = box.note.description                                                    
-                                                     }
-                                            }
-                                        else box) boxGroup.idleBoxes 
-                    }
-                savePostsCmd = if model.saveDefault then saveNotes newBoxGroup else Cmd.none
-            in
-            ({ model | boxGroup = newBoxGroup}, savePostsCmd)
+                let
+                    newBoxGroup = {boxGroup | idleBoxes = 
+                                    List.map 
+                                        (\box -> 
+                                            if box.note.id == i
+                                            then 
+                                                { box | note = 
+                                                        { id = box.note.id
+                                                        , done = not box.note.done
+                                                        , title = box.note.title
+                                                        , description = box.note.description                                                    
+                                                        }
+                                                }
+                                            else box) boxGroup.idleBoxes 
+                        }
+                    savePostsCmd = if model.saveDefault then saveNotes newBoxGroup else Cmd.none
+                in
+                ({ model | boxGroup = newBoxGroup}, savePostsCmd)
 
         ClearNote i ->
-            let
-                idleBoxesFiltered = List.filter (\box -> box.note.id /= i) model.boxGroup.idleBoxes 
-                newBoxGroup = { boxGroup | idleBoxes = idleBoxesFiltered }
-                savePostsCmd = if model.saveDefault then saveNotes newBoxGroup else Cmd.none
-            in
-            ({ model | isPopUpActive = False, boxGroup =newBoxGroup}, savePostsCmd)
+                let
+                    idleBoxesFiltered = List.filter (\box -> box.note.id /= i) model.boxGroup.idleBoxes 
+                    newBoxGroup = { boxGroup | idleBoxes = idleBoxesFiltered }
+                    savePostsCmd = if model.saveDefault then saveNotes newBoxGroup else Cmd.none
+                in
+                ({ model | isPopUpActive = False, boxGroup =newBoxGroup}, savePostsCmd)
 
         StartNoteForm -> 
-            ({ model | isPopUpActive = True }, Cmd.none)
+                ({ model | isPopUpActive = True }, Cmd.none)
         
         CancelNoteForm ->
-            ({ model | isPopUpActive = False,editNote=False, currentBox = emptyBox }, Cmd.none)
+                ({ model | isPopUpActive = False,editNote=False, currentBox = emptyBox }, Cmd.none)
         
         ChangeTitle t ->
                 let
@@ -132,33 +124,34 @@ update msg ({ boxGroup } as model) =
                 in
                 ({ model | currentBox = newBox}, Cmd.none)
         ReceivedBoard value ->              
-            let                 
-                boxGroupMaybe = boxGroupDecoderString value                
-                newBoxGroup = case boxGroupMaybe of                                
-                                Just data -> data
-                                Nothing -> boxGroup
-            in    
-             ( { model | localBoxGroup = boxGroupMaybe, boxGroup = newBoxGroup }, Cmd.none )
+                let                 
+                    boxGroupMaybe = boxGroupDecoderString value                
+                    newBoxGroup = case boxGroupMaybe of                                
+                                    Just data -> data
+                                    Nothing -> boxGroup
+                in    
+                ( { model | localBoxGroup = boxGroupMaybe, boxGroup = newBoxGroup }, Cmd.none )
 
-        ViewNote id -> let       
-                            boxOpt = boxGroup.idleBoxes |> List.filter (\b -> b.id == id) |> List.head
-                            viewBox = case boxOpt of
-                                        Just b -> b
-                                        Nothing -> emptyBox
-                            model_ = {model | isPopUpActive = True,currentBox = viewBox, editNote = True}                                        
-                        in    
-                            (model_  , Cmd.none)
+        ViewNote id -> 
+                let       
+                    boxOpt = boxGroup.idleBoxes |> List.filter (\b -> b.id == id) |> List.head
+                    viewBox = case boxOpt of
+                                Just b -> b
+                                Nothing -> emptyBox
+                    model_ = {model | isPopUpActive = True,currentBox = viewBox, editNote = True}                                        
+                in    
+                    (model_  , Cmd.none)
         SaveBoard -> (model,saveNotes model.boxGroup)
         Position x y -> ({ model | position = (x, y) },Cmd.none)
         UpdateTitleColor tileColor -> 
-                        let
-                            box = model.currentBox                                                                    
-                            newBox = {box | color = Just tileColor}                            
-                        in
-                            ({model | currentBox = newBox} , Cmd.none)        
+                let
+                    box = model.currentBox                                                                    
+                    newBox = {box | color = Just tileColor}                            
+                in
+                    ({model | currentBox = newBox} , Cmd.none)        
         Pick ->
             ( model
-            , Select.files ["json/*"] GotFiles  
+            , Select.files ["json/*"] ImportBoard  
             )
         DragEnter ->
             ( { model | hover = True }
@@ -168,15 +161,15 @@ update msg ({ boxGroup } as model) =
             ( { model | hover = False }
             , Cmd.none
             )
-        GotFiles file files ->
+        ImportBoard file files ->
             ( { model
                     | files = file :: files                    
                     , hover = False
                     , saveDefault = False
                 }
-            , read file
+            , readImportedBoard file
             )
-        MarkdownLoaded fileContent -> 
+        LoadImportedBoard fileContent -> 
             let
                 newIdelBoxes = boxListDecoderString <| fileContent
                 newBoxGroup = {boxGroup | idleBoxes = newIdelBoxes}
@@ -184,25 +177,22 @@ update msg ({ boxGroup } as model) =
                 ({model | boxGroup = newBoxGroup },Cmd.none)
         ToggleAutoSave -> ({model | saveDefault = not model.saveDefault}, Cmd.none)
         UpdateBoxSize boxSize -> 
-                        let
-                            box = model.currentBox                                                                    
-                            newBox = {box | size = boxSize}                            
-                        in
-                            ({model | currentBox = newBox} , Cmd.none)
-        InitDownloadSVG content ->(model,Task.perform  (DownloadSVG content) Date.today)                    
-        DownloadSVG content today -> (model,downloadJson content (Date.toIsoString today))                    
+            let
+                box = model.currentBox                                                                    
+                newBox = {box | size = boxSize}                            
+            in
+                ({model | currentBox = newBox} , Cmd.none)
+        ExportBoard content boardName ->(model,downloadJson content boardName)                            
         GetSvg ->
-            ( model,Cmd.batch [Ports.getSvg "boxesView"
-            --,Task.perform  (DownloadSVG "") Date.today
-            ]  )
+            ( model,Cmd.batch [Ports.getSvg "boxesView"]  )
         GotSvg output ->             
-            ( model, downloadSVG output "type")             
+            ( model, downloadSVG output model.boxGroup.name)             
         ContextMenuMsg cMsg ->
-                        let                            
-                            ( contextMenu_, cmd ) =
-                                ContextMenu.update cMsg model.contextMenu
-                        in
-                            ({ model | contextMenu = contextMenu_ } , Cmd.map ContextMenuMsg cmd )   
+            let                            
+                ( contextMenu_, cmd ) =
+                    ContextMenu.update cMsg model.contextMenu
+            in
+                ({ model | contextMenu = contextMenu_ } , Cmd.map ContextMenuMsg cmd )   
         SelectShape context action ->
                         let                                                        
                            updateCmdMsg = if context == "mainContextMenu" then
@@ -223,7 +213,7 @@ update msg ({ boxGroup } as model) =
         NewBoard -> (model, Task.perform (NewBoardGen) Time.now)                                                      
         NewBoardGen timeNow -> 
                 let                                    
-                    boxGroup_ = emptyGroupWithId (Time.posixToMillis timeNow) (dateToString timeNow)                    
+                    boxGroup_ = emptyGroupWithId (Time.posixToMillis timeNow) (Core.dateToString timeNow)                    
                     containsBoxGroup = List.filter (\board -> board.uid == model.boxGroup.uid) model.boxGroups
                     boxGroups_ = if List.isEmpty containsBoxGroup then
                                        boxGroup_ :: model.boxGroups 
@@ -235,7 +225,7 @@ update msg ({ boxGroup } as model) =
                     savePostsCmd = saveBoards boxGroups_
                     
                 in
-                    (model_,Cmd.none)
+                    (model_,savePostsCmd)
         LoadSelectedBoard boardId -> 
                     let          
                         switchBoard =
@@ -259,15 +249,14 @@ update msg ({ boxGroup } as model) =
                         modelMsg
         ReceivedBoards boxGroupsString -> 
                             let
-                               boxGroups = boxGroupsDecoderString boxGroupsString  
-                               _ = Debug.log "boxGroups" (List.length boxGroups)                             
+                               boxGroups = boxGroupsDecoderString boxGroupsString                                                          
                             in
                                 ({model | boxGroups = boxGroups},Cmd.none)
         CurrentDateTime -> (model, Task.perform (CaptureDateTime) Time.now)            
         CaptureDateTime timeNow -> 
                             let
                                 timeNow_ = Time.posixToMillis timeNow
-                                boxGroup_ = Core.emptyGroupWithId timeNow_  (dateToString timeNow)
+                                boxGroup_ = Core.emptyGroupWithId timeNow_  (Core.dateToString timeNow)
                                 boxGroups_ = [boxGroup_]
                             in                
                                 ({model | boxGroup = boxGroup_,boxGroups = boxGroups_ },Cmd.none)
@@ -277,19 +266,14 @@ update msg ({ boxGroup } as model) =
         MenuHoverOut -> ({model | menuHover = Nothing},Cmd.none)
         EditBoardTitle uid -> ({ model | boardTitleEdit = Just uid}, Cmd.none)
         BoardTitleChange text -> 
-                            let                                
-                                boxGroups_ = 
-                                    case model.boardTitleEdit of 
-                                            Just boardId -> 
-                                                    List.map 
-                                                        (\board -> 
-                                                            if boardId == board.uid  then 
-                                                                {board | name = text} 
-                                                                else 
-                                                                    board
-                                                        ) 
-                                                        model.boxGroups
-                                            Nothing -> model.boxGroups                                                      
+                            let 
+                                boxGroups_ = case model.boardTitleEdit of 
+                                                    Just boardId -> List.map 
+                                                            (\board -> 
+                                                            if boardId == board.uid  then  {board | name = text}  else  board
+                                                            ) 
+                                                            model.boxGroups
+                                                    Nothing -> model.boxGroups                                                      
                                 boxGroup_ = {boxGroup | name = text}            
                             in  
                                 ({ model | boxGroup = boxGroup_, boxGroups = boxGroups_}, Cmd.none)
@@ -297,8 +281,7 @@ update msg ({ boxGroup } as model) =
         SaveBoardTitleChange -> ({ model | boardTitleEdit = Nothing,boxGroups = model.boxGroups}, Cmd.none)
         RemoveBoard uid -> 
             let
-                boxGroups_ = List.filter (\board -> board.uid == uid |> not) model.boxGroups
-                --saveCommand = saveBoards boxGroups_
+                boxGroups_ = List.filter (\board -> board.uid == uid |> not) model.boxGroups                
                 boxGroup_ = Maybe.withDefault emptyGroup (List.head boxGroups_)                
             in 
                 ({model | boxGroup = boxGroup_, boxGroups = boxGroups_},Core.run (LoadSelectedBoard boxGroup_.uid) )
@@ -322,7 +305,5 @@ update msg ({ boxGroup } as model) =
                 in 
                     ({model | searchKeyword = Nothing, boxGroup = boxGroup_},Cmd.none)
 
-dateToString : Time.Posix -> String
-dateToString date = format "%d-%b-%Y-%-I:%M" Time.utc date
      
 

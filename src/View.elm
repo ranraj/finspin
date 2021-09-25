@@ -21,7 +21,7 @@ import File.Download as Download
 import Task
 import File exposing (File)
 
-import BoardEncoder exposing (boxListEncoder)
+import BoardEncoder exposing (boxGroupEncoder)
 import Model exposing (Model,Box,BoxGroup)
 import Msg exposing (Color(..),Msg,Msg(..),BoxAction(..),ContenxtMenuArea(..))
 import Core exposing (getColor,boxSizePallet)
@@ -46,16 +46,16 @@ boxesView model =
         |> Svg.node "g" [Attr.id "boxesView"]
 
 downloadJson : String -> String -> Cmd msg
-downloadJson content date =
-  Download.string ("finspin-"++ date ++".json") "application/json" content
+downloadJson content boardName =
+  Download.string ("finspin-"++ boardName ++".json") "application/json" content
 
 downloadSVG : String -> String -> Cmd msg
-downloadSVG svgContent date =
-  Download.string ("finspin-"++ date ++".svg") "image/svg" (svgContent |> svgWrapper)
+downloadSVG svgContent boardName =
+  Download.string ("finspin-"++ boardName ++".svg") "image/svg" (svgContent |> svgWrapper)
 
-read : File -> Cmd Msg
-read file =
-  Task.perform MarkdownLoaded (File.toString file)
+readImportedBoard : File -> Cmd Msg
+readImportedBoard file =
+  Task.perform LoadImportedBoard (File.toString file)
 
 -- Notes View Html --
 
@@ -245,7 +245,7 @@ viewController model =
                 ] [ Icon.viewStyled [ Icon.fa2x ] (if model.saveDefault then Icon.toggleOn else Icon.toggleOff)]     
             , span [class "content-controller-label"] [text "Export"]             
             , button 
-                [ onClick <| InitDownloadSVG <| Encode.encode 5 <| boxListEncoder model.boxGroup.idleBoxes
+                [ onClick ((ExportBoard <| Encode.encode 5 <| boxGroupEncoder model.boxGroup) model.boxGroup.name)
                 ,class "content-controller-item"
                 ] [ Icon.viewStyled [ Icon.fa2x ] Icon.fileExport]            
             , span [class "content-controller-label"] [text "Import"]                    
@@ -296,7 +296,7 @@ viewFileUpload model = div
 
 dropDecoder : Decode.Decoder Msg
 dropDecoder =
-  Decode.at ["dataTransfer","files"] (Decode.oneOrMore GotFiles File.decoder)
+  Decode.at ["dataTransfer","files"] (Decode.oneOrMore ImportBoard File.decoder)
 
 
 hijackOn : String -> Decode.Decoder msg -> Html.Attribute msg
