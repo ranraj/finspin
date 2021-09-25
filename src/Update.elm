@@ -222,25 +222,20 @@ update msg ({ boxGroup } as model) =
                             updateCmdMsg  
         NewBoard -> (model, Task.perform (NewBoardGen) Time.now)                                                      
         NewBoardGen timeNow -> 
-                let
-                    date = DateTime.fromPosix timeNow
-                 
-                    boxGroup_ = emptyGroupWithId (Time.posixToMillis timeNow) (dateToString timeNow)
-                    _ = Debug.log "NewBoard" boxGroup_
-                    boxGp = model.boxGroup
-                    _ = Debug.log "NewBoard gp" boxGp.name
+                let                                    
+                    boxGroup_ = emptyGroupWithId (Time.posixToMillis timeNow) (dateToString timeNow)                    
                     containsBoxGroup = List.filter (\board -> board.uid == model.boxGroup.uid) model.boxGroups
                     boxGroups_ = if List.isEmpty containsBoxGroup then
                                        boxGroup_ :: model.boxGroups 
                                     else
-                                        List.map 
-                                            (\board -> if board.uid == model.boxGroup.uid then boxGp else board) 
+                                       boxGroup_ :: List.map 
+                                            (\board -> if board.uid == model.boxGroup.uid then boxGroup else board) 
                                             model.boxGroups                     
                     model_ = {model | boxGroup = boxGroup_, boxGroups = boxGroups_}                   
                     savePostsCmd = saveBoards boxGroups_
                     
                 in
-                    (model_,savePostsCmd)
+                    (model_,Cmd.none)
         LoadSelectedBoard boardId -> 
                     let          
                         switchBoard =
