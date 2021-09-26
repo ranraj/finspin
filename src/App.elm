@@ -4,7 +4,7 @@ import Draggable
 
 import BoardTiles exposing (..)
 import BoardEncoder exposing (boxGroupEncoder,boxGroupsEncoder)
-import Model exposing (Model,BoxGroup)
+import Model exposing (Model,BoxGroup,Position)
 import Msg exposing (Color(..),Msg(..))
 import Ports
 import View exposing (..)
@@ -76,7 +76,7 @@ init _ =
       , localBoxGroup = Nothing
       , jsonError = Nothing
       , welcomeTour = True
-      , position =  (160, 120)
+      , position =  Position 160 120
       , hover = False
       , files = []
       , contextMenu = contextMenu
@@ -89,5 +89,4 @@ init _ =
       , searchResult = Nothing
       }
     , Cmd.batch [(Cmd.map ContextMenuMsg contextMsg),Core.run CurrentDateTime, navbarCmd]
-
     )

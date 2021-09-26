@@ -51,7 +51,7 @@ type alias Model =
     , boxGroups : List BoxGroup
     , localBoxGroup : Maybe BoxGroup
     , jsonError : Maybe Error
-    , position :  (Int, Int)
+    , position :  Position
     , hover : Bool
     , files : List File
     , contextMenu : ContextMenu String
@@ -61,7 +61,7 @@ type alias Model =
     , menuHover : Maybe String
     , boardTitleEdit : Maybe String    
     , searchKeyword : Maybe String
-    , searchResult : Maybe BoxGroup
+    , searchResult : Maybe BoxGroup    
     }
 
 
@@ -78,3 +78,5 @@ type alias BoxSize =
             width : Float,
             height : Float
          }
+
+type alias Position = {x: Int, y:Int}

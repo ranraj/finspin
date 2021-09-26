@@ -175,6 +175,7 @@ select:focus {
 }
 
 .content-controller {
+    border-left: 3px solid #343a40;
     display: flex;
     flex-direction: column;
     flex-flow: column;

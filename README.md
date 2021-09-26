@@ -71,10 +71,11 @@ App screenshot
 - Add, Rename, and Delete Note Board
 - Search Notes
 - Drag & Drop notes
-- Change Board size and Color
+- Right click (Context menu) to add notes operation
+- Change Note Size and Color
 - Title Board (Only have Title) for labelling purpose
 - Complete offline Application - Stores the Boards in local browser storage
 - Progressive Web App - Intermident network disconnection doest not kill the user experience
 - Default Autosave, Toggle for Autosave, Save
 - Import and Export Board
-- Download Board as CSV Image
+- Download Board as SVG Image

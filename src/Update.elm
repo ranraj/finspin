@@ -6,18 +6,19 @@ import Tuple exposing (first,second)
 import Math.Vector2 as Vector2
 import File.Select as Select
 import Task
-import Model exposing (Model,BoxGroup)
+import Model exposing (Model,BoxGroup,Position)
 import Core exposing (buildNote,makeBox,emptyBox,updateNoteBox)
 import Ports
 import View exposing (..)
 import App exposing (saveNotes,saveBoards)
 import BoardTiles exposing (..)
-import BoardDecoder exposing (boxListDecoderString,boxGroupDecoderString,boxGroupsDecoderString)
+import BoardDecoder exposing (boxListDecoderString,boxGroupDecoderString,boxGroupsDecoderString,positionDecoderContextMenu)
 import Msg exposing (BoxAction(..),Color(..),Msg(..))
 import Core exposing (emptyGroup)
 import Time
 import Core exposing (emptyGroupWithId)
 import ContextMenu exposing (ContextMenu)
+import Html.Attributes exposing (contextmenu)
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg ({ boxGroup } as model) =
@@ -52,14 +53,21 @@ update msg ({ boxGroup } as model) =
                 isEmpty = String.isEmpty t && String.isEmpty d
                 newBoxGroup = {boxGroup | idleBoxes = idleBoxes}
                 savePostsCmd = if isEmpty || not model.saveDefault then Cmd.none else saveNotes newBoxGroup
-                tilePosition = Vector2.vec2 (toFloat (first model.position)) (toFloat (second model.position))
+                tilePosition = Vector2.vec2 (toFloat model.position.x) (toFloat model.position.y)
+                _ = Debug.log "postion1" model.position
+                _ = Debug.log "postion" tilePosition
                 idleBoxes = 
                     if isEmpty then 
                         boxGroup.idleBoxes
                     else 
                         makeBox note.id note tilePosition currentBox.color currentBox.size :: boxGroup.idleBoxes
+                                
+                y_= model.position.y + 60                                    
+                x_ = model.position.x
+                position_ = Position x_ y_
+                _ = Debug.log "sd" position_
             in
-                 ({ model | isPopUpActive = False,welcomeTour = False,currentBox = emptyBox,boxGroup = newBoxGroup}
+                 ({ model | position = position_, isPopUpActive = False,welcomeTour = False,currentBox = emptyBox,boxGroup = newBoxGroup}
                 , savePostsCmd)  
 
         UpdateNote t d ->                     
@@ -142,7 +150,7 @@ update msg ({ boxGroup } as model) =
                 in    
                     (model_  , Cmd.none)
         SaveBoard -> (model,saveNotes model.boxGroup)
-        Position x y -> ({ model | position = (x, y) },Cmd.none)
+        SetPosition x y -> ({ model | position =  Position x  y  },Cmd.none)
         UpdateTitleColor tileColor -> 
                 let
                     box = model.currentBox                                                                    
@@ -190,11 +198,18 @@ update msg ({ boxGroup } as model) =
         ContextMenuMsg cMsg ->
             let                            
                 ( contextMenu_, cmd ) =
-                    ContextMenu.update cMsg model.contextMenu
+                    ContextMenu.update cMsg model.contextMenu              
+                contextMenuJson = Debug.toString contextMenu_
+            
+                position_ = if String.contains "hover = None, mouse =" contextMenuJson  then
+                                 positionDecoderContextMenu contextMenuJson
+                                else model.position
+                                                
             in
-                ({ model | contextMenu = contextMenu_ } , Cmd.map ContextMenuMsg cmd )   
+                ({ model | position = position_, contextMenu = contextMenu_ } , Cmd.map ContextMenuMsg cmd )   
         SelectShape context action ->
-                        let                                                        
+                        let                              
+                           position = context                                                    
                            updateCmdMsg = if context == "mainContextMenu" then
                                case action of 
                                         New -> (model,Core.run StartNoteForm)
@@ -304,6 +319,5 @@ update msg ({ boxGroup } as model) =
                     boxGroup_ = {boxGroup | idleBoxes = result}                
                 in 
                     ({model | searchKeyword = Nothing, boxGroup = boxGroup_},Cmd.none)
-
      
 

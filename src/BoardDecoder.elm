@@ -1,12 +1,13 @@
-module BoardDecoder exposing (boxGroupDecoderString,boxListDecoderString,boxGroupsDecoderString)
+module BoardDecoder exposing (boxGroupDecoderString,boxListDecoderString,boxGroupsDecoderString,positionDecoderContextMenu)
 
-import Json.Decode as JD exposing (Error(..), string,field,decodeString,bool,Decoder)
+import Json.Decode as JD exposing (Error(..), string,field,decodeString,bool,Decoder,int)
 import Model exposing (Note,Box,BoxSize,BoxGroup)
 import Tuple exposing (first,second)
 import Math.Vector2 as Vector2
 import Array
 import Core exposing (emptyBox)
 import Maybe exposing (withDefault)
+import Model exposing (Position)
 
 notePositionDecoder : Maybe Float -> Maybe Float -> (Float, Float)
 notePositionDecoder x y = 
@@ -74,8 +75,7 @@ boxListDecoderString value =
     case res of
         Result.Ok data -> data
         Result.Err e -> 
-            let        
-               --_ = Debug.log "BoxList Decoder" e        
+            let                            
                emptyArray = []
             in
                 emptyArray
@@ -105,4 +105,14 @@ boxGroupsDecoderString : String -> List BoxGroup
 boxGroupsDecoderString value = case (decodeString boxGroupsDecoder value) of
                                   Result.Ok data -> data
                                   Result.Err _ -> []            
-        
+positionDecoderContextMenu : String -> Position
+positionDecoderContextMenu jsonValue = 
+                  let
+                        positionSliced : String
+                        positionSliced = jsonValue |> String.slice 107 128 |> String.replace "=" ":" |> String.replace "x" "\"x\"" |> String.replace "y" "\"y\""
+                        position = decodeString (JD.map2 Position (field "x" int)  (field "y" int)) positionSliced
+                                       
+                  in
+                    case position of
+                            Result.Ok data ->  data
+                            Result.Err _ -> Position 0 0

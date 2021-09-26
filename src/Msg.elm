@@ -31,7 +31,7 @@ type Msg
     | ReceivedBoard String
     | UpdateNote String String
     | SaveBoard 
-    | Position Int Int
+    | SetPosition Int Int
     | UpdateTitleColor String
     | ExportBoard String String    
     | Pick

@@ -116,8 +116,7 @@ titleSizePickerView =
 viewNoteComponent : Box -> Html Msg
 viewNoteComponent box =
     let
-         td = box.note
-         --_ = Debug.log (if (box.note.id == addNote.id) then "yes" else "")
+         td = box.note         
     in
         li [ class (if td.done then "done list-item" else "list-item"), onClick (CheckNote td.id)
             ]
@@ -160,7 +159,7 @@ svgBox : Model -> Svg Msg
 svgBox model = 
     let 
         radius = 4
-        ( x, y ) = model.position
+        ( x, y ) = (model.position.x,model.position.y)
         cx = x - radius // 2
         cy = y - radius // 2
     in
@@ -173,10 +172,10 @@ svgBox model =
             , Attr.fill (getColor BoardGreen)
             , Attr.class "svg-panel"        
             , Attr.class "content-display"   
-            , Events.on "svgclick" 
-                <| Decode.map2 Position
-                (Decode.at ["detail", "x"] Decode.int)
-                (Decode.at ["detail", "y"] Decode.int)
+            -- , Events.on "svgclick" 
+            --     <| Decode.map2 Position
+            --     (Decode.at ["detail", "x"] Decode.int)
+            --     (Decode.at ["detail", "y"] Decode.int)
             , ContextMenu.open ContextMenuMsg "mainContextMenu"    
             ]
             
@@ -258,13 +257,13 @@ viewController model =
                 ] [ Icon.viewStyled [ Icon.fa2x ] Icon.download]                    
             --, getNotes model.boxGroup        //TODO : Move this in next page Bookmark
             , div
-            [ ContextMenu.open ContextMenuMsg "mainContextMenu"]
-            [ ContextMenu.view
-                ContextMenu.defaultConfig
-                    ContextMenuMsg 
-                    boxContextMenuItems
-                    model.contextMenu
-            ]        
+                [ ContextMenu.open ContextMenuMsg "mainContextMenu"]
+                [ ContextMenu.view
+                    ContextMenu.defaultConfig
+                        ContextMenuMsg 
+                        boxContextMenuItems
+                        model.contextMenu
+                ]        
             ] 
 boxContextMenuItems : String -> List (List (Item,Msg))
 boxContextMenuItems context =  
@@ -348,8 +347,7 @@ viewNavBarControl titleEdit hoverMenu uid name =
 
 viewNavBar : Model -> Html Msg
 viewNavBar model =
-            let
-                _ = Debug.log "Nav" (List.length model.boxGroups)     
+            let                
                 activeMenuClass uid = if model.boxGroup.uid == uid then (class "active") else (class "")                           
                 navBarItems = List.map 
                                 (\board -> 
