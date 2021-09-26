@@ -70,6 +70,7 @@ App screenshot
 - Add, Update and Delete Note
 - Add, Rename, and Delete Note Board
 - Search Notes
+- Drag & Drop notes
 - Change Board size and Color
 - Title Board (Only have Title) for labelling purpose
 - Complete offline Application - Stores the Boards in local browser storage
