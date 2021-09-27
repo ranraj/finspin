@@ -80,6 +80,7 @@ App screenshot
 - Import and Export Board
 - Download Board as SVG Image
 #### Requested feature
+- Multiboard support (Saravanabhavan)
 - Clone notes - (Jerome)
 - Undo - Add, Update, Delete - (Jerome)
 - New Box Overlapping - (Radhakrishnan)
