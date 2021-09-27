@@ -3,7 +3,7 @@ module Update exposing (..)
 import Draggable
 
 import Tuple exposing (first,second)
-import Math.Vector2 as Vector2
+import Math.Vector2 as Vector2 exposing( getX,getY)
 import File.Select as Select
 import Task
 import Model exposing (Model,BoxGroup,Position,Activity,ActivityType(..))
@@ -19,6 +19,7 @@ import Time
 import Core exposing (emptyGroupWithId)
 import ContextMenu exposing (ContextMenu)
 import Html.Attributes exposing (contextmenu)
+import Math.Vector2 exposing (getX)
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg ({ boxGroup } as model) =
@@ -160,6 +161,24 @@ update msg ({ boxGroup } as model) =
                     model_ = {model | isPopUpActive = True,currentBox = viewBox, editNote = True}                                        
                 in    
                     (model_  , Cmd.none)
+        DuplicateNote id -> 
+                let       
+                    boxOpt = boxGroup.idleBoxes |> List.filter (\b -> b.id == id) |> List.head
+                    sourceBox = case boxOpt of
+                                Just b -> b
+                                Nothing -> emptyBox
+                    sourceBoxPosition = sourceBox.position
+                    vec = (+) 60 >> Vector2.vec2 (getX sourceBoxPosition )
+                    tilePosition =  vec (getY sourceBoxPosition)
+                    -- (x_ , y_ ) = ( model.position.x , model.position.y + 60)                                                       
+                    -- position_ = Position x_ y_                                 
+                    newBoxId =  sourceBox.id ++ "-" ++ String.fromInt ((List.length boxGroup.idleBoxes) + 1)
+                    box = Core.cloneBox sourceBox newBoxId tilePosition
+                    
+                    boxGroup_ = {boxGroup | idleBoxes = box :: boxGroup.idleBoxes}
+                    model_ = {model | boxGroup = boxGroup_}                                        
+                in    
+                    (model_  , Cmd.none)
         SaveBoard -> (model,saveNotes model.boxGroup)
         SetPosition x y -> ({ model | position =  Position x  y  },Cmd.none)
         UpdateTitleColor tileColor -> 
@@ -235,6 +254,7 @@ update msg ({ boxGroup } as model) =
                                             Open -> (model,Core.run (ViewNote context))
                                             Completed -> (model, Core.run (CheckNote context))
                                             Delete ->  (model,Core.run (DeleteNote context))
+                                            Duplicate -> (model,Core.run (DuplicateNote context))
                                             _ -> (model,Core.run NoOp)                             
                         in            
                             updateCmdMsg  

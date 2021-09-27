@@ -276,6 +276,7 @@ boxContextMenuItems context =
         ]]
     else[ [ (ContextMenu.item "Open", ContextAction context Open)
         , (ContextMenu.item "Mark toggle", ContextAction context Completed)
+        , (ContextMenu.item "Duplicate", ContextAction context Duplicate)
         , (ContextMenu.item "Delete", ContextAction context Delete)        
         ]
         ] 

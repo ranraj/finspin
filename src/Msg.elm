@@ -20,6 +20,7 @@ type Msg
     | OnDragBy Vec2
     | StartDragging String    
     | ViewNote String
+    | DuplicateNote String
     | StopDragging
     | AddNote String String
     | CheckNote String
@@ -67,6 +68,7 @@ type Msg
 type BoxAction
     = Open
     | Completed
+    | Duplicate
     | Delete
     | New
     | DeleteAll

@@ -167,3 +167,6 @@ searchBox boxGroup keyword =
 
 dateToString : Time.Posix -> String
 dateToString date = format "%d-%b-%Y-%-I:%M" Time.utc date
+
+cloneBox : Box -> String -> Vec2 -> Box
+cloneBox box id position = makeBox id box.note position box.color box.size
