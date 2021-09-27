@@ -179,7 +179,8 @@ update msg ({ boxGroup } as model) =
             )
         LoadImportedBoard fileContent -> 
             let
-                newIdelBoxes = boxListDecoderString <| fileContent
+                boxGroup_ = boxGroupDecoderString <| fileContent
+                newIdelBoxes = (Maybe.withDefault emptyGroup boxGroup_).idleBoxes
                 newBoxGroup = {boxGroup | idleBoxes = newIdelBoxes}
             in  
                 ({model | boxGroup = newBoxGroup },Cmd.none)
