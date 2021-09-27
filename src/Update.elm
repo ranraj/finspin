@@ -6,7 +6,7 @@ import Tuple exposing (first,second)
 import Math.Vector2 as Vector2
 import File.Select as Select
 import Task
-import Model exposing (Model,BoxGroup,Position)
+import Model exposing (Model,BoxGroup,Position,Activity,ActivityType(..))
 import Core exposing (buildNote,makeBox,emptyBox,updateNoteBox)
 import Ports
 import View exposing (..)
@@ -54,33 +54,40 @@ update msg ({ boxGroup } as model) =
                 newBoxGroup = {boxGroup | idleBoxes = idleBoxes}
                 savePostsCmd = if isEmpty || not model.saveDefault then Cmd.none else saveNotes newBoxGroup
                 tilePosition = Vector2.vec2 (toFloat model.position.x) (toFloat model.position.y)
-                _ = Debug.log "postion1" model.position
-                _ = Debug.log "postion" tilePosition
-                idleBoxes = 
-                    if isEmpty then 
-                        boxGroup.idleBoxes
-                    else 
-                        makeBox note.id note tilePosition currentBox.color currentBox.size :: boxGroup.idleBoxes
                                 
+                (boxId,idleBoxes) = 
+                    if isEmpty then 
+                        (Nothing, boxGroup.idleBoxes)
+                    else 
+                        let
+                            box = makeBox note.id note tilePosition currentBox.color currentBox.size
+                        in                                
+                            (Just box.id, box :: boxGroup.idleBoxes)
+                activity_ = case boxId of
+                                Just data -> (Activity (CreateNoteAction data)) :: model.activity               
+                                Nothing -> model.activity
                 y_= model.position.y + 60                                    
                 x_ = model.position.x
-                position_ = Position x_ y_
-                _ = Debug.log "sd" position_
+                position_ = Position x_ y_ 
             in
-                 ({ model | position = position_, isPopUpActive = False,welcomeTour = False,currentBox = emptyBox,boxGroup = newBoxGroup}
+                ({ model | activity = activity_, position = position_, isPopUpActive = False,welcomeTour = False,currentBox = emptyBox,boxGroup = newBoxGroup}
                 , savePostsCmd)  
 
         UpdateNote t d ->                     
                 let                  
                     edit = model.editNote                                
                     isEmpty = String.isEmpty t && String.isEmpty d                
-                    
-                    newIdleBoxes = if edit && isEmpty then boxGroup.idleBoxes else List.map (\box -> updateNoteBox model box t d) boxGroup.idleBoxes                                                                                    
+                    lastBoxStatus = List.filter (\box -> model.currentBox.id == box.id) boxGroup.idleBoxes
+                    newIdleBoxes = if edit && isEmpty then
+                                    boxGroup.idleBoxes 
+                                   else List.map (\box -> updateNoteBox model box t d) boxGroup.idleBoxes                                                                                    
                     newBoxGroup = { boxGroup | idleBoxes = newIdleBoxes}
                     savePostsCmd = if isEmpty || not model.saveDefault then Cmd.none else saveNotes newBoxGroup
-                    
+                    activity_ =  case List.head lastBoxStatus of
+                                    Just box -> Activity (UpdateNoteAction box) :: model.activity 
+                                    Nothing -> model.activity                                               
                 in
-                    ({ model | isPopUpActive = False,editNote = False,boxGroup = newBoxGroup }
+                    ({ model | activity=activity_, isPopUpActive = False,editNote = False,boxGroup = newBoxGroup }
                     , savePostsCmd)
 
         CheckNote i ->
@@ -100,16 +107,20 @@ update msg ({ boxGroup } as model) =
                                             else box) boxGroup.idleBoxes 
                         }
                     savePostsCmd = if model.saveDefault then saveNotes newBoxGroup else Cmd.none
+                    
                 in
                 ({ model | boxGroup = newBoxGroup}, savePostsCmd)
 
-        ClearNote i ->
+        DeleteNote i ->
                 let
-                    idleBoxesFiltered = List.filter (\box -> box.note.id /= i) model.boxGroup.idleBoxes 
+                    (idleBoxesFiltered,removedNotes) = List.partition (\box -> box.note.id /= i) model.boxGroup.idleBoxes 
                     newBoxGroup = { boxGroup | idleBoxes = idleBoxesFiltered }
                     savePostsCmd = if model.saveDefault then saveNotes newBoxGroup else Cmd.none
+                    activity_ =  case List.head removedNotes of
+                                    Just box -> Activity (DeleteNoteAction box) :: model.activity 
+                                    Nothing -> model.activity   
                 in
-                ({ model | isPopUpActive = False, boxGroup =newBoxGroup}, savePostsCmd)
+                ({ model |activity = activity_, isPopUpActive = False, boxGroup =newBoxGroup}, savePostsCmd)
 
         StartNoteForm -> 
                 ({ model | isPopUpActive = True }, Cmd.none)
@@ -188,7 +199,8 @@ update msg ({ boxGroup } as model) =
         UpdateBoxSize boxSize -> 
             let
                 box = model.currentBox                                                                    
-                newBox = {box | size = boxSize}                            
+                newBox = {box | size = boxSize}      
+                                      
             in
                 ({model | currentBox = newBox} , Cmd.none)
         ExportBoard content boardName ->(model,downloadJson content boardName)                            
@@ -208,22 +220,22 @@ update msg ({ boxGroup } as model) =
                                                 
             in
                 ({ model | position = position_, contextMenu = contextMenu_ } , Cmd.map ContextMenuMsg cmd )   
-        SelectShape context action ->
-                        let                              
-                           position = context                                                    
-                           updateCmdMsg = if context == "mainContextMenu" then
-                               case action of 
-                                        New -> (model,Core.run StartNoteForm)
-                                        DeleteAll -> (model,Core.run NoOp)
-                                        Share ->  (model,Core.run NoOp)
-                                        _ -> (model, Core.run NoOp)
-                            else
-                                case action of 
-                                        Open -> (model,Core.run (ViewNote context))
-                                        Completed -> (model, Core.run (CheckNote context))
-                                        Delete ->  (model,Core.run (ClearNote context))
-                                        _ -> (model,Core.run NoOp)
-                             
+        ContextAction context action ->
+                        let                                          
+                           updateCmdMsg = 
+                                if context == "mainContextMenu" then
+                                    case action of 
+                                            New -> (model,Core.run StartNoteForm)
+                                            DeleteAll -> (model,Core.run NoOp)
+                                            Share ->  (model,Core.run NoOp)
+                                            Undo -> (model,Core.run UndoAction)
+                                            _ -> (model, Core.run NoOp)
+                                else
+                                    case action of 
+                                            Open -> (model,Core.run (ViewNote context))
+                                            Completed -> (model, Core.run (CheckNote context))
+                                            Delete ->  (model,Core.run (DeleteNote context))
+                                            _ -> (model,Core.run NoOp)                             
                         in            
                             updateCmdMsg  
         NewBoard -> (model, Task.perform (NewBoardGen) Time.now)                                                      
@@ -297,7 +309,7 @@ update msg ({ boxGroup } as model) =
         SaveBoardTitleChange -> ({ model | boardTitleEdit = Nothing,boxGroups = model.boxGroups}, Cmd.none)
         RemoveBoard uid -> 
             let
-                boxGroups_ = List.filter (\board -> board.uid == uid |> not) model.boxGroups                
+                boxGroups_ = List.filter (\board -> board.uid /= uid) model.boxGroups                
                 boxGroup_ = Maybe.withDefault emptyGroup (List.head boxGroups_)                
             in 
                 ({model | boxGroup = boxGroup_, boxGroups = boxGroups_},Core.run (LoadSelectedBoard boxGroup_.uid) )
@@ -320,5 +332,34 @@ update msg ({ boxGroup } as model) =
                     boxGroup_ = {boxGroup | idleBoxes = result}                
                 in 
                     ({model | searchKeyword = Nothing, boxGroup = boxGroup_},Cmd.none)
+        UndoAction -> 
+                let                    
+                    head = Maybe.withDefault (Activity NoAction) (List.head model.activity)
+                    tail = Maybe.withDefault model.activity (List.tail model.activity)
+                    boxGroup_ = case head.action of
+                        CreateNoteAction boxId -> 
+                                        let
+                                            idleBoxes_ = List.filter (\box -> boxId /= box.id) boxGroup.idleBoxes                                            
+                                        in
+                                            {boxGroup | idleBoxes=idleBoxes_}
+                                            
+                        UpdateNoteAction previousBoxStatus -> 
+                                        let
+                                            _ = Debug.log "Box" previousBoxStatus
+                                            idleBoxes_ = List.map 
+                                                            (\box -> if box.id == previousBoxStatus.id then previousBoxStatus else box)
+                                                             boxGroup.idleBoxes 
+                                        in  
+                                            {boxGroup | idleBoxes = idleBoxes_}
+                        DeleteNoteAction deletedBox -> 
+                                        let
+                                            _ = Debug.log "deletedBox" deletedBox
+                                            idleBoxes_ = deletedBox :: boxGroup.idleBoxes 
+                                        in  
+                                            {boxGroup | idleBoxes = idleBoxes_}
+                        MoveNoteAction data -> boxGroup
+                        NoAction -> boxGroup
+                in
+                    ({model | boxGroup = boxGroup_ ,activity = tail},Cmd.none)
      
 

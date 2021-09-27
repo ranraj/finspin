@@ -125,7 +125,7 @@ viewNoteComponent box =
             -- , div [] [
             --     div [] [div [class "li-preview"] [text td.description]]
             --     ]                
-            , div [ onClick (ClearNote td.id)] [ Icon.viewStyled [ Icon.sm, style "color" "gray" ] Icon.trash]
+            , div [ onClick (DeleteNote td.id)] [ Icon.viewStyled [ Icon.sm, style "color" "gray" ] Icon.trash]
             ]
 
 viewInput : String -> String -> String -> String -> (String -> Msg) -> Html Msg
@@ -147,7 +147,7 @@ viewNotePopupModal model =
                 ,addNotePanel model.currentBox model.editNote
                 ,div [class "notes-status-ctrl"] [
                     div [class "status-icon-check", onClick (CheckNote model.currentBox.id)] [Icon.viewStyled [ Icon.sm, style "color" "gray" ] (if note.done then Icon.checkSquare else Icon.square)]
-                    , div [class "status-icon-trash", onClick (ClearNote model.currentBox.id)] [ Icon.viewStyled [ Icon.sm, style "color" "gray" ] Icon.trash]
+                    , div [class "status-icon-trash", onClick (DeleteNote model.currentBox.id)] [ Icon.viewStyled [ Icon.sm, style "color" "gray" ] Icon.trash]
                 ]                                    
             ]       
 
@@ -269,13 +269,14 @@ boxContextMenuItems : String -> List (List (Item,Msg))
 boxContextMenuItems context =  
     if context == "mainContextMenu" then
         [[
-         (ContextMenu.item "New Note", SelectShape context New)
-        , (ContextMenu.item "Delete All", SelectShape context DeleteAll)
-        , (ContextMenu.item "Share", SelectShape context Share)
+         (ContextMenu.item "New Note", ContextAction context New)
+        , (ContextMenu.item "Undo", ContextAction context Undo)
+        , (ContextMenu.item "Delete All", ContextAction context DeleteAll)
+        , (ContextMenu.item "Share", ContextAction context Share)
         ]]
-    else[ [ (ContextMenu.item "Open", SelectShape context Open)
-        , (ContextMenu.item "Mark toggle", SelectShape context Completed)
-        , (ContextMenu.item "Delete", SelectShape context Delete)        
+    else[ [ (ContextMenu.item "Open", ContextAction context Open)
+        , (ContextMenu.item "Mark toggle", ContextAction context Completed)
+        , (ContextMenu.item "Delete", ContextAction context Delete)        
         ]
         ] 
         

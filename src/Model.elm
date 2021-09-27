@@ -61,7 +61,8 @@ type alias Model =
     , menuHover : Maybe String
     , boardTitleEdit : Maybe String    
     , searchKeyword : Maybe String
-    , searchResult : Maybe BoxGroup    
+    , searchResult : Maybe BoxGroup 
+    , activity : List Activity
     }
 
 
@@ -74,9 +75,20 @@ type alias LocalStore =
 -------------------------------TileSize-----------------------------------
 type alias BoxSize = 
         {
-            title : String,            
-            width : Float,
-            height : Float
+              title : String           
+            , width : Float
+            , height : Float
          }
 
 type alias Position = {x: Int, y:Int}
+
+type ActivityType = CreateNoteAction String -- Created Box Id
+                | UpdateNoteAction Box -- Previous box status
+                | DeleteNoteAction Box  -- Deleted Box Copy
+                | MoveNoteAction Box -- Previous location of Box
+                | NoAction
+
+type alias Activity = 
+    {
+         action : ActivityType
+    }

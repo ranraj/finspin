@@ -23,7 +23,7 @@ type Msg
     | StopDragging
     | AddNote String String
     | CheckNote String
-    | ClearNote String
+    | DeleteNote String
     | ChangeTitle String
     | ChangeDesc String
     | StartNoteForm
@@ -44,7 +44,7 @@ type Msg
     | GetSvg
     | GotSvg String
     | ContextMenuMsg (ContextMenu.Msg String)
-    | SelectShape String BoxAction
+    | ContextAction String BoxAction
     | NewBoardGen Time.Posix
     | NewBoard 
     | LoadSelectedBoard String
@@ -61,6 +61,7 @@ type Msg
     | Search String
     | SearchKeywordChange String
     | SearchClear
+    | UndoAction
     
 
 type BoxAction
@@ -70,6 +71,7 @@ type BoxAction
     | New
     | DeleteAll
     | Share
+    | Undo
 
 
 type ContenxtMenuArea = MainSVG | BoxSVG
