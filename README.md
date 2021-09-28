@@ -82,10 +82,10 @@ App screenshot
 - Import and Export Board
 - Download Board as SVG Image
 #### Requested features
-- Multiboard support [Saravanabhavan-Jaganathan](https://github.com/Saravanabhavan-Jaganathan)
+- Multiboard support - [Saravanabhavan-Jaganathan](https://github.com/Saravanabhavan-Jaganathan)
 - Clone notes - (Jerome)
 - Undo - Add, Update, Delete - (Jerome)
-- New Box Overlapping - (Radhakrishnan)
+- New Box Overlapping - [Radhakrishnan](https://github.com/rakihears)
 
 ### Pipeline features
 - Board Sharing
