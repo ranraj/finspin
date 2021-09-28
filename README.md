@@ -86,3 +86,20 @@ App screenshot
 - Clone notes - (Jerome)
 - Undo - Add, Update, Delete - (Jerome)
 - New Box Overlapping - (Radhakrishnan)
+
+### Pipeline features
+- Board Sharing
+- Community Board and Multi user action
+- Real time update and event Notification
+- Advertisment Wall
+- Image Support
+- SVG clip arts (Various Shapes)
+- Transform shapes and Text
+- Auto allignment of note boxes
+- Labeling, Add Notes type, Template note types
+- Auto grouping by labeling notes type and date
+- Zoom in / out the Notes Board
+- UX imporvement
+
+### Bugs
+- Default note position goes beyong the board limit
