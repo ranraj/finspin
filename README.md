@@ -100,6 +100,11 @@ App screenshot
 - Auto grouping by labeling notes type and date
 - Zoom in / out the Notes Board
 - UX imporvement
+- Reminder and Browser alert
+- Notes type for Table, Graph, Long text
+- Edit poup shoule be maximizable for long text edit
+### Improvement 
+- Pick other tile color on edit a tile
 
 ### Bugs
 - Default note position goes beyong the board limit
