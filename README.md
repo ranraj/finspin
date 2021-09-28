@@ -81,8 +81,8 @@ App screenshot
 - Default Autosave, Toggle for Autosave, Save
 - Import and Export Board
 - Download Board as SVG Image
-#### Requested feature
-- Multiboard support (Saravanabhavan)
+#### Requested features
+- Multiboard support [Saravanabhavan-Jaganathan](https://github.com/Saravanabhavan-Jaganathan)
 - Clone notes - (Jerome)
 - Undo - Add, Update, Delete - (Jerome)
 - New Box Overlapping - (Radhakrishnan)
