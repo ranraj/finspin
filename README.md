@@ -83,8 +83,8 @@ App screenshot
 - Download Board as SVG Image
 #### Requested features
 - Multiboard support - [Saravanabhavan-Jaganathan](https://github.com/Saravanabhavan-Jaganathan)
-- Clone notes - (Jerome)
-- Undo - Add, Update, Delete - (Jerome)
+- Clone notes - [Jerome](https://github.com/jerome4598)
+- Undo - Add, Update, Delete - [Jerome](https://github.com/jerome4598)
 - New Box Overlapping - [Radhakrishnan](https://github.com/rakihears)
 
 ### Pipeline features
