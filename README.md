@@ -103,3 +103,4 @@ App screenshot
 
 ### Bugs
 - Default note position goes beyong the board limit
+- Firefox add notes popup does not hide properly
