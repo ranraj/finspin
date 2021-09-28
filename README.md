@@ -24,6 +24,8 @@ I see developers are using notepad for multipurpose. It is an offline web applic
 
 Note : Currently supports only PC version. 
 
+Supported Browser : Chrome
+
 Live ['Demo'](https://finspin.netlify.app/)
 
 Tech Stack  
