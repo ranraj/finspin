@@ -45,11 +45,9 @@ update msg ({ boxGroup } as model) =
 
         DragMsg dragMsg ->
             Draggable.update dragConfig dragMsg model
-
-        AddNote t d ->                     
-            let 
-                currentBox = model.currentBox
-                
+        InitAddNote t d -> (model, Task.perform (AddNote t d) Time.now)           
+        AddNote t d time ->                     
+            let                             
                 note  = buildNote (List.length model.boxGroup.idleBoxes) t d                             
                 isEmpty = String.isEmpty t && String.isEmpty d
                 newBoxGroup = {boxGroup | idleBoxes = idleBoxes}
@@ -59,11 +57,15 @@ update msg ({ boxGroup } as model) =
                 (boxId,idleBoxes) = 
                     if isEmpty then 
                         (Nothing, boxGroup.idleBoxes)
-                    else 
-                        let
-                            box = makeBox note.id note tilePosition currentBox.color currentBox.size
-                        in                                
-                            (Just box.id, box :: boxGroup.idleBoxes)
+                    else                         
+                        case model.currentBox of
+                            Just currentBox -> 
+                                let
+                                    box = makeBox note.id note tilePosition currentBox.color currentBox.size
+                                in                                
+                                    (Just box.id, box :: boxGroup.idleBoxes)
+                            Nothing -> (Nothing,boxGroup.idleBoxes)
+                            
                 activity_ = case boxId of
                                 Just data -> (Activity (CreateNoteAction data)) :: model.activity               
                                 Nothing -> model.activity
@@ -71,14 +73,18 @@ update msg ({ boxGroup } as model) =
                 x_ = model.position.x
                 position_ = Position x_ y_ 
             in
-                ({ model | activity = activity_, position = position_, isPopUpActive = False,welcomeTour = False,currentBox = emptyBox,boxGroup = newBoxGroup}
+                ({ model | activity = activity_, position = position_, isPopUpActive = False,welcomeTour = False,currentBox = Nothing,boxGroup = newBoxGroup}
                 , savePostsCmd)  
 
         UpdateNote t d ->                     
                 let                  
                     edit = model.editNote                                
                     isEmpty = String.isEmpty t && String.isEmpty d                
-                    lastBoxStatus = List.filter (\box -> model.currentBox.id == box.id) boxGroup.idleBoxes
+                    lastBoxStatus = 
+                            case model.currentBox of
+                                Just currentBox -> 
+                                    List.filter (\box -> currentBox.id == box.id) boxGroup.idleBoxes
+                                Nothing -> []
                     newIdleBoxes = if edit && isEmpty then
                                     boxGroup.idleBoxes 
                                    else List.map (\box -> updateNoteBox model box t d) boxGroup.idleBoxes                                                                                    
@@ -123,26 +129,40 @@ update msg ({ boxGroup } as model) =
                 in
                 ({ model |activity = activity_, isPopUpActive = False, boxGroup =newBoxGroup}, savePostsCmd)
 
-        StartNoteForm -> 
-                ({ model | isPopUpActive = True }, Cmd.none)
+        OpenNoteForm -> 
+                let
+                    box_ = Just Core.emptyBox
+                in
+                    ({ model | isPopUpActive = True, currentBox =  box_ }, Cmd.none)
         
-        CancelNoteForm ->
-                ({ model | isPopUpActive = False,editNote=False, currentBox = emptyBox }, Cmd.none)
+        CloseNoteForm ->
+                ({ model | isPopUpActive = False,editNote=False, currentBox = Nothing }, Cmd.none)
         
         ChangeTitle t ->
                 let
-                    box = model.currentBox
-                    note = box.note                                        
-                    newBox = {box | note = {note | title = t} }
+                    box_ =  Maybe.map 
+                                (\box -> 
+                                    let 
+                                        note = box.note                                           
+                                    in
+                                        {box | note = {note | title = t} } 
+                                )  
+                                model.currentBox              
                 in    
-                    ({ model | currentBox = newBox}, Cmd.none)
+                    ({ model | currentBox = box_}, Cmd.none)
         ChangeDesc d ->
                 let
-                    box = model.currentBox
-                    note = box.note                                        
-                    newBox = {box | note = {note | description = d} }
+                    box_ =  Maybe.map 
+                                (\box -> 
+                                    let 
+                                        note = box.note                                           
+                                    in
+                                        {box | note = {note | description = d} } 
+                                )  
+                                model.currentBox 
+                     
                 in
-                ({ model | currentBox = newBox}, Cmd.none)
+                    ({ model | currentBox = box_}, Cmd.none)
         ReceivedBoard value ->              
                 let                 
                     boxGroupMaybe = boxGroupDecoderString value                
@@ -154,11 +174,8 @@ update msg ({ boxGroup } as model) =
 
         ViewNote id -> 
                 let       
-                    boxOpt = boxGroup.idleBoxes |> List.filter (\b -> b.id == id) |> List.head
-                    viewBox = case boxOpt of
-                                Just b -> b
-                                Nothing -> emptyBox
-                    model_ = {model | isPopUpActive = True,currentBox = viewBox, editNote = True}                                        
+                    box_ = boxGroup.idleBoxes |> List.filter (\b -> b.id == id) |> List.head                  
+                    model_ = {model | isPopUpActive = True,currentBox = box_, editNote = True}                                        
                 in    
                     (model_  , Cmd.none)
         InitDuplicateNote id ->  (model, Task.perform (DuplicateNote id) Time.now)           
@@ -186,10 +203,9 @@ update msg ({ boxGroup } as model) =
         SetPosition x y -> ({ model | position =  Position x  y  },Cmd.none)
         UpdateTitleColor tileColor -> 
                 let
-                    box = model.currentBox                                                                    
-                    newBox = {box | color = Just tileColor}                            
+                    box_ = Maybe.map (\box -> {box | color = Just tileColor}) model.currentBox                                                                    
                 in
-                    ({model | currentBox = newBox} , Cmd.none)        
+                    ({model | currentBox = box_} , Cmd.none)        
         Pick ->
             ( model
             , Select.files ["json/*"] ImportBoard  
@@ -219,12 +235,10 @@ update msg ({ boxGroup } as model) =
                 ({model | boxGroup = newBoxGroup },Cmd.none)
         ToggleAutoSave -> ({model | saveDefault = not model.saveDefault}, Cmd.none)
         UpdateBoxSize boxSize -> 
-            let
-                box = model.currentBox                                                                    
-                newBox = {box | size = boxSize}      
-                                      
+            let 
+                box_ = Maybe.map (\box -> {box | size = boxSize}) model.currentBox                        
             in
-                ({model | currentBox = newBox} , Cmd.none)
+                ({model | currentBox = box_} , Cmd.none)
         ExportBoard content boardName ->(model,downloadJson content boardName)                            
         GetSvg ->
             ( model,Cmd.batch [Ports.getSvg "boxesView"]  )
@@ -247,7 +261,7 @@ update msg ({ boxGroup } as model) =
                            updateCmdMsg = 
                                 if context == "mainContextMenu" then
                                     case action of 
-                                            New -> (model,Core.run StartNoteForm)
+                                            New -> (model,Core.run OpenNoteForm)
                                             DeleteAll -> (model,Core.run NoOp)
                                             Share ->  (model,Core.run NoOp)
                                             Undo -> (model,Core.run UndoAction)
@@ -367,16 +381,14 @@ update msg ({ boxGroup } as model) =
                                             {boxGroup | idleBoxes=idleBoxes_}
                                             
                         UpdateNoteAction previousBoxStatus -> 
-                                        let
-                                            _ = Debug.log "Box" previousBoxStatus
+                                        let                                            
                                             idleBoxes_ = List.map 
                                                             (\box -> if box.id == previousBoxStatus.id then previousBoxStatus else box)
                                                              boxGroup.idleBoxes 
                                         in  
                                             {boxGroup | idleBoxes = idleBoxes_}
                         DeleteNoteAction deletedBox -> 
-                                        let
-                                            _ = Debug.log "deletedBox" deletedBox
+                                        let                                            
                                             idleBoxes_ = deletedBox :: boxGroup.idleBoxes 
                                         in  
                                             {boxGroup | idleBoxes = idleBoxes_}

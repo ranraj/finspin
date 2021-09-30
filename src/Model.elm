@@ -7,7 +7,7 @@ import File exposing (File)
 import ContextMenu exposing (ContextMenu)
 import Dict exposing (Dict)
 import Bootstrap.Navbar as Navbar
-
+import Time
 type alias Id =
     String
 
@@ -29,6 +29,8 @@ type alias Box =
     , size : BoxSize
     , hidden : Bool
     , foundInSearch : Bool
+    -- , createdAt : Time.Posix
+    -- , updatedAt : Time.Posix
     }
 
 -------------------------------BoxGroup-----------------------------------
@@ -46,7 +48,7 @@ type alias Model =
     , welcomeTour : Bool
     , editNote : Bool
     , saveDefault : Bool
-    , currentBox : Box
+    , currentBox : Maybe Box
     , drag : Draggable.State Id
     , boxGroups : List BoxGroup
     , localBoxGroup : Maybe BoxGroup

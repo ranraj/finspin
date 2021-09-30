@@ -103,6 +103,8 @@ App screenshot
 - Reminder and Browser alert
 - Notes type for Table, Graph, Long text
 - Edit poup shoule be maximizable for long text edit
+- Calender view - Timesheet option
+- Clip arts - Like, Heart, Fire, Simle
 ### Improvement 
 - Pick other tile color on edit a tile
 

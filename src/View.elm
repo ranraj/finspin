@@ -70,8 +70,8 @@ addNotePanel box isEdit =
             , div [] [ viewTextArea "Description" "form-input" note.description (ChangeDesc)]   
             , div [class "add-notes-ctrl"] 
                 [
-                button [ onClick ((if isEdit then UpdateNote else AddNote) note.title note.description), class "form-btn"] [text "Save"]
-                ,button [ onClick CancelNoteForm, class "form-btn" ] [text "Clear"]            
+                button [ onClick ((if isEdit then UpdateNote else InitAddNote) note.title note.description), class "form-btn"] [text "Save"]
+                ,button [ onClick CloseNoteForm, class "form-btn" ] [text "Clear"]            
                 ] 
             , colorPickerView box  
             , titleSizePickerView      
@@ -136,18 +136,19 @@ viewTextArea : String -> String -> String -> (String -> Msg) -> Html Msg
 viewTextArea ph c v msg = 
     textarea [ placeholder ph, class c, value v, onInput msg ] []
 
-viewNotePopupModal : Model -> Html Msg
-viewNotePopupModal model =
+viewNotePopupModal : Box -> Bool -> Html Msg
+viewNotePopupModal currentBox isEditNote=
         let
-            note = model.currentBox.note 
+            note = currentBox.note 
         in              
             div [ class "modal-core" ]
             [                                                             
-                div [class "status-icon-close", onClick (CancelNoteForm)] [Icon.viewStyled [ Icon.lg, style "color" "gray" ] Icon.timesCircle]                                                                      
-                ,addNotePanel model.currentBox model.editNote
+                div [class "status-icon-close", onClick (CloseNoteForm)]
+                 [Icon.viewStyled [ Icon.lg, style "color" "gray" ] Icon.timesCircle]                                                                      
+                ,addNotePanel currentBox isEditNote
                 ,div [class "notes-status-ctrl"] [
-                    div [class "status-icon-check", onClick (CheckNote model.currentBox.id)] [Icon.viewStyled [ Icon.sm, style "color" "gray" ] (if note.done then Icon.checkSquare else Icon.square)]
-                    , div [class "status-icon-trash", onClick (DeleteNote model.currentBox.id)] [ Icon.viewStyled [ Icon.sm, style "color" "gray" ] Icon.trash]
+                    div [class "status-icon-check", onClick (CheckNote currentBox.id)] [Icon.viewStyled [ Icon.sm, style "color" "gray" ] (if note.done then Icon.checkSquare else Icon.square)]
+                    , div [class "status-icon-trash", onClick (DeleteNote currentBox.id)] [ Icon.viewStyled [ Icon.sm, style "color" "gray" ] Icon.trash]
                 ]                                    
             ]       
 
@@ -229,7 +230,7 @@ viewController model =
                 ] [ Icon.viewStyled [ Icon.fa2x ] Icon.folderPlus]
             , span [class "content-controller-label"] [text "Add Note"]                             
             , button 
-                [ onClick (if model.isPopUpActive then CancelNoteForm else StartNoteForm)             
+                [ onClick (if model.isPopUpActive then CloseNoteForm else OpenNoteForm)             
                 ,class "content-controller-item"
                 ] [ Icon.viewStyled [ Icon.fa2x ] Icon.plusCircle]
             , span [class "content-controller-label"] [text "Save"]             
@@ -249,7 +250,13 @@ viewController model =
                 ] [ Icon.viewStyled [ Icon.fa2x ] Icon.fileExport]            
             , span [class "content-controller-label"] [text "Import"]                    
             , viewFileUpload model     
-            , (if model.isPopUpActive then viewNotePopupModal model else div [ style "hidden" "true" ] [])        
+            , (if model.isPopUpActive 
+                then 
+                    Maybe.map (\box -> viewNotePopupModal box model.editNote) model.currentBox 
+                        |> Maybe.withDefault (div [ style "hidden" "true" ] []) 
+                else 
+                    div [ style "hidden" "true" ] []
+              )        
             , span [class "content-controller-label"] [text "Download Svg"]
             , button 
                 [ onClick GetSvg

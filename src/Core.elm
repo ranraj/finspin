@@ -48,28 +48,29 @@ makeBox : Id -> Note -> Vec2 -> Maybe String -> BoxSize -> Box
 makeBox id note position color size =
     Box id position False note color size False False
 
-
 makeBoxDefaultSize : Id -> Note -> Vec2 -> Maybe String -> Box 
 makeBoxDefaultSize id note position color =
     Box id position False note color defaultBoxSize False False
 
 updateNoteBox : Model -> Box -> String -> String -> Box
 updateNoteBox model box t d = 
-    if (box.id == model.currentBox.id) 
-        then
-            let
-                currentBox = model.currentBox
-                newTitle = if String.isEmpty t then box.note.title else t
-                --newDescription = if String.isEmpty d then box.note.description else d
-                color = case currentBox.color of
-                            Just _ -> currentBox.color
-                            Nothing -> box.color
-                note = box.note             
-                newNote = {note | title = newTitle,description = d}
-            in    
-                {box | color = color, size = currentBox.size, note = newNote}
-        else 
-            box
+    case model.currentBox of
+        Just currentBox -> 
+            if (box.id == currentBox.id) 
+                then
+                    let                        
+                        newTitle = if String.isEmpty t then box.note.title else t
+                        --newDescription = if String.isEmpty d then box.note.description else d
+                        color = case currentBox.color of
+                                    Just _ -> currentBox.color
+                                    Nothing -> box.color
+                        note = box.note             
+                        newNote = {note | title = newTitle,description = d}
+                    in    
+                        { box | color = color, size = currentBox.size, note = newNote }
+                else 
+                    box
+        Nothing -> box
 
 
 rndUUID : Int -> String

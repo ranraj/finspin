@@ -23,13 +23,14 @@ type Msg
     | InitDuplicateNote String
     | DuplicateNote String Time.Posix
     | StopDragging
-    | AddNote String String
+    | InitAddNote String String
+    | AddNote String String Time.Posix
     | CheckNote String
     | DeleteNote String
     | ChangeTitle String
     | ChangeDesc String
-    | StartNoteForm
-    | CancelNoteForm
+    | OpenNoteForm
+    | CloseNoteForm
     | ReceivedBoard String
     | UpdateNote String String
     | SaveBoard 
