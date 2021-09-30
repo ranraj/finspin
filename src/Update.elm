@@ -161,8 +161,10 @@ update msg ({ boxGroup } as model) =
                     model_ = {model | isPopUpActive = True,currentBox = viewBox, editNote = True}                                        
                 in    
                     (model_  , Cmd.none)
-        DuplicateNote id -> 
+        InitDuplicateNote id ->  (model, Task.perform (DuplicateNote id) Time.now)           
+        DuplicateNote id timeNow -> 
                 let       
+                    timeNow_ = Time.posixToMillis timeNow
                     boxOpt = boxGroup.idleBoxes |> List.filter (\b -> b.id == id) |> List.head
                     sourceBox = case boxOpt of
                                 Just b -> b
@@ -170,13 +172,14 @@ update msg ({ boxGroup } as model) =
                     sourceBoxPosition = sourceBox.position
                     vec = (+) 60 >> Vector2.vec2 (getX sourceBoxPosition )
                     tilePosition =  vec (getY sourceBoxPosition)
-                    -- (x_ , y_ ) = ( model.position.x , model.position.y + 60)                                                       
-                    -- position_ = Position x_ y_                                 
-                    newBoxId =  sourceBox.id ++ "-" ++ String.fromInt ((List.length boxGroup.idleBoxes) + 1)
+                    
+                    newBoxId =  Core.rndUUID timeNow_
+                    activity_ = Activity (DuplicateNoteAction newBoxId) :: model.activity               
+                                                             
                     box = Core.cloneBox sourceBox newBoxId tilePosition
                     
                     boxGroup_ = {boxGroup | idleBoxes = box :: boxGroup.idleBoxes}
-                    model_ = {model | boxGroup = boxGroup_}                                        
+                    model_ = {model | activity = activity_, boxGroup = boxGroup_}                                        
                 in    
                     (model_  , Cmd.none)
         SaveBoard -> (model,saveNotes model.boxGroup)
@@ -254,7 +257,7 @@ update msg ({ boxGroup } as model) =
                                             Open -> (model,Core.run (ViewNote context))
                                             Completed -> (model, Core.run (CheckNote context))
                                             Delete ->  (model,Core.run (DeleteNote context))
-                                            Duplicate -> (model,Core.run (DuplicateNote context))
+                                            Duplicate -> (model,Core.run (InitDuplicateNote context))
                                             _ -> (model,Core.run NoOp)                             
                         in            
                             updateCmdMsg  
@@ -377,6 +380,11 @@ update msg ({ boxGroup } as model) =
                                             idleBoxes_ = deletedBox :: boxGroup.idleBoxes 
                                         in  
                                             {boxGroup | idleBoxes = idleBoxes_}
+                        DuplicateNoteAction boxId -> 
+                                        let
+                                            idleBoxes_ = List.filter (\box -> boxId /= box.id) boxGroup.idleBoxes                                            
+                                        in
+                                            {boxGroup | idleBoxes=idleBoxes_}
                         MoveNoteAction data -> boxGroup
                         NoAction -> boxGroup
                 in

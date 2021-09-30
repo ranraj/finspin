@@ -169,4 +169,9 @@ dateToString : Time.Posix -> String
 dateToString date = format "%d-%b-%Y-%-I:%M" Time.utc date
 
 cloneBox : Box -> String -> Vec2 -> Box
-cloneBox box id position = makeBox id box.note position box.color box.size
+cloneBox box id position = 
+        let
+            note  = box.note
+            note_ = {note| id = id }
+        in
+            makeBox id note_ position box.color box.size

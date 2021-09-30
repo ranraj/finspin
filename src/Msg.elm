@@ -20,7 +20,8 @@ type Msg
     | OnDragBy Vec2
     | StartDragging String    
     | ViewNote String
-    | DuplicateNote String
+    | InitDuplicateNote String
+    | DuplicateNote String Time.Posix
     | StopDragging
     | AddNote String String
     | CheckNote String

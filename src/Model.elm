@@ -86,6 +86,7 @@ type ActivityType = CreateNoteAction String -- Created Box Id
                 | UpdateNoteAction Box -- Previous box status
                 | DeleteNoteAction Box  -- Deleted Box Copy
                 | MoveNoteAction Box -- Previous location of Box
+                | DuplicateNoteAction String
                 | NoAction
 
 type alias Activity = 
