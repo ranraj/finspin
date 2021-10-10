@@ -122,7 +122,7 @@ allBoxes searchKey { movingBox, idleBoxes } =
     movingBox        
         |> Maybe.map (\a -> a :: idleBoxes)        
         |> Maybe.withDefault idleBoxes
-        |> (\boxes -> if not (searchKey == Nothing) then List.filter (\box -> box.foundInSearch == True) boxes else boxes)
+        |> (\boxes -> if not (searchKey == Nothing) then List.filter (\box -> box.display.foundInSearch == True) boxes else boxes)
 
 dragBoxBy : Vec2 -> Box -> Box
 dragBoxBy delta box =

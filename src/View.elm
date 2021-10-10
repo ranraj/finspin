@@ -22,7 +22,7 @@ import Task
 import File exposing (File)
 
 import BoardEncoder exposing (boxGroupEncoder)
-import Model exposing (Model,Box,BoxGroup)
+import Model exposing (Model,Box,BoxGroup,BoxInput,AuditInfo)
 import Msg exposing (Color(..),Msg,Msg(..),BoxAction(..),ContenxtMenuArea(..))
 import Core exposing (getColor,boxSizePallet)
 import Config exposing (colorPallet,svgWrapper)
@@ -35,6 +35,7 @@ import Bootstrap.CDN as CDN
 import Bootstrap.Grid as Grid
 import Html.Events exposing (onMouseOver)
 import Html.Events exposing (onMouseLeave)
+import Time
 
 
 boxesView : Model -> Svg Msg
@@ -59,8 +60,8 @@ readImportedBoard file =
 
 -- Notes View Html --
 
-addNotePanel : Box -> Bool -> Html Msg
-addNotePanel box isEdit =
+addNotePanel : BoxInput -> Maybe AuditInfo -> Bool -> Html Msg
+addNotePanel box audit isEdit =
     let 
         note = box.note
     in    
@@ -74,10 +75,12 @@ addNotePanel box isEdit =
                 ,button [ onClick CloseNoteForm, class "form-btn" ] [text "Clear"]            
                 ] 
             , colorPickerView box  
-            , titleSizePickerView      
+            , titleSizePickerView   
+            , div [] [ span [class "audit-modal-info"] [Maybe.withDefault (text "") <| Maybe.map (\ data -> text ("Created At : " ++ (Core.dateToString data.createdAt))) audit]]    
+            , div [] [ span [class "audit-modal-info"] [Maybe.withDefault (text "") <| Maybe.map (\ data -> text ("Last updated At : " ++ (Core.dateToString data.updatedAt))) audit]]    
             ]
 
-colorPickerView : Box -> Html Msg
+colorPickerView : BoxInput -> Html Msg
 colorPickerView box = 
             let                
                 colorPicker_ = 
@@ -136,8 +139,8 @@ viewTextArea : String -> String -> String -> (String -> Msg) -> Html Msg
 viewTextArea ph c v msg = 
     textarea [ placeholder ph, class c, value v, onInput msg ] []
 
-viewNotePopupModal : Box -> Bool -> Html Msg
-viewNotePopupModal currentBox isEditNote=
+viewNotePopupModal : BoxInput -> Maybe AuditInfo -> Bool -> Html Msg
+viewNotePopupModal currentBox audit isEditNote=
         let
             note = currentBox.note 
         in              
@@ -145,7 +148,7 @@ viewNotePopupModal currentBox isEditNote=
             [                                                             
                 div [class "status-icon-close", onClick (CloseNoteForm)]
                  [Icon.viewStyled [ Icon.lg, style "color" "gray" ] Icon.timesCircle]                                                                      
-                ,addNotePanel currentBox isEditNote
+                ,addNotePanel currentBox audit isEditNote
                 ,div [class "notes-status-ctrl"] [
                     div [class "status-icon-check", onClick (CheckNote currentBox.id)] [Icon.viewStyled [ Icon.sm, style "color" "gray" ] (if note.done then Icon.checkSquare else Icon.square)]
                     , div [class "status-icon-trash", onClick (DeleteNote currentBox.id)] [ Icon.viewStyled [ Icon.sm, style "color" "gray" ] Icon.trash]
@@ -251,8 +254,16 @@ viewController model =
             , span [class "content-controller-label"] [text "Import"]                    
             , viewFileUpload model     
             , (if model.isPopUpActive 
-                then 
-                    Maybe.map (\box -> viewNotePopupModal box model.editNote) model.currentBox 
+                then
+                    let
+                       _ =  Maybe.map (\box -> Core.getBox box) model.currentBox  
+                    in
+                        Maybe.map 
+                            (\box -> 
+                                viewNotePopupModal box 
+                                (Core.getBox box model.boxGroup.idleBoxes |> Maybe.map (\boxForAudit -> boxForAudit.audit)) 
+                                model.editNote) 
+                            model.currentBox  
                         |> Maybe.withDefault (div [ style "hidden" "true" ] []) 
                 else 
                     div [ style "hidden" "true" ] []

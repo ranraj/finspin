@@ -20,6 +20,15 @@ type alias Note =
     }
 
 -------------------------------Box-----------------------------------
+type alias BoxInput = 
+    {
+        id : Id
+        , position : Vec2
+        , note : Note
+        , color : Maybe String
+        , size : BoxSize
+    }
+
 type alias Box =
     { id : Id
     , position : Vec2
@@ -27,12 +36,15 @@ type alias Box =
     , note : Note
     , color : Maybe String
     , size : BoxSize
-    , hidden : Bool
-    , foundInSearch : Bool
-    -- , createdAt : Time.Posix
-    -- , updatedAt : Time.Posix
+    , display : BoxDisplay
+    , audit : AuditInfo
     }
 
+type alias BoxDisplay = 
+    {
+     hidden : Bool
+    , foundInSearch : Bool
+    }
 -------------------------------BoxGroup-----------------------------------
 type alias BoxGroup =
     { uid : String
@@ -41,6 +53,13 @@ type alias BoxGroup =
     , idleBoxes : List Box
     }
 
+type alias AuditInfo =
+    {
+        createdAt : Time.Posix
+        , updatedAt : Time.Posix
+        , createdBy : String
+        , updatedBy : String
+    }
 -------------------------------Model-----------------------------------
 type alias Model =
     { boxGroup : BoxGroup       
@@ -48,7 +67,7 @@ type alias Model =
     , welcomeTour : Bool
     , editNote : Bool
     , saveDefault : Bool
-    , currentBox : Maybe Box
+    , currentBox : Maybe BoxInput
     , drag : Draggable.State Id
     , boxGroups : List BoxGroup
     , localBoxGroup : Maybe BoxGroup

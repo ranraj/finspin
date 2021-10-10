@@ -455,3 +455,7 @@ input:checked+.slider:before {
     align-items: center;
     padding : 5px;
 }
+.audit-modal-info{
+    font-size: 10px;
+    color: #343a40;
+}

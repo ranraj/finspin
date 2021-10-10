@@ -41,16 +41,31 @@ emptyNote =
     }
 
 
-emptyBox : Box
-emptyBox = Box "" defaultNewTilePosition False emptyNote Nothing defaultBoxSize False False
+emptyBox : BoxInput
+emptyBox = BoxInput "" defaultNewTilePosition emptyNote Nothing defaultBoxSize
 
-makeBox : Id -> Note -> Vec2 -> Maybe String -> BoxSize -> Box 
-makeBox id note position color size =
-    Box id position False note color size False False
+buildBoxInput : Id -> Note -> Vec2 -> Maybe String -> BoxSize -> BoxInput
+buildBoxInput id note position color size =
+    BoxInput id position note color size
 
-makeBoxDefaultSize : Id -> Note -> Vec2 -> Maybe String -> Box 
-makeBoxDefaultSize id note position color =
-    Box id position False note color defaultBoxSize False False
+defaultBoxDisplay : BoxDisplay
+defaultBoxDisplay = BoxDisplay False False
+makeBox : BoxInput -> AuditInfo -> Box 
+makeBox ({id,position,note,color,size}) auditInfo =
+    Box id position False note color size defaultBoxDisplay auditInfo
+
+getBox : BoxInput -> List Box -> Maybe Box
+getBox ({id,position,note,color,size}) boxes = List.filter (\box -> box.id == id) boxes |> List.head
+
+getBoxInput : Box -> BoxInput
+getBoxInput ({id,position,note,color,size}) = BoxInput id position note color size 
+
+-- makeBoxDefaultSize : Id -> Note -> Vec2 -> Maybe String -> Box 
+-- makeBoxDefaultSize id note position color =
+--     Box id position False note color defaultBoxSize False False
+
+buidAudit : Time.Posix -> Time.Posix -> String -> String -> AuditInfo
+buidAudit createdAt updatedAt createdBy updatedBy = AuditInfo createdAt updatedAt createdBy updatedBy
 
 updateNoteBox : Model -> Box -> String -> String -> Box
 updateNoteBox model box t d = 
@@ -152,12 +167,15 @@ searchBox boxGroup keyword =
             search keyword_ = 
                     List.map 
                             (\box -> 
+                                let
+                                    display = box.display
+                                in
                                 if String.contains keyword_ (String.toLower box.note.title)  || String.contains keyword_ (String.toLower box.note.description) then
-                                    {box | foundInSearch = True}
+                                    {box | display = {display | foundInSearch = True}}
                                 else 
-                                    {box | foundInSearch = False}
+                                    {box | display = {display | foundInSearch = False}}
                             ) 
-                                boxGroup.idleBoxes
+                            boxGroup.idleBoxes
             searchResult_ = if String.isEmpty keyword  then 
                                 boxGroup.idleBoxes 
                         else 
@@ -169,10 +187,7 @@ searchBox boxGroup keyword =
 dateToString : Time.Posix -> String
 dateToString date = format "%d-%b-%Y-%-I:%M" Time.utc date
 
-cloneBox : Box -> String -> Vec2 -> Box
-cloneBox box id position = 
-        let
-            note  = box.note
-            note_ = {note| id = id }
-        in
-            makeBox id note_ position box.color box.size
+cloneBox : Id -> Vec2 -> Box -> AuditInfo -> Box
+cloneBox id position ({note, color, size}) audit = 
+         makeBox (BoxInput id position note color size) audit
+         

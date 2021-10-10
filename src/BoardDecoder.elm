@@ -1,13 +1,16 @@
 module BoardDecoder exposing (boxGroupDecoderString,boxListDecoderString,boxGroupsDecoderString,positionDecoderContextMenu)
 
 import Json.Decode as JD exposing (Error(..), string,field,decodeString,bool,Decoder,int)
-import Model exposing (Note,Box,BoxSize,BoxGroup)
+import Model exposing (Note,Box,BoxSize,BoxGroup,BoxDisplay)
 import Tuple exposing (first,second)
 import Math.Vector2 as Vector2
 import Array
 import Core exposing (emptyBox)
 import Maybe exposing (withDefault)
 import Model exposing (Position)
+import Model exposing (AuditInfo)
+import Time
+import Model exposing (BoxDisplay)
 
 notePositionDecoder : Maybe Float -> Maybe Float -> (Float, Float)
 notePositionDecoder x y = 
@@ -28,8 +31,19 @@ noteDecoder =
     (field "done" JD.bool)
     (field "title" JD.string)
     (field "description" JD.string)
-    
 
+decodeTimePosix : JD.Decoder Time.Posix
+decodeTimePosix =
+    JD.int
+        |> JD.map Time.millisToPosix
+
+auditDecoder : Decoder AuditInfo
+auditDecoder =
+  JD.map4 AuditInfo
+    (field "createdAt" decodeTimePosix)
+    (field "updatedAt" decodeTimePosix)
+    (field "createdBy" JD.string)
+    (field "updatedBy" JD.string)    
 
 positionDecoder : String -> (Float, Float)
 positionDecoder pos = 
@@ -51,6 +65,12 @@ boxSizeDecoder =
     (field "width" JD.float)
     (field "height" JD.float)    
 
+boxDisplayDecoder : Decoder BoxDisplay
+boxDisplayDecoder =
+      JD.map2 BoxDisplay
+        (JD.succeed False)
+        (JD.succeed False)
+
 boxDecoder:  Decoder Box
 boxDecoder =
   JD.map8 Box
@@ -60,8 +80,8 @@ boxDecoder =
     (field "note" noteDecoder)
     (JD.maybe (field "color" string))
     (field "size" boxSizeDecoder)
-    (JD.succeed False)
-    (JD.succeed False)
+    boxDisplayDecoder
+    (field "audit" auditDecoder)
 
 boxListDecoder : Decoder (List Box)
 boxListDecoder = JD.list boxDecoder 
