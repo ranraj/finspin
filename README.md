@@ -63,6 +63,16 @@ Test
 http://localhost:3000
 ```
 
+## Docker
+
+Build 
+```
+docker build . -t finspin
+```
+Run
+```
+docker run -dp 8000:8000 finspin
+```
 App screenshot
 ![](https://ranraj.github.io/finspin/Screenshot.png)
 
